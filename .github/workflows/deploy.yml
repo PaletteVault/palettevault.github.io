@@ -1,0 +1,124 @@
+name: Deploy to GitHub Pages
+
+# This workflow assumes the Astro project sits at the repository root, which
+# is the layout produced by pushing from inside the `site/` directory —
+# `astro.config.mjs`, `package.json` and `src/` are all top level.
+#
+# The dataset, the icons and the palette PNGs are generated rather than
+# committed, so every deploy rebuilds them. That is why this does noticeably
+# more than `npm ci && npm run build`.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      palette_count:
+        description: 'How many palettes to generate'
+        required: false
+        default: '100000'
+
+# Required to publish. The token is scoped to this run only.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race. Running deploys finish rather than being
+# cancelled: a half-published site is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The image pipeline shells out to Pillow, which is not preinstalled on
+      # the runner. Installing it here rather than later means a missing
+      # dependency fails in seconds instead of after the dataset has already
+      # been generated.
+      - name: Install Pillow
+        run: python3 -m pip install --quiet --break-system-packages Pillow
+
+      - name: Generate palettes
+        run: node scripts/generate-palettes.mjs --count=${{ github.event.inputs.palette_count || '100000' }} --chunk=1000
+
+      - name: Generate icons
+        run: npm run icons
+
+      - name: Generate palette images
+        run: npm run images
+
+      - name: Build
+        env:
+          # A Firebase web config is public by design — it ships in the bundle
+          # of every site that uses one, and the database rules are what
+          # actually control access. Keeping the values in secrets avoids
+          # duplicating them across the repo and allows rotating in one place.
+          SITE_URL: https://palettevault.github.io
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.PUBLIC_FIREBASE_DATABASE_URL }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.PUBLIC_FIREBASE_APP_ID }}
+        run: npm run build
+
+      # Catches the two failures that are otherwise invisible until someone
+      # reports a broken site days later.
+      - name: Verify output
+        run: |
+          set -e
+          test -f dist/.nojekyll \
+            || { echo "::error::dist/.nojekyll is missing — Jekyll will drop _astro/ and the site will load unstyled"; exit 1; }
+          test -f dist/404.html \
+            || { echo "::error::dist/404.html is missing — palette pages that are not pre-rendered will not resolve"; exit 1; }
+          test -f dist/index.html && test -f dist/sitemap.xml && test -f dist/robots.txt
+
+          echo "Pages:  $(find dist -name index.html | wc -l)"
+          echo "Images: $(ls dist/p 2>/dev/null | wc -l)"
+          echo "Files:  $(find dist -type f | wc -l)"
+
+          # GitHub Pages refuses to publish a site over 1 GB.
+          SIZE_MB=$(du -sm dist | cut -f1)
+          if [ "$SIZE_MB" -gt 900 ]; then
+            echo "::error::dist is ${SIZE_MB} MB, close to the 1 GB GitHub Pages limit. Lower PRERENDER_PALETTES or the palette count."
+            exit 1
+          fi
+          echo "::notice::dist is ${SIZE_MB} MB"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

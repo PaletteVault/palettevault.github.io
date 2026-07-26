@@ -12,28 +12,34 @@ reasoning behind the parts that are easy to get wrong.
 
 ### 1. Push the repository
 
-The workflow expects the project at `site/` inside the repository, matching the
-current layout:
+`site/` is its own git repository and is pushed from inside itself, so the
+Astro project sits at the **root** of `palettevault.github.io`:
 
 ```
 palettevault.github.io/
-  .github/workflows/deploy.yml
-  site/          ← the Astro project
-  extension/     ← the Chrome extension, not deployed
+  .github/workflows/deploy.yml   ← lives inside site/ locally
+  astro.config.mjs
+  package.json
+  src/
+  public/
 ```
+
+The workflow therefore lives at `site/.github/workflows/deploy.yml` and runs
+from the repository root — no `working-directory`.
 
 ```bash
-git init
+cd site
 git add .
-git commit -m "Palette Vault"
-git branch -M main
-git remote add origin https://github.com/PaletteVault/palettevault.github.io.git
-git push -u origin main
+git commit -m "Add deploy workflow"
+git push
 ```
 
-If you would rather push only the site's contents to the repository root,
-change `working-directory: site` to `.` in the workflow and drop `site/` from
-the `paths` filter and the artifact path.
+**A workflow only runs if it is committed to the repository it should run in.**
+A file placed one directory above `site/` never reaches this repository, which
+is the usual reason a first push produces no build at all: the Actions tab is
+simply empty rather than showing a failure.
+
+The Chrome extension lives outside this repository and is not deployed.
 
 ### 2. Point Pages at Actions
 
@@ -70,9 +76,9 @@ each visitor's browser and Popular stays empty.
 
 ### 4. Run it
 
-The workflow runs on every push that touches `site/`, or manually from the
-**Actions** tab, where **Run workflow** also lets you override the palette
-count for a one-off build.
+The workflow runs on every push to `main`, or manually from the **Actions**
+tab, where **Run workflow** also lets you override the palette count for a
+one-off build.
 
 First run takes roughly 8–12 minutes, most of it generating palettes and
 rendering the 4000 PNGs.
