@@ -1,0 +1,43 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('picker');
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="Pick a colour and read it back in every format, with a tint and shade ramp built in OKLCH so the mid-tones keep their saturation."
+>
+  <section id="picker" class="tool-panel picker">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Colour</span>
+        <span class="field__pair">
+          <input type="color" data-picker-input />
+          <input type="text" class="input-hex" data-picker-text spellcheck="false" />
+        </span>
+      </label>
+    </div>
+
+    <div class="picker__grid">
+      <div class="picker__preview" data-picker-preview>
+        <span class="picker__name" data-picker-name></span>
+      </div>
+
+      <ul class="formats" data-picker-formats></ul>
+    </div>
+
+    <p class="tool-note" data-picker-contrast></p>
+
+    <h2 class="tool-subhead">Tints and shades</h2>
+    <div class="ramp" data-picker-ramp></div>
+  </section>
+</ToolLayout>
+
+<script>
+  import { initPicker } from '../../lib/tools/picker.js';
+  initPicker();
+</script>

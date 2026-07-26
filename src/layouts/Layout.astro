@@ -1,23 +1,130 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+/**
+ * Base page shell: head metadata, header, sidebar and content slot.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Sidebar from '../components/Sidebar.astro';
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+interface Props {
+  title: string;
+  description?: string;
+  active?: 'new' | 'popular' | 'random' | 'collection' | 'tools' | null;
+  activeTag?: string | null;
+  /** Absolute or root-relative image for social previews. */
+  image?: string;
+  /** Set for pages that should stay out of the index (fallback shells). */
+  noindex?: boolean;
+  /** Rendered without the category sidebar (tools, standalone pages). */
+  wide?: boolean;
+  /** Extra schema.org objects to emit alongside the site-level graph. */
+  schema?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = 'Thousands of hand-tuned four-colour palettes. Copy any HEX in one click.',
+  active = null,
+  activeTag = null,
+  image = '/og-image.png',
+  noindex = false,
+  wide = false,
+  schema = [],
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(image, site).href;
+
+// Site-level graph. Page-specific objects (breadcrumbs, tool descriptions)
+// arrive through the `schema` prop and are emitted in the same block.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${site.origin}/#website`,
+      url: `${site.origin}/`,
+      name: 'Palette Vault',
+      description:
+        'Thousands of hand-tuned four-colour palettes with a set of free colour tools.',
+      inLanguage: 'en',
+    },
+    ...schema,
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161c" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Palette Vault" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- The gallery requests the manifest immediately after parsing. -->
+    <link rel="preload" href="/data/meta.json" as="fetch" crossorigin="anonymous" />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
+    <!--
+      Theme is applied before first paint, otherwise dark-mode users get a
+      white flash while the stylesheet and scripts load.
+    -->
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('palette.theme');
+          const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved ?? (prefersDark ? 'dark' : 'light');
+        } catch {
+          /* localStorage unavailable — stay on the light theme */
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <Header active={active} />
+
+    <div class:list={['shell', wide && 'shell--wide']}>
+      {!wide && <Sidebar activeTag={activeTag} />}
+      <main id="main">
+        <slot />
+      </main>
+    </div>
+
+    <slot name="after" />
+  </body>
+</html>

@@ -1,0 +1,74 @@
+---
+/**
+ * Single palette page: /palette/4e1f6e3e3e7545a9a998e8de/
+ *
+ * The slug is four HEX codes in a row, so the address carries the whole
+ * palette. The page needs no chunk request and no id — it rebuilds itself
+ * entirely from the URL.
+ *
+ * Only the top of the feed is pre-rendered (see PRERENDER_PALETTES). Every
+ * other address is caught by the host's rewrite rule and served
+ * pages/palette/index.astro instead.
+ *
+ * These pages are also the only ones that can carry per-palette social
+ * metadata. The rewrite fallback serves a single shared HTML file, and
+ * crawlers do not run JavaScript, so an og:image set on the client would never
+ * be seen. That is why the PNGs are generated for exactly this set of pages.
+ */
+import Layout from '../../layouts/Layout.astro';
+import PaletteDetail from '../../components/PaletteDetail.astro';
+import { getPrerenderRows } from '../../lib/data.server.js';
+import { paletteName, paletteSlug } from '../../lib/palette.js';
+
+export function getStaticPaths() {
+  return getPrerenderRows().map((row) => {
+    const colors = row.slice(1);
+    return { params: { slug: paletteSlug(colors) }, props: { colors } };
+  });
+}
+
+const { colors } = Astro.props;
+const { slug } = Astro.params;
+
+const hexList = colors.map((hex) => `#${hex.toUpperCase()}`).join(' ');
+const name = paletteName(colors);
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const imagePath = `/p/${slug}.png`;
+const pageUrl = new URL(`/palette/${slug}/`, site).href;
+const pinImage = new URL(`/p/${slug}-pin.png`, site).href;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name },
+    ],
+  },
+  {
+    '@type': 'ImageObject',
+    name: `${name} colour palette`,
+    description: `Colour palette ${hexList}`,
+    contentUrl: new URL(imagePath, site).href,
+    width: 1200,
+    height: 630,
+    license: `${site.origin}/`,
+  },
+];
+---
+
+<Layout
+  title={`${name} — ${hexList}`}
+  description={`${name}: colour palette ${hexList}. Copy the HEX codes or download it as a PNG.`}
+  image={imagePath}
+  schema={schema}
+>
+  <PaletteDetail
+    colors={colors}
+    slug={slug}
+    image={imagePath}
+    pageUrl={pageUrl}
+    pinImage={pinImage}
+  />
+</Layout>

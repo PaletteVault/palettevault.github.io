@@ -1,0 +1,9 @@
+This file disables Jekyll processing on GitHub Pages.
+
+Without it GitHub runs the published output through Jekyll, which silently
+ignores every file and directory whose name starts with an underscore. Astro
+emits all of its hashed JavaScript and CSS into `_astro/`, so the entire site
+would load as unstyled HTML with no scripts and no obvious error anywhere.
+
+The file has to exist in the published output, which is why it lives in
+public/ rather than at the project root.

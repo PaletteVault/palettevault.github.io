@@ -1,0 +1,41 @@
+---
+/**
+ * 404 page, doubling as the GitHub Pages fallback.
+ *
+ * GitHub Pages supports no rewrite rules at all — neither `_redirects` nor
+ * `vercel.json` does anything there. The only mechanism available is the
+ * `404.html` file, which is served for any address that has no file.
+ *
+ * So this carries the same body as the palette page: if the address looks like
+ * /palette/<24 hex>/, show the palette, otherwise show a plain not-found state.
+ * The caveat is that the response still carries HTTP 404. Visitors get a
+ * working page; search engines will not index it. On hosts with real rewrites
+ * (Netlify, Cloudflare Pages, Vercel) `/palette/index.html` handles this
+ * instead and the file stays a plain 404.
+ */
+import Layout from '../layouts/Layout.astro';
+import PaletteDetail from '../components/PaletteDetail.astro';
+---
+
+<Layout title="Page not found — Palette Vault" description="This page does not exist." noindex>
+  <div id="not-found" class="empty" hidden>
+    <h2>Page not found</h2>
+    <p>The address doesn’t match anything here.</p>
+    <p><a class="detail-back" href="/">Back to all palettes</a></p>
+  </div>
+
+  <div id="palette-fallback" hidden>
+    <PaletteDetail />
+  </div>
+</Layout>
+
+<script is:inline>
+  // Decide what to show before first paint. Inline and dependency-free so
+  // there is no module round-trip and no flash of the wrong state.
+  (() => {
+    const isPalette = /\/palette\/[0-9a-fA-F]{24}\/?$/.test(location.pathname);
+    document
+      .getElementById(isPalette ? 'palette-fallback' : 'not-found')
+      ?.removeAttribute('hidden');
+  })();
+</script>

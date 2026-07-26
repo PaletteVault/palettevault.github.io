@@ -1,0 +1,34 @@
+---
+/**
+ * Random — shuffled order.
+ *
+ * Implementation: the New feed's chunks are visited in random order without
+ * repeats, and the rows inside each chunk are shuffled again. That gives real
+ * randomness without ever loading the whole dataset into memory.
+ *
+ * Not pre-rendered on purpose — a fixed HTML batch would be identical on every
+ * visit, which defeats the point of the page.
+ */
+import Layout from '../layouts/Layout.astro';
+import Feed from '../components/Feed.astro';
+import { getMeta } from '../lib/data.server.js';
+
+const meta = getMeta();
+const chunks = meta.feeds?.new?.chunks ?? 0;
+---
+
+<Layout
+  title="Random palettes — Palette Vault"
+  description="A shuffled stream of colour palettes. Refresh for a new set."
+  active="random"
+>
+  <Feed
+    title="Random"
+    subtitle="Reshuffled on every visit. Reload for a fresh set."
+    type="random"
+    base="/data/new"
+    chunks={chunks}
+    emptyTitle="No palettes yet"
+    emptyText="Run npm run generate to build the dataset."
+  />
+</Layout>

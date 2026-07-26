@@ -1,0 +1,52 @@
+---
+/**
+ * Category page: /tag/pastel/, /tag/blue/ and so on.
+ *
+ * Paths come from meta.json at build time, so the category list always matches
+ * the dataset that was actually generated — no dead links to tags with zero
+ * palettes behind them.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Feed from '../../components/Feed.astro';
+import { getFirstRows, getMeta, SSG_BATCH } from '../../lib/data.server.js';
+
+export function getStaticPaths() {
+  return getMeta().tags.map((tag) => ({
+    params: { slug: tag.slug },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const preRows = getFirstRows(`tag/${tag.slug}`, SSG_BATCH);
+const count = tag.count.toLocaleString('en-US');
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: `${tag.label} palettes` },
+    ],
+  },
+];
+---
+
+<Layout
+  title={`${tag.label} colour palettes — Palette Vault`}
+  description={`${count} ${tag.label.toLowerCase()} palettes. Click any swatch to copy its HEX.`}
+  activeTag={tag.slug}
+  schema={schema}
+>
+  <Feed
+    title={`${tag.label} palettes`}
+    subtitle={`${count} palettes tagged ${tag.label.toLowerCase()}.`}
+    type="chunks"
+    base={`/data/tag/${tag.slug}`}
+    chunks={tag.chunks}
+    preRows={preRows}
+    emptyTitle={`No ${tag.label.toLowerCase()} palettes`}
+    emptyText="Try another category from the sidebar."
+  />
+</Layout>

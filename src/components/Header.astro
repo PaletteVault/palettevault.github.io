@@ -1,0 +1,88 @@
+---
+/** Site header: logo, primary navigation, theme toggle. */
+
+interface Props {
+  /** Highlighted section. */
+  active?: 'new' | 'popular' | 'random' | 'collection' | 'tools' | null;
+}
+
+const { active = null } = Astro.props;
+
+const links = [
+  { key: 'new', label: 'New', href: '/' },
+  { key: 'popular', label: 'Popular', href: '/popular/' },
+  { key: 'random', label: 'Random', href: '/random/' },
+  { key: 'collection', label: 'Collection', href: '/collection/' },
+  { key: 'tools', label: 'Tools', href: '/tools/' },
+] as const;
+---
+
+<header class="header">
+  <a class="logo" href="/">
+    <img
+      class="logo__mark"
+      src="/favicon-48.png"
+      srcset="/favicon-48.png 1x, /icon-192.png 4x"
+      width="26"
+      height="26"
+      alt=""
+      decoding="async"
+    />
+    <span>Palette Vault</span>
+  </a>
+
+  <nav class="nav" aria-label="Main">
+    {
+      links.map((link) => (
+        <a
+          class="nav__link"
+          href={link.href}
+          aria-current={active === link.key ? 'page' : undefined}
+        >
+          {link.label}
+          {link.key === 'collection' && <span class="badge" data-collection-count hidden>0</span>}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="header__spacer"></div>
+
+  <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle colour theme">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" data-theme-icon="dark"></path>
+      <path
+        d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-6h0v3m0 16v3M1 12h3m16 0h3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"
+        data-theme-icon="light"
+        hidden></path>
+    </svg>
+  </button>
+</header>
+
+<script>
+  /**
+   * Theme toggle. The initial value is set by the inline script in the head
+   * (see Layout.astro) so there is no flash of the wrong theme.
+   */
+  const root = document.documentElement;
+  const button = document.querySelector('[data-theme-toggle]');
+
+  function paint() {
+    const dark = root.dataset.theme === 'dark';
+    document.querySelector('[data-theme-icon="dark"]')?.toggleAttribute('hidden', dark);
+    document.querySelector('[data-theme-icon="light"]')?.toggleAttribute('hidden', !dark);
+  }
+
+  button?.addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('palette.theme', next);
+    } catch {
+      /* private mode — just don't persist */
+    }
+    paint();
+  });
+
+  paint();
+</script>

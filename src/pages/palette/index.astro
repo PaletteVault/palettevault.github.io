@@ -1,0 +1,25 @@
+---
+/**
+ * Catch-all template for palette pages that were not pre-rendered.
+ *
+ * Built to /palette/index.html. The host rewrites any /palette/<slug>/ address
+ * without its own file onto this one (see public/_redirects and vercel.json).
+ * The colours are unknown at build time — initDetail() fills them in from the
+ * address bar.
+ *
+ * Opened directly, with no slug, it shows the "palette not found" state, which
+ * is correct: /palette/ on its own means nothing.
+ *
+ * Marked noindex so the empty shell never competes with the real pages.
+ */
+import Layout from '../../layouts/Layout.astro';
+import PaletteDetail from '../../components/PaletteDetail.astro';
+---
+
+<Layout
+  title="Palette — Palette Vault"
+  description="Colour palette details: copy the HEX codes or download it as a PNG."
+  noindex
+>
+  <PaletteDetail />
+</Layout>

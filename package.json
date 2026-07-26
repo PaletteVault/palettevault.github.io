@@ -1,17 +1,23 @@
 {
-  "name": "site",
+  "name": "palette-vault",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "private": true,
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
+    "generate": "node scripts/generate-palettes.mjs --count=100000 --chunk=1000",
+    "generate:dev": "node scripts/generate-palettes.mjs --count=10000 --chunk=1000",
+    "icons": "node scripts/build-icons.mjs",
+    "images": "node scripts/build-palette-images.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.1.3"
+    "astro": "^7.1.3",
+    "firebase": "^12.16.0"
   }
 }

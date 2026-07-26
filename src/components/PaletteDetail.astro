@@ -1,0 +1,197 @@
+---
+/**
+ * Body of the single palette page.
+ *
+ * Used by two routes:
+ *   • pages/palette/[slug].astro — pre-rendered pages, where the colours are
+ *     known at build time and land in the HTML for search engines;
+ *   • pages/palette/index.astro — the catch-all template the host rewrites
+ *     every other address onto. No colours at build time; initDetail() fills
+ *     them in from the slug in the address bar.
+ *
+ * One copy of the markup for both cases — anything else drifts out of sync.
+ */
+import { swatchesHTML } from '../lib/detail.js';
+import { paletteName } from '../lib/palette.js';
+
+interface Props {
+	/** Four HEX values without '#', when known at build time. */
+	colors?: string[];
+	/** Slug for the data attribute; empty on the catch-all template. */
+	slug?: string;
+	/**
+	 * Root-relative path to the pre-rendered PNG, when one exists.
+	 * Only pre-rendered pages have one — see scripts/build-palette-images.mjs.
+	 */
+	image?: string | null;
+	/** Absolute page URL, needed for the Pinterest share link. */
+	pageUrl?: string | null;
+	/** Absolute URL of the 2:3 Pinterest variant. */
+	pinImage?: string | null;
+}
+
+const { colors = [], slug = '', image = null, pageUrl = null, pinImage = null } = Astro.props;
+const hasColors = colors.length === 4;
+
+const name = hasColors ? paletteName(colors) : 'Palette';
+const hexList = hasColors ? colors.map((hex) => `#${hex.toUpperCase()}`).join(' ') : '';
+const swatches = hasColors ? swatchesHTML(colors) : '';
+
+/*
+ * Pinterest fetches the image server-side from the `media` parameter, so it
+ * has to be a public http(s) URL. blob: and data: URLs are invisible to it,
+ * which is the whole reason the PNG is generated at build time rather than
+ * drawn on a canvas.
+ */
+const COPY_FORMATS = [
+	{ id: 'hex', label: 'HEX' },
+	{ id: 'rgb', label: 'RGB' },
+	{ id: 'css', label: 'CSS vars' },
+	{ id: 'array', label: 'Array' },
+];
+---
+
+<section
+	id='palette-detail'
+	class='detail'
+	data-slug={slug}>
+	<!-- Fallback for a malformed slug: this page answers arbitrary addresses. -->
+	<div
+		class='empty'
+		data-detail-invalid
+		hidden>
+		<h2>Palette not found</h2>
+		<p>
+			The address should contain four HEX codes, for example
+			<code>/palette/4e1f6e3e3e7545a9a998e8de/</code>
+		</p>
+		<p
+			><a
+				class='detail-back'
+				href='/'
+				>Back to all palettes</a
+			></p
+		>
+	</div>
+
+	<div data-detail-body>
+		<nav class='detail-nav'>
+			<a
+				class='detail-back'
+				href='/'
+				>← All palettes</a
+			>
+		</nav>
+
+		<header class='detail-head'>
+			<h1 data-detail-name>{name}</h1>
+			<p
+				class='detail-head__hex'
+				data-detail-title
+				>{hexList}</p
+			>
+		</header>
+
+		<div
+			class='detail-swatches'
+			data-detail-swatches
+			set:html={swatches}
+		/>
+
+		<div class='detail-actions'>
+			<div class='detail-actions__group'>
+				<span class='detail-actions__label'>Copy palette</span>
+				<div class='detail-actions__buttons'>
+					{
+						COPY_FORMATS.map((format) => (
+							<button
+								type='button'
+								class='action'
+								data-copy-format={format.id}>
+								{format.label}
+							</button>
+						))
+					}
+				</div>
+			</div>
+
+			<div class='detail-actions__group'>
+				<span class='detail-actions__label'>Share &amp; save</span>
+				<div class='detail-actions__buttons'>
+					{
+						/*
+						 * A real <a download> when the file exists on disk: no JavaScript,
+						 * and the browser streams it straight to the downloads folder.
+						 * Otherwise fall back to a button that builds the PNG on a canvas.
+						 */
+						image ?
+							<a
+								class='action action--primary'
+								href={image}
+								download={`palette-${slug}.png`}>
+								Download PNG
+							</a>
+						:	<button
+								type='button'
+								class='action action--primary'
+								data-download>
+								Download PNG
+							</button>
+					}
+
+					<button
+						type='button'
+						class='action'
+						data-copy-link
+						>Copy link</button
+					>
+
+					<button
+						type='button'
+						class='like like--lg'
+						data-like
+						aria-pressed='false'
+						aria-label='Like palette'>
+						<svg
+							class='like__icon'
+							viewBox='0 0 24 24'
+							aria-hidden='true'
+							focusable='false'>
+							<path d='M12 20.7 4.3 13a5 5 0 0 1 7.1-7.1l.6.6.6-.6A5 5 0 1 1 19.7 13Z'></path>
+						</svg>
+						<span
+							class='like__count'
+							data-count
+							>0</span
+						>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<figure class='detail-preview'>
+			<!--
+        A real <img>, not a <canvas>. Only an <img> can be right-clicked and
+        saved, dragged into another app, or picked up by the Pinterest browser
+        extension. Pages without a pre-rendered file get a blob URL from
+        initDetail(), which keeps every one of those behaviours except pinning.
+      -->
+			<img
+				class='detail-preview__img'
+				data-detail-image
+				src={image ?? undefined}
+				alt={hasColors ? `Colour palette ${hexList}` : 'Colour palette preview'}
+				width='1200'
+				height='630'
+				loading='lazy'
+				decoding='async'
+			/>
+			<figcaption>1200×630 PNG. Right-click to save, or use the download button.</figcaption>
+		</figure>
+	</div>
+</section>
+
+<script>
+	import { initDetail } from '../lib/detail.js';
+	initDetail();
+</script>

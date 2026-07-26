@@ -1,0 +1,18 @@
+# Netlify / Cloudflare Pages
+#
+# Palette pages are addressed by a slug of four HEX codes:
+#   /palette/4e1f6e3e3e7545a9a998e8de/
+#
+# Only the top of the feed is pre-rendered (see PRERENDER_PALETTES in
+# src/lib/data.server.js). The rule below catches every other address and
+# serves it the same HTML. The page draws itself from the slug in the address,
+# so the result is indistinguishable from a pre-rendered page.
+#
+# Status 200, not 301/302: this is a rewrite, not a redirect. The address in
+# the browser must stay as it was, otherwise the client code cannot find the
+# slug.
+#
+# The rule only applies to paths with no matching file, so genuinely
+# pre-rendered pages are served normally and are unaffected.
+
+/palette/*  /palette/index.html  200

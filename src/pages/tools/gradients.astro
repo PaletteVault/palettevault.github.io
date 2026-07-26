@@ -1,0 +1,128 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+import { mix, oklchToHex } from '../../lib/oklch.js';
+import { isDark } from '../../lib/palette.js';
+
+const tool = getTool('gradients');
+
+/**
+ * Gradient library, generated at build time.
+ *
+ * Built in OKLCH for one specific reason: a two-stop gradient interpolated in
+ * sRGB passes through a desaturated middle, which is where the classic "muddy
+ * grey band" between complementary colours comes from. Walking hue and chroma
+ * in a perceptual space keeps the midpoint as vivid as the ends.
+ *
+ * Deterministic: no RNG, so the library is stable across builds and the pairs
+ * can be linked to reliably.
+ */
+const GRADIENTS = [];
+
+const FAMILIES = [
+  { name: 'Sunrise', hue: 30, spread: 45, L: [0.62, 0.86], C: [0.13, 0.18] },
+  { name: 'Ocean', hue: 220, spread: 45, L: [0.45, 0.78], C: [0.1, 0.16] },
+  { name: 'Meadow', hue: 140, spread: 50, L: [0.5, 0.84], C: [0.09, 0.15] },
+  { name: 'Orchid', hue: 300, spread: 45, L: [0.55, 0.82], C: [0.11, 0.17] },
+  { name: 'Ember', hue: 15, spread: 35, L: [0.45, 0.75], C: [0.14, 0.19] },
+  { name: 'Lagoon', hue: 190, spread: 40, L: [0.55, 0.85], C: [0.1, 0.15] },
+  { name: 'Dusk', hue: 265, spread: 60, L: [0.35, 0.68], C: [0.09, 0.16] },
+  { name: 'Citrus', hue: 75, spread: 40, L: [0.68, 0.9], C: [0.12, 0.17] },
+];
+
+for (const family of FAMILIES) {
+  for (let step = 0; step < 6; step += 1) {
+    const t = step / 5;
+    const from = oklchToHex(
+      family.L[0] + (family.L[1] - family.L[0]) * t * 0.35,
+      family.C[0] + (family.C[1] - family.C[0]) * t,
+      family.hue - family.spread / 2,
+    );
+    const to = oklchToHex(
+      family.L[1] - (family.L[1] - family.L[0]) * t * 0.25,
+      family.C[1] - (family.C[1] - family.C[0]) * t * 0.4,
+      family.hue + family.spread / 2 + step * 8,
+    );
+
+    GRADIENTS.push({
+      name: `${family.name} ${step + 1}`,
+      from,
+      to,
+      // Pre-computed midpoint, used for the readable label colour.
+      mid: mix(from, to, 0.5),
+      angle: 135,
+    });
+  }
+}
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="Two-stop gradients interpolated in OKLCH, so the middle stays vivid instead of drifting grey. Click a card to copy its CSS."
+>
+  <section id="gradients" class="tool-panel">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Copy as</span>
+        <select data-grad-mode>
+          <option value="css">CSS gradient</option>
+          <option value="oklch">CSS in OKLCH</option>
+          <option value="hex">Both HEX values</option>
+        </select>
+      </label>
+    </div>
+
+    <ul class="grad-grid">
+      {
+        GRADIENTS.map((gradient) => (
+          <li>
+            <button
+              type="button"
+              class:list={['grad-card', isDark(gradient.mid) ? 'on-dark' : 'on-light']}
+              style={`--from:#${gradient.from};--to:#${gradient.to};--angle:${gradient.angle}deg`}
+              data-from={gradient.from}
+              data-to={gradient.to}
+              data-angle={gradient.angle}
+              title={`Copy ${gradient.name}`}
+            >
+              <span class="grad-card__name">{gradient.name}</span>
+              <span class="grad-card__hex">
+                #{gradient.from.toUpperCase()} → #{gradient.to.toUpperCase()}
+              </span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</ToolLayout>
+
+<script>
+  import { copyWithToast } from '../../lib/clipboard.js';
+  import { formatOklch } from '../../lib/oklch.js';
+
+  const root = document.getElementById('gradients');
+  const mode = root?.querySelector('[data-grad-mode]');
+
+  root?.addEventListener('click', async (event) => {
+    const card = event.target.closest('[data-from]');
+    if (!card) return;
+
+    const { from, to, angle } = card.dataset;
+    let value;
+
+    if (mode?.value === 'hex') {
+      value = `#${from.toUpperCase()}, #${to.toUpperCase()}`;
+    } else if (mode?.value === 'oklch') {
+      // `in oklch` tells the browser to interpolate perceptually, matching
+      // how these gradients were generated in the first place.
+      value = `linear-gradient(${angle}deg in oklch, ${formatOklch(from)}, ${formatOklch(to)})`;
+    } else {
+      value = `linear-gradient(${angle}deg, #${from} 0%, #${to} 100%)`;
+    }
+
+    await copyWithToast(value, 'Gradient');
+  });
+</script>

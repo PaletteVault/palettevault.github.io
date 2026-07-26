@@ -1,0 +1,94 @@
+---
+/**
+ * A feed of palettes.
+ *
+ * Responsible for:
+ *   • the section heading;
+ *   • the first batch of cards, rendered statically at build time;
+ *   • the grid container, infinite-scroll sentinel and empty state;
+ *   • handing the data source configuration to gallery.js via data attributes.
+ *
+ * The script is shared by every feed page — see lib/gallery.js.
+ */
+import PaletteCard from './PaletteCard.astro';
+import { getMeta } from '../lib/data.server.js';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  /** Data source type for gallery.js. */
+  type: 'chunks' | 'random' | 'popular' | 'collection';
+  /** Base path to the chunks (chunks / random only). */
+  base?: string;
+  /** Number of chunks in the feed (chunks / random only). */
+  chunks?: number;
+  /** Rows pre-rendered into the HTML (chunks only). */
+  preRows?: Array<[number, string, string, string, string]>;
+  /** Empty state copy. */
+  emptyTitle?: string;
+  emptyText?: string;
+}
+
+const {
+  title,
+  subtitle,
+  type,
+  base = '',
+  chunks = 0,
+  preRows = [],
+  emptyTitle = 'Nothing here yet',
+  emptyText = 'Try another category.',
+} = Astro.props;
+
+const meta = getMeta();
+---
+
+<section class="page-head">
+  <h1>{title}</h1>
+  {subtitle && <p>{subtitle}</p>}
+</section>
+
+<div
+  class="grid"
+  id="grid"
+  data-source-type={type}
+  data-source-base={base}
+  data-source-chunks={String(chunks)}
+  data-source-skip={String(preRows.length)}
+>
+  {preRows.map((row) => <PaletteCard row={row} meta={meta} />)}
+</div>
+
+<div class="empty" id="empty" hidden>
+  <h2>{emptyTitle}</h2>
+  <p>{emptyText}</p>
+</div>
+
+<div class="status" id="status"></div>
+<div class="sentinel" id="sentinel"></div>
+
+<script>
+  import { initGallery, updateCollectionBadge } from '../lib/gallery.js';
+
+  const grid = document.getElementById('grid');
+
+  if (grid) {
+    // The source configuration arrives from frontmatter through data
+    // attributes, which lets one script serve every feed page on the site.
+    initGallery({
+      mount: grid,
+      sentinel: document.getElementById('sentinel'),
+      empty: document.getElementById('empty'),
+      status: document.getElementById('status'),
+      source: {
+        type: grid.dataset.sourceType,
+        base: grid.dataset.sourceBase,
+        chunks: Number(grid.dataset.sourceChunks) || 0,
+        skip: Number(grid.dataset.sourceSkip) || 0,
+      },
+    });
+  }
+
+  // The header counter is present on every page.
+  updateCollectionBadge();
+</script>

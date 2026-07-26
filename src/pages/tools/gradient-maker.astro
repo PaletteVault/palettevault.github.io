@@ -1,0 +1,67 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('gradient-maker');
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="Build a gradient from your own stops. The two previews show the same stops interpolated in sRGB and in OKLCH — the difference is usually obvious in the middle."
+>
+  <section id="gradient-maker" class="tool-panel">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Type</span>
+        <select data-gm-type>
+          <option value="linear">Linear</option>
+          <option value="radial">Radial</option>
+        </select>
+      </label>
+
+      <label class="field field--grow">
+        <span class="field__label">Angle <em data-gm-angle-out></em></span>
+        <input type="range" min="0" max="360" step="1" data-gm-angle />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Copy in</span>
+        <select data-gm-space>
+          <option value="srgb">sRGB</option>
+          <option value="oklch">OKLCH</option>
+        </select>
+      </label>
+
+      <div class="field field--actions">
+        <button type="button" class="action" data-gm-reverse>Reverse</button>
+        <button type="button" class="action" data-gm-add>Add stop</button>
+      </div>
+    </div>
+
+    <div class="gm-previews">
+      <figure>
+        <div class="gm-preview" data-gm-preview-srgb></div>
+        <figcaption>Interpolated in sRGB</figcaption>
+      </figure>
+      <figure>
+        <div class="gm-preview" data-gm-preview-oklch></div>
+        <figcaption>Interpolated in OKLCH</figcaption>
+      </figure>
+    </div>
+
+    <h2 class="tool-subhead">Stops</h2>
+    <ul class="stops" data-gm-stops></ul>
+
+    <div class="gm-output">
+      <code data-gm-css></code>
+      <button type="button" class="action action--primary" data-gm-copy>Copy CSS</button>
+    </div>
+  </section>
+</ToolLayout>
+
+<script>
+  import { initGradientMaker } from '../../lib/tools/gradient-maker.js';
+  initGradientMaker();
+</script>

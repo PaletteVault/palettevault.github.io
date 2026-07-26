@@ -1,0 +1,87 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+import { TAILWIND, TAILWIND_STEPS } from '../../lib/tools/swatch-data.js';
+import { isDark } from '../../lib/palette.js';
+
+const tool = getTool('tailwind');
+const families = Object.entries(TAILWIND);
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="The default Tailwind CSS palette. Click a swatch to copy its HEX, or the label to copy the class name."
+>
+  <section id="tailwind" class="tool-panel">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Copy as</span>
+        <select data-tw-mode>
+          <option value="hex">HEX value</option>
+          <option value="class">Class name (bg-)</option>
+          <option value="var">CSS variable</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="tw-scroll">
+      <div class="tw-row tw-row--head">
+        <span class="tw-name"></span>
+        {TAILWIND_STEPS.map((step) => <span class="tw-step">{step}</span>)}
+      </div>
+
+      {
+        families.map(([name, shades]) => (
+          <div class="tw-row">
+            <span class="tw-name">{name}</span>
+            {shades.map((hex, index) => (
+              <button
+                type="button"
+                class:list={['tw-cell', isDark(hex) ? 'on-dark' : 'on-light']}
+                style={`--swatch-bg:#${hex}`}
+                data-hex={hex}
+                data-family={name}
+                data-step={TAILWIND_STEPS[index]}
+                title={`${name}-${TAILWIND_STEPS[index]} · #${hex.toUpperCase()}`}
+              >
+                <span class="tw-cell__hex">{hex.toUpperCase()}</span>
+              </button>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="tool-note">
+      Values reproduced from the Tailwind CSS default theme, which is released
+      under the MIT licence.
+    </p>
+  </section>
+</ToolLayout>
+
+<script>
+  import { copyWithToast } from '../../lib/clipboard.js';
+
+  const root = document.getElementById('tailwind');
+  const mode = root?.querySelector('[data-tw-mode]');
+
+  root?.addEventListener('click', async (event) => {
+    const cell = event.target.closest('[data-hex]');
+    if (!cell) return;
+
+    const { hex, family, step } = cell.dataset;
+
+    // Three shapes of the same colour: the raw value for design tools, the
+    // utility class for markup, and a custom property for a token file.
+    const value =
+      mode?.value === 'class'
+        ? `bg-${family}-${step}`
+        : mode?.value === 'var'
+          ? `--color-${family}-${step}: #${hex};`
+          : `#${hex.toUpperCase()}`;
+
+    await copyWithToast(value);
+  });
+</script>

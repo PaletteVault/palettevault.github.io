@@ -1,0 +1,28 @@
+---
+/**
+ * Collection — the visitor's own saved palettes.
+ *
+ * Entirely client-side: the slug list comes from localStorage (see lib/store.js)
+ * and the colours are decoded from the slugs themselves. No backend, no accounts —
+ * the collection lives in the browser.
+ *
+ * Marked noindex: a crawler would only ever see an empty page.
+ */
+import Layout from '../layouts/Layout.astro';
+import Feed from '../components/Feed.astro';
+---
+
+<Layout
+  title="My collection — Palette Vault"
+  description="Palettes you liked, saved right in your browser."
+  active="collection"
+  noindex
+>
+  <Feed
+    title="My collection"
+    subtitle="Everything you liked, stored locally in this browser."
+    type="collection"
+    emptyTitle="Your collection is empty"
+    emptyText="Tap the heart on any palette to save it here."
+  />
+</Layout>

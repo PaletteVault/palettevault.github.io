@@ -1,6 +1,18 @@
 # build output
 dist/
 
+# Generated palette dataset.
+# At 100k palettes this is ~30 MB, which has no business in git: the build
+# runs `npm run generate` first, the seed is fixed and the output reproducible.
+# To commit the data anyway (for a deploy with no Node step, say), delete the
+# line below.
+public/data/
+
+# Generated palette PNGs (npm run images). Rebuilt from the dataset, and
+# re-running skips files that already exist, so there is no reason to commit
+# ~23 MB of them.
+public/p/
+
 # generated types
 .astro/
 
@@ -16,6 +28,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.example
 
 # macOS-specific files
 .DS_Store

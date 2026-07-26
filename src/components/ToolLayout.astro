@@ -1,0 +1,69 @@
+---
+/**
+ * Shared shell for tool pages: breadcrumb, heading, intro, content slot and a
+ * footer that links to the other tools.
+ */
+import '../styles/tools.css';
+import Layout from '../layouts/Layout.astro';
+import { TOOLS } from '../lib/routes.server.js';
+
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  /** Optional longer intro rendered under the heading. */
+  intro?: string;
+}
+
+const { slug, title, description, intro } = Astro.props;
+const others = TOOLS.filter((tool) => tool.slug !== slug);
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: `${site.origin}/tools/` },
+      { '@type': 'ListItem', position: 3, name: title },
+    ],
+  },
+  {
+    '@type': 'WebApplication',
+    name: title,
+    description,
+    url: `${site.origin}/tools/${slug}/`,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+---
+
+<Layout title={`${title} — Palette Vault`} description={description} active="tools" wide schema={schema}>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span aria-hidden="true">/</span>
+    <a href="/tools/">Tools</a>
+  </nav>
+
+  <header class="page-head">
+    <h1>{title}</h1>
+    <p>{intro ?? description}</p>
+  </header>
+
+  <slot />
+
+  <footer class="tool-more">
+    <h2>Other tools</h2>
+    <ul class="tool-more__list">
+      {
+        others.map((tool) => (
+          <li>
+            <a href={`/tools/${tool.slug}/`}>{tool.short}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </footer>
+</Layout>

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/palette/:slug([0-9a-f]{24})/",
+      "destination": "/palette/index.html"
+    },
+    {
+      "source": "/palette/:slug([0-9a-f]{24})",
+      "destination": "/palette/index.html"
+    }
+  ]
+}

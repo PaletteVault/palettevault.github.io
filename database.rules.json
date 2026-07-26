@@ -1,0 +1,17 @@
+{
+	"rules": {
+		".read": false,
+		".write": false,
+
+		"palettes": {
+			".read": true,
+			".indexOn": ".value",
+
+			"$slug": {
+				".write": true,
+
+				".validate": "$slug.matches(/^[0-9a-f]{24}$/) && newData.isNumber() && newData.val() >= 0 && (!data.exists() || (newData.val() - data.val() <= 1 && data.val() - newData.val() <= 1))"
+			}
+		}
+	}
+}

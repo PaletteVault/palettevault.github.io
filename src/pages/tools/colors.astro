@@ -1,0 +1,109 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+import { CSS_NAMED } from '../../lib/tools/swatch-data.js';
+import { hexToHsl, hexToRgb, isDark } from '../../lib/palette.js';
+
+const tool = getTool('colors');
+
+// Sorted by hue at build time so the default view reads as a spectrum rather
+// than an alphabetical jumble. Greys are pulled out and sorted by lightness,
+// otherwise their unstable hue scatters them randomly through the list.
+const entries = CSS_NAMED.map(([name, hex]) => {
+  const { h, s, l } = hexToHsl(hex);
+  const { r, g, b } = hexToRgb(hex);
+  return { name, hex, h, s, l, rgb: `${r}, ${g}, ${b}` };
+});
+
+const chromatic = entries.filter((item) => item.s >= 12).sort((a, b) => a.h - b.h || b.s - a.s);
+const neutral = entries.filter((item) => item.s < 12).sort((a, b) => b.l - a.l);
+const sorted = [...chromatic, ...neutral];
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro={`All ${CSS_NAMED.length} named colours from the CSS Color specification, ordered by hue. Click any card to copy.`}
+>
+  <section id="colors" class="tool-panel">
+    <div class="tool-controls">
+      <label class="field field--grow">
+        <span class="field__label">Filter</span>
+        <input type="search" data-colors-search placeholder="Search by name or HEX" spellcheck="false" />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Copy as</span>
+        <select data-colors-mode>
+          <option value="hex">HEX value</option>
+          <option value="name">CSS name</option>
+          <option value="rgb">RGB</option>
+        </select>
+      </label>
+    </div>
+
+    <ul class="named-grid" data-colors-list>
+      {
+        sorted.map((item) => (
+          <li
+            class="named"
+            data-name={item.name}
+            data-hex={item.hex}
+            data-rgb={item.rgb}
+            data-search={`${item.name} ${item.hex}`}
+          >
+            <button
+              type="button"
+              class:list={['named__chip', isDark(item.hex) ? 'on-dark' : 'on-light']}
+              style={`--swatch-bg:#${item.hex}`}
+            >
+              <span class="named__hex">#{item.hex.toUpperCase()}</span>
+            </button>
+            <span class="named__name">{item.name}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="tool-note" data-colors-empty hidden>Nothing matches that search.</p>
+  </section>
+</ToolLayout>
+
+<script>
+  import { copyWithToast } from '../../lib/clipboard.js';
+
+  const root = document.getElementById('colors');
+  const list = root?.querySelector('[data-colors-list]');
+  const search = root?.querySelector('[data-colors-search]');
+  const mode = root?.querySelector('[data-colors-mode]');
+  const empty = root?.querySelector('[data-colors-empty]');
+
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLowerCase();
+    let visible = 0;
+
+    for (const item of list.children) {
+      const matches = !query || item.dataset.search.includes(query);
+      item.hidden = !matches;
+      if (matches) visible += 1;
+    }
+
+    empty?.toggleAttribute('hidden', visible > 0);
+  });
+
+  root?.addEventListener('click', async (event) => {
+    const chip = event.target.closest('.named__chip');
+    if (!chip) return;
+
+    const item = chip.closest('.named');
+    const value =
+      mode?.value === 'name'
+        ? item.dataset.name
+        : mode?.value === 'rgb'
+          ? `rgb(${item.dataset.rgb})`
+          : `#${item.dataset.hex.toUpperCase()}`;
+
+    await copyWithToast(value);
+  });
+</script>

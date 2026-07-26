@@ -1,0 +1,59 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('contrast');
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="Check a foreground and background pair against WCAG 2.1. When a level fails, you also get the nearest colour on the same hue that passes."
+>
+  <section id="contrast" class="tool-panel contrast">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Foreground</span>
+        <span class="field__pair">
+          <input type="color" data-contrast-fg />
+          <input type="text" class="input-hex" data-contrast-fg-text spellcheck="false" />
+        </span>
+      </label>
+
+      <button type="button" class="action action--icon" data-contrast-swap aria-label="Swap colours">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 4v13m0 0-3-3m3 3 3-3M17 20V7m0 0-3 3m3-3 3 3" />
+        </svg>
+      </button>
+
+      <label class="field">
+        <span class="field__label">Background</span>
+        <span class="field__pair">
+          <input type="color" data-contrast-bg />
+          <input type="text" class="input-hex" data-contrast-bg-text spellcheck="false" />
+        </span>
+      </label>
+    </div>
+
+    <div class="contrast__preview">
+      <p class="contrast__sample contrast__sample--lg">Large text, 24px</p>
+      <p class="contrast__sample">
+        Normal body text at 16px. The quick brown fox jumps over the lazy dog.
+      </p>
+      <p class="contrast__sample contrast__sample--sm">Small print at 13px</p>
+    </div>
+
+    <div class="contrast__score">
+      <span class="contrast__ratio" data-contrast-ratio>—</span>
+      <ul class="levels" data-contrast-levels></ul>
+    </div>
+
+    <p class="tool-note" data-contrast-suggest hidden></p>
+  </section>
+</ToolLayout>
+
+<script>
+  import { initContrast } from '../../lib/tools/contrast.js';
+  initContrast();
+</script>

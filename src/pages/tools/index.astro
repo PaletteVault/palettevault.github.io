@@ -1,0 +1,56 @@
+---
+/** Tools index. */
+import '../../styles/tools.css';
+import Layout from '../../layouts/Layout.astro';
+import { TOOLS } from '../../lib/routes.server.js';
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Tools' },
+    ],
+  },
+  {
+    '@type': 'ItemList',
+    name: 'Colour tools',
+    itemListElement: TOOLS.map((tool, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: tool.title,
+      url: `${site.origin}/tools/${tool.slug}/`,
+    })),
+  },
+];
+---
+
+<Layout
+  title="Colour tools — Palette Vault"
+  description="Free colour tools: palette generator, image extractor, contrast checker, colour picker, Tailwind reference and gradient builders."
+  active="tools"
+  wide
+  schema={schema}
+>
+  <header class="page-head">
+    <h1>Tools</h1>
+    <p>Everything runs in your browser. No uploads, no accounts, no limits.</p>
+  </header>
+
+  <ul class="tool-grid">
+    {
+      TOOLS.map((tool) => (
+        <li>
+          <a class="tool-card" href={`/tools/${tool.slug}/`}>
+            <svg class="tool-card__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d={tool.icon} />
+            </svg>
+            <h2>{tool.title}</h2>
+            <p>{tool.description}</p>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

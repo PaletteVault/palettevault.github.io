@@ -1,0 +1,46 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('generate');
+---
+
+<ToolLayout
+  slug={tool.slug}
+  title={tool.title}
+  description={tool.description}
+  intro="Pick a base colour and a harmony scheme, then press space to reroll. Lock the shades you want to keep."
+>
+  <section id="generator" class="tool-panel">
+    <div class="tool-controls">
+      <label class="field">
+        <span class="field__label">Base colour</span>
+        <input type="color" data-generator-base />
+      </label>
+
+      <label class="field">
+        <span class="field__label">Harmony</span>
+        <select data-generator-scheme></select>
+      </label>
+
+      <div class="field field--actions">
+        <button type="button" class="action action--primary" data-generator-reroll>
+          Reroll <kbd>space</kbd>
+        </button>
+        <button type="button" class="action" data-generator-copy-all>Copy all</button>
+      </div>
+    </div>
+
+    <div class="gen-swatches" data-generator-swatches></div>
+
+    <p class="tool-note">
+      <strong data-generator-name></strong>
+      <a data-generator-open href="/">Open as a palette page →</a>
+    </p>
+  </section>
+</ToolLayout>
+
+<script>
+  import { initGenerator } from '../../lib/tools/generate.js';
+  initGenerator();
+</script>

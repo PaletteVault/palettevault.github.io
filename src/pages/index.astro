@@ -1,11 +1,43 @@
 ---
-import Welcome from '../components/Welcome.astro';
+/**
+ * Home page — the New feed.
+ * Chunks are already stored newest-first, so no sorting is needed here.
+ */
 import Layout from '../layouts/Layout.astro';
+import Feed from '../components/Feed.astro';
+import { getFirstRows, getMeta, SSG_BATCH } from '../lib/data.server.js';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const meta = getMeta();
+const chunks = meta.feeds?.new?.chunks ?? 0;
+const preRows = getFirstRows('new', SSG_BATCH);
+
+const total = meta.total.toLocaleString('en-US');
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    name: 'New colour palettes',
+    description: `Browse ${total} four-colour palettes.`,
+    url: `${site.origin}/`,
+  },
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Palette Vault — fresh colour palettes"
+  description={`Browse ${total} four-colour palettes. Click any swatch to copy its HEX.`}
+  active="new"
+  schema={schema}
+>
+  <Feed
+    title="New palettes"
+    subtitle={`${total} palettes and counting — click a swatch to copy its HEX.`}
+    type="chunks"
+    base="/data/new"
+    chunks={chunks}
+    preRows={preRows}
+    emptyTitle="No palettes yet"
+    emptyText="Run npm run generate to build the dataset."
+  />
 </Layout>
