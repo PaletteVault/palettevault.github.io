@@ -113,8 +113,12 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title="Palette Vault Blog" href="/blog/rss.xml" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#14161c" media="(prefers-color-scheme: dark)" />
+    <!--
+      One value, matching the default theme. Keying these to
+      prefers-color-scheme would tint the browser chrome dark for a visitor on a
+      dark OS while the page itself is light.
+    -->
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
@@ -145,11 +149,23 @@ const jsonLd = {
     <script is:inline>
       (() => {
         try {
+          /*
+           * Light by default, whatever the operating system says.
+           *
+           * The site was following prefers-color-scheme, which meant a visitor
+           * on a dark desktop met a dark page on first load. For a colour
+           * reference that is the wrong opening: swatches are judged against
+           * their surroundings, and the light theme is the one the palettes,
+           * the contrast figures and the shade scales were designed against.
+           *
+           * The OS preference is not ignored so much as demoted — it stops
+           * being a default and the toggle becomes the only thing that sets
+           * the theme. A saved choice still wins on every later visit.
+           */
           const saved = localStorage.getItem('palette.theme');
-          const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
-          document.documentElement.dataset.theme = saved ?? (prefersDark ? 'dark' : 'light');
+          document.documentElement.dataset.theme = saved ?? 'light';
         } catch {
-          /* localStorage unavailable — stay on the light theme */
+          /* localStorage unavailable — the light theme on <html> already applies */
         }
       })();
     </script>

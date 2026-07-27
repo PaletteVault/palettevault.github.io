@@ -1,286 +1,179 @@
 # Palette Vault
 
-A static catalogue of four-color palettes built with Astro. The palettes are
-pre-generated JSON chunks in `public/`; the only backend is Firebase, used
-solely for like counters.
+A free color reference: ready-made four-color palettes, a page for every
+named color, and a set of tools that run in your browser.
 
-## Stack
+Everything on it is free to use — for client work, for something you sell, for
+anything at all. No account, no attribution, no sign-up.
 
-| Layer | Choice |
+**[palettevault.github.io](https://palettevault.github.io)**
+
+---
+
+## What it is for
+
+Picking colors is easy to start and hard to finish. You find a blue you like,
+then need three more that go with it, then a darker version for text, then you
+discover the pair you chose is unreadable. This site is built around those four
+moments.
+
+- **Browse palettes** when you want a starting point. Each one is four colors
+  chosen to sit together.
+- **Open a color** when you have one shade and need its family: lighter and
+  darker versions, every format, and how it behaves against white and black.
+- **Use a tool** when you want to make something rather than pick it — build a
+  palette from your own color, pull one out of a photo, or check whether two
+  colors are legible together.
+- **Read the blog** when something is behaving oddly and you want to know why.
+
+---
+
+## Using the site
+
+### Finding a palette
+
+The home page shows what is newest. **Popular** ranks by what people have
+liked, **Random** reshuffles on every visit, and **All palettes** keeps loading
+as you scroll.
+
+The sidebar narrows things down two ways: by mood — pastel, vintage, neon,
+sunset, night — and by color family. Categories come from what a palette
+actually looks like, measured, not from a label somebody typed. A palette
+appears under *Blue* because its colors measure as blue.
+
+### Taking colors with you
+
+Click any swatch to copy its hex code. That works everywhere on the site — on
+the cards, on the palette page, inside the tools.
+
+Open a palette and you get more: all four colors at once as hex, RGB, CSS
+variables or an array, and a download as an image you can drop into a
+moodboard, a message, or a pin. Each color also links through to its own page.
+
+Tap the heart to save a palette. Saved palettes live in **My collection**,
+stored in your own browser rather than on a server — which means no account,
+and also means the collection belongs to one browser on one device.
+
+### Color pages
+
+Every color has a page with its hex, RGB, HSL and OKLCH values, a scale of
+lighter and darker versions, contrast figures against white and black, and
+palettes built around it. The scale is the part worth bookmarking: it gives you
+a usable light and dark version of a color instead of one isolated value.
+
+A few pages cover a whole look rather than a single shade — pastel, Y2K,
+Tuscan — and describe the colors that belong to it.
+
+### Tools
+
+All of them run entirely in your browser. Nothing you upload is sent anywhere.
+
+| Tool | What it does |
 | --- | --- |
-| Framework | Astro 7, `output: 'static'` |
-| Styling | Plain CSS with custom properties, light and dark themes |
-| Palette data | Static JSON chunks of 1000 records under `public/data` |
-| Likes | Firebase Realtime Database (`increment`) |
-| Saved palettes | `localStorage` |
-| Runtime dependencies | `firebase` only, lazily loaded as a separate chunk |
+| Palette generator | Builds a scheme around a color you pick. Lock the shades you like, reroll the rest. |
+| Extract from image | Pulls the colors that actually define a photo. |
+| Image + color collage | Combines a photo with its colors into one shareable image. |
+| Contrast checker | Tells you whether two colors are legible together, and suggests the nearest shade that is. |
+| Color picker | Any color in every format, with a scale of tints and shades. |
+| OKLCH picker | Lightness, chroma and hue as separate sliders, marking where a color leaves what a screen can show. |
+| Tailwind colors | The default Tailwind palette, ready to copy. |
+| List of colors | Every named CSS color, ordered by hue. |
+| Browse gradients | A library of two-stop gradients. |
+| Gradient maker | Build your own and copy the CSS. |
 
-## Quick start
+### Browser extension
+
+There is a Chrome extension alongside this folder, in `../extension/`. It
+generates palettes, picks a color off any page with the eyedropper, and pulls
+the palette out of a site you are looking at. It works offline and asks only
+for access to the tab you are currently on.
+
+---
+
+## Why the colors look considered
+
+One decision explains most of it: everything is built in **OKLCH**, a color
+space designed so that equal numeric steps look like equal steps to the eye.
+
+That is not true of the older ways of describing color. In HSL a yellow and a
+blue can claim the same lightness while the yellow glares and the blue reads as
+nearly black. Anything built on that — a scale, a gradient, a palette — comes
+out uneven no matter how carefully the numbers were chosen.
+
+Working in a space that matches perception is why the scales here step evenly,
+why the gradients keep their color through the middle instead of passing
+through grey, and why four colors on a card look related rather than merely
+different. There is a
+[longer explanation on the blog](https://palettevault.github.io/blog/oklch-vs-hsl/).
+
+---
+
+## Running it locally
+
+You need Node. Clone the repo, then:
 
 ```bash
 npm install
-cp .env.example .env        # fill in if you want likes to work
-npm run generate:dev        # 10,000 palettes — fast, for development
+npm run generate:dev   # build a small palette set to work against
 npm run dev
 ```
 
-Production:
+That is enough to see the whole site. Likes will not save without Firebase
+credentials, which is fine for local work — everything else runs.
+
+For a full production build:
 
 ```bash
-npm run generate            # 100,000 palettes (~2 min, ~28 MB in public/data)
-npm run icons               # favicons and the OG banner from public/icon.png
-npm run images              # a PNG per pre-rendered palette (~23 MB)
-npm run build               # dist/ — deploy to any static host
+npm run generate       # the full palette dataset
+npm run icons          # favicons and social banner (needs Pillow)
+npm run images         # a share image per palette page
+npm run build          # writes dist/
+npm run check          # checks the built output for common mistakes
 ```
 
-The generator takes flags:
+Publish `dist/` to any static host.
 
-```bash
-node scripts/generate-palettes.mjs --count=500000 --chunk=1000 --seed=42
-```
+### Likes
 
-> The seed is fixed, so the same seed always produces the same dataset. Likes
-> are keyed by color rather than by id, so changing the seed no longer breaks
-> them — but ids will shift, which changes the dates shown on cards.
+Likes are the only thing that touches a server. Each one adds to a single
+number stored against a palette, with nothing recorded about who sent it. Set
+it up with `.env` — see [`docs/firebase-setup.md`](docs/firebase-setup.md).
+Without it the site still works completely; only the Popular page stays empty.
 
-## How the data is organised
-
-```
-public/data/
-  meta.json              manifest: total, chunkSize, latestTs, stepMs, tags[]
-  new/1.json … N.json    the New feed, ids descending
-  tag/<slug>/1.json …    one shard set per category
-```
-
-A palette is a compact tuple with no keys:
-
-```json
-[12345, "ffd6e0", "ffef9f", "c1f4c5", "94d3ac"]
-```
-
-Dates are not stored. They are derived from the id:
-`ts = latestTs − (total − id) × stepMs`, which saves several megabytes across
-100k records.
-
-**Why tag shards duplicate the data instead of storing id lists.** A palette
-costs ~45 bytes. Duplicating it into 3–6 shards is cheaper than shipping an
-`id → chunk` index: the ids for one tag are scattered across every chunk, so
-`/tag/pastel/` would need a hundred requests instead of one. Disk is cheaper
-than round trips.
-
-## The palette generator
-
-`scripts/generate-palettes.mjs`, no external dependencies.
-
-1. Colors are built in **OKLCH**, a perceptually uniform space. That is why
-   the combinations look considered rather than like random values in RGB.
-2. Colors outside sRGB are fixed by **gamut mapping**: chroma is reduced by
-   binary search while lightness and hue are preserved, instead of clipping.
-3. Around 30 mood presets (`pastel`, `vintage`, `neon`, `sunset`, `coffee`,
-   `night`…) define corridors of lightness, chroma and permitted hues.
-4. Eight harmony schemes: mono, analogous, complementary, split, triad,
-   tetrad, neutral-with-accent, gradient.
-5. Lightness is laid out as a **ladder** rather than randomly, so every palette
-   has a readable spread.
-6. A proximity filter rejects palettes that read as four shades of one blob.
-7. Tags are applied from the actual output: properties (`light`, `dark`,
-   `pastel`, `neon`, `warm`, `cold`) and color families (`blue`, `red`, …).
-
-## Firebase
-
-The data model is one node holding one number:
-
-```
-/palettes/{slug} = 42
-```
-
-where `slug` is the same 24 hex characters used in the palette page URL. The
-key *is* the data, which gives three things:
-
-- colors are never stored separately — **Popular** rebuilds each palette from
-  the key with a single `orderByValue().limitToLast(N)` query;
-- likes are not tied to generator ids, so the dataset can be regenerated with a
-  different seed and the counters stay with their colors;
-- **Collection** needs no color storage either: the list of slugs in
-  `localStorage` is already the render data.
-
-The rules in `database.rules.json` allow writing only a number, only by ±1 per
-operation, and only under a 24-hex-character key. Deploy with:
-
-```bash
-firebase deploy --only database
-```
-
-Without `.env` the site works completely: likes live in `localStorage` and only
-the Popular page stays empty.
-
-Step-by-step setup, filling in `.env`, deploying the rules and the common
-failure modes are covered in [`docs/firebase-setup.md`](docs/firebase-setup.md).
-
-## Routes
-
-| Route | Shows | Source |
-| --- | --- | --- |
-| `/` | New — freshest palettes | `new/` chunks |
-| `/popular/` | ranked by likes | Firebase RTDB |
-| `/random/` | shuffled order | `new/` chunks in random order |
-| `/collection/` | the visitor's saved palettes | `localStorage` |
-| `/tag/<slug>/` | a category | `tag/<slug>/` chunks |
-| `/palette/<slug>/` | a single palette | the address itself |
-| `/tools/` | eight color tools | client-side |
-
-The first 24 cards of every feed are rendered into the HTML at build time, so
-the first screen is visible without JavaScript and indexable. Everything after
-that arrives through infinite scroll.
-
-### The palette page
-
-An address like `/palette/4e1f6e3e3e7545a9a998e8de/` is four HEX codes in a
-row, so the page needs no data request and no id: it rebuilds itself from the
-URL. It can copy a single color or the whole palette in four formats (HEX,
-RGB, CSS variables, array), download a 1200×630 PNG, and register a like.
-
-The preview is a real `<img>`, not a `<canvas>`. That distinction matters more
-than it looks: a canvas cannot be right-clicked and saved, dragged into another
-app, or picked up by a browser extension. `npm run images` renders two PNGs per
-pre-rendered palette — a 1200×630 landscape for Open Graph and Twitter, and a
-1000×1500 portrait for Pinterest, which crops and ranks around a 2:3 ratio.
-Re-running skips files that already exist, so an interrupted run resumes and
-raising `PRERENDER_PALETTES` only renders the new pages.
-
-**Per-palette social images only exist on pre-rendered pages, and that is
-inherent to the architecture rather than a limitation of the image pipeline.**
-Every other address is served one shared HTML file through the rewrite, and
-crawlers do not execute JavaScript — so an `og:image` written on the client
-would never be seen. Pinterest has the same constraint from the other side: it
-fetches the image server-side from the `media` parameter, which means `blob:`
-and `data:` URLs are invisible to it. Pages without a file still get an `<img>`
-built from a canvas blob, so saving and downloading work; only pinning does not,
-and the Pinterest button is simply not rendered there.
-
-Only the top of the feed is pre-rendered — `PRERENDER_PALETTES` in
-`src/lib/data.server.js`, 2000 by default. Pre-rendering all of them is not an
-option: at 100,000 palettes that is 100,000 HTML files and an output directory
-of several hundred megabytes. Every other address is caught by a rewrite rule
-and served `/palette/index.html`, the same template that draws itself from the
-address bar:
-
-- **Netlify, Cloudflare Pages** — `public/_redirects` (already in the project)
-- **Vercel** — `vercel.json` (already in the project)
-- **nginx** — `location /palette/ { try_files $uri $uri/ /palette/index.html; }`
-- **GitHub Pages** — no rewrite support at all. The `404.html` fallback works
-  (also in the project), but responses carry HTTP 404: fine for visitors, not
-  for indexing. This is the current deployment target — see
-  [`docs/deploy-github-pages.md`](docs/deploy-github-pages.md).
-
-Without a rewrite rule the 2000 pre-rendered palettes still work; the rest
-return 404.
-
-### Palette names
-
-A name like "Shadowed Bay" is a pure function of the four colors, exactly like
-the slug. The adjective comes from lightness and saturation, the noun from the
-dominant hue — where only visibly colored swatches vote and each vote is
-weighted by saturation. Variation within a group comes from an FNV-1a hash.
-
-Names are never stored: that saves ~2 MB across 100,000 palettes and, more
-importantly, lets the palette page name itself with nothing but its address.
-Names are not unique and do not need to be — roughly 780 distinct names across
-a sample of 1000 palettes.
-
-## Tools
-
-Eight client-side tools under `/tools/`, all running entirely in the browser:
-
-| Tool | Notes |
-| --- | --- |
-| Palette generator | OKLCH harmony schemes, per-swatch locking, space to reroll |
-| Extract from image | k-means clustering in OKLab; nothing is uploaded |
-| Contrast checker | WCAG 2.1 AA/AAA, plus the nearest passing foreground |
-| Color picker | HEX, RGB, HSL, OKLCH and a tint/shade ramp |
-| Tailwind colors | the default Tailwind palette as a lookup table |
-| List of colors | every named CSS color, ordered by hue |
-| Browse gradients | two-stop gradients generated in OKLCH |
-| Gradient maker | custom stops, sRGB and OKLCH previews side by side |
-
-Two of these are worth a note on method. The image extractor clusters in
-**OKLab** rather than RGB, because distance in OKLab tracks how different two
-colors actually look — cluster boundaries land where a person would draw them,
-instead of returning five near-identical browns from a landscape photo. The
-gradient tools interpolate in **OKLCH** for the same underlying reason: a
-two-stop gradient interpolated in sRGB passes through a desaturated middle,
-which is where the familiar grey band between complementary colors comes from.
-
-## Icons
-
-`public/icon.png` is the master artwork. `npm run icons` trims its margin,
-punches transparent rounded corners with an alpha mask, and writes the
-favicons, the Apple touch icon, the PWA icons and a 1200×630 Open Graph banner.
-Requires Pillow (`pip install Pillow`).
-
-## SEO
-
-- `sitemap.xml` and `robots.txt` are generated from `src/lib/routes.server.js`,
-  so a new route cannot end up in one and missing from the other.
-- `/collection/` and the `/palette/` fallback shell are excluded from both the
-  sitemap and the index — a crawler would only ever see an empty page.
-- Every page emits Open Graph and Twitter card metadata plus a canonical URL.
-- JSON-LD: a site-level `WebSite` object, with `BreadcrumbList`,
-  `CollectionPage` and `WebApplication` added per page.
-
-## Project layout
+### Where things live
 
 ```
 src/
-  lib/
-    palette.js        slug, color conversions, palette naming
-    card.js           card markup — shared by the build and the runtime
-    gallery.js        chunks, infinite scroll, copy, likes
-    detail.js         the palette page
-    firebase.js       lazy RTDB layer with a counter cache
-    store.js          localStorage for likes
-    oklch.js          OKLCH conversions, ramps, interpolation
-    clipboard.js      copy plus toast, shared everywhere
-    data.server.js    reads public/data at build time
-    routes.server.js  route inventory for the sitemap and tools index
-    tools/            per-tool logic
-  components/         Header, Sidebar, Feed, PaletteCard, PaletteDetail, ToolLayout
-  pages/              feeds, tags, palette pages, tools, sitemap, robots
-scripts/
-  generate-palettes.mjs
-  build-icons.mjs
-  build-palette-images.mjs
+  lib/          color maths, palette naming, storage, per-tool logic
+  components/   header, sidebar, cards, palette page, footer
+  pages/        feeds, color pages, tools, blog, sitemap
+  content/      blog posts as markdown
+scripts/        dataset, icons and share images
+docs/           Firebase and deployment guides
 ```
 
-The card markup is declared exactly once (`lib/card.js`) and reused by both the
-Astro component at build time and `gallery.js` during scroll, so static and
-dynamically inserted cards cannot drift apart. The palette page body follows
-the same pattern through `swatchesHTML`.
+The Chrome extension is a sibling of this folder, at `../extension/`.
 
-Like counters are fetched lazily: an `IntersectionObserver` requests them only
-for cards that actually reach the viewport, with a concurrency limit and a
-cache. Clicking a like updates the UI optimistically and rolls back if the
-write fails.
+### Writing a blog post
+
+Drop a markdown file in `src/content/blog/`. The frontmatter needs a title, a
+description, a date and an accent color; an `image` is optional and becomes
+the social preview. Name a file `_something.md` while it is unfinished and it
+stays out of the site entirely.
+
+---
 
 ## Deployment
 
-Deployed to GitHub Pages at `https://palettevault.github.io` by
-`.github/workflows/deploy.yml` on every push touching `site/`. The workflow
-regenerates the dataset, the icons and the palette images first, since none of
-those are committed. Setup and the GitHub Pages specifics are in
+Pushing to `main` builds and publishes to GitHub Pages automatically. The
+dataset and images are generated during the build rather than committed, so the
+repository stays small. Details and the GitHub Pages quirks are in
 [`docs/deploy-github-pages.md`](docs/deploy-github-pages.md).
 
-For any other static host, the build is:
+---
 
-```
-npm run generate && npm run images && npm run build
-```
+## License
 
-Publish directory: `dist`. The origin comes from `site` in `astro.config.mjs`,
-overridable with the `SITE_URL` environment variable — it drives canonical
-URLs, the sitemap, Open Graph images and the Pinterest share link.
-
-Two files must reach the published output or the site breaks in ways that are
-hard to spot: `public/.nojekyll`, without which GitHub drops the `_astro/`
-directory and the site loads unstyled, and `404.html`, which is the only
-fallback mechanism GitHub Pages offers for non-pre-rendered palette pages.
+Colors cannot be owned, and the palettes here are free for any use, commercial
+or not, with no attribution required. The code is open — read it, take it, fork
+it.
