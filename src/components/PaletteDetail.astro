@@ -3,16 +3,17 @@
  * Body of the single palette page.
  *
  * Used by two routes:
- *   • pages/palette/[slug].astro — pre-rendered pages, where the colours are
+ *   • pages/palette/[slug].astro — pre-rendered pages, where the colors are
  *     known at build time and land in the HTML for search engines;
  *   • pages/palette/index.astro — the catch-all template the host rewrites
- *     every other address onto. No colours at build time; initDetail() fills
+ *     every other address onto. No colors at build time; initDetail() fills
  *     them in from the slug in the address bar.
  *
  * One copy of the markup for both cases — anything else drifts out of sync.
  */
 import { swatchesHTML } from '../lib/detail.js';
 import { paletteName } from '../lib/palette.js';
+import { COLOR_INDEX } from '../lib/colors.js';
 
 interface Props {
 	/** Four HEX values without '#', when known at build time. */
@@ -35,7 +36,7 @@ const hasColors = colors.length === 4;
 
 const name = hasColors ? paletteName(colors) : 'Palette';
 const hexList = hasColors ? colors.map((hex) => `#${hex.toUpperCase()}`).join(' ') : '';
-const swatches = hasColors ? swatchesHTML(colors) : '';
+const swatches = hasColors ? swatchesHTML(colors, COLOR_INDEX) : '';
 
 /*
  * Pinterest fetches the image server-side from the `media` parameter, so it
@@ -66,21 +67,13 @@ const COPY_FORMATS = [
 			<code>/palette/4e1f6e3e3e7545a9a998e8de/</code>
 		</p>
 		<p
-			><a
-				class='detail-back'
-				href='/'
-				>Back to all palettes</a
-			></p
+			><a class="detail-back" href="/">Back to all palettes</a></p
 		>
 	</div>
 
 	<div data-detail-body>
 		<nav class='detail-nav'>
-			<a
-				class='detail-back'
-				href='/'
-				>← All palettes</a
-			>
+			<a class="detail-back" href="/">← All palettes</a>
 		</nav>
 
 		<header class='detail-head'>
@@ -96,6 +89,18 @@ const COPY_FORMATS = [
 			class='detail-swatches'
 			data-detail-swatches
 			set:html={swatches}
+		/>
+
+		<!--
+			The catalog index, for palettes that arrive through the rewrite fallback
+			and are rendered in the browser. About 2 KB; importing the color catalog
+			itself would pull fifty kilobytes of page prose into the bundle.
+		-->
+		<script
+			id='color-index'
+			type='application/json'
+			is:inline
+			set:html={JSON.stringify(COLOR_INDEX)}
 		/>
 
 		<div class='detail-actions'>
@@ -180,7 +185,7 @@ const COPY_FORMATS = [
 				class='detail-preview__img'
 				data-detail-image
 				src={image ?? undefined}
-				alt={hasColors ? `Colour palette ${hexList}` : 'Colour palette preview'}
+				alt={hasColors ? `Color palette ${hexList}` : 'Color palette preview'}
 				width='1200'
 				height='630'
 				loading='lazy'

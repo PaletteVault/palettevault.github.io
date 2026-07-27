@@ -42,7 +42,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { getPrerenderRows } from '../src/lib/data.server.js';
+import { getStaticLinkedRows } from '../src/lib/data.server.js';
 import { paletteName, paletteSlug } from '../src/lib/palette.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -63,7 +63,9 @@ const OUT_DIR = outFlag
  * the site uses. Duplicating the naming logic in Python would guarantee the
  * image caption and the page heading drift apart eventually.
  * -------------------------------------------------------------------------- */
-const rows = getPrerenderRows();
+// Must match the set of pages that get built, not just the New-feed window:
+// a page whose og:image 404s is worse than a page with no image.
+const rows = getStaticLinkedRows();
 
 if (rows.length === 0) {
   console.error('No palettes found. Run `npm run generate` first.');

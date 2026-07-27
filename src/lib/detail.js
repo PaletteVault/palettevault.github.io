@@ -4,7 +4,7 @@
  * ============================================================================
  *
  *  The defining property: this page needs no external data at all. All four
- *  colours are encoded directly in the address:
+ *  colors are encoded directly in the address:
  *
  *      /palette/4e1f6e3e3e7545a9a998e8de/
  *
@@ -14,7 +14,7 @@
  *  is no visible difference, because the client render is idempotent and
  *  simply redraws the same thing.
  *
- *  Supports: copying a single colour, copying the whole palette in four
+ *  Supports: copying a single color, copying the whole palette in four
  *  formats, downloading a PNG, and liking.
  * ============================================================================
  */
@@ -36,6 +36,7 @@ import {
   parseSlug,
   paletteSlug,
 } from './palette.js';
+import { nearestColor } from './nearest-color.js';
 import { isLiked, toggleLike } from './store.js';
 import { updateCollectionBadge } from './gallery.js';
 
@@ -129,7 +130,7 @@ const FORMATS = {
  * renders pre-rendered pages with it at build time, and initDetail renders the
  * ones that arrive via a rewrite. One source of truth, same as card.js.
  */
-export function swatchesHTML(colors) {
+export function swatchesHTML(colors, colorIndex = []) {
   return colors
     .map((hex) => {
       const upper = `#${hex.toUpperCase()}`;
@@ -141,25 +142,64 @@ export function swatchesHTML(colors) {
       const onWhite = contrastRatio(hex, 'ffffff').toFixed(1);
       const onBlack = contrastRatio(hex, '000000').toFixed(1);
 
+      /*
+       * The link sits below the swatch, not inside it. The swatch is a <button>
+       * that copies the hex, and an <a> inside a <button> is invalid HTML — the
+       * browser would hoist it out and the copy target would break.
+       *
+       * The label names the destination rather than saying "Explore color",
+       * because the catalog page may carry a different name than this swatch's
+       * own description: #6C7C59 reads as a muted lime and the page it links to
+       * is Olive. Naming it avoids the surprise.
+       */
+      const match = nearestColor(hex, colorIndex);
+      const explore = match
+        ? `<a class="detail-swatch__explore" href="/colors/${match.slug}/" ` +
+          `title="${match.name} color: hex codes, shades and palettes">` +
+            `Explore ${match.name.toLowerCase()} <span aria-hidden="true">→</span>` +
+          `</a>`
+        : '';
+
       return (
-        `<button type="button" class="detail-swatch ${tone}" ` +
-        `style="--swatch-bg:#${hex}" data-hex="${upper}" ` +
-        `title="Copy ${upper}" aria-label="Copy ${upper}">` +
-          `<span class="detail-swatch__hex">${upper}</span>` +
-          `<span class="detail-swatch__meta">` +
-            `<span>${describeColor(hex)}</span>` +
-            `<span>rgb(${r}, ${g}, ${b})</span>` +
-            `<span>hsl(${h}, ${s}%, ${l}%)</span>` +
-            `<span class="detail-swatch__contrast">${onWhite}:1 on white · ${onBlack}:1 on black</span>` +
-          `</span>` +
-        `</button>`
+        `<div class="detail-swatch-cell">` +
+          `<button type="button" class="detail-swatch ${tone}" ` +
+          `style="--swatch-bg:#${hex}" data-hex="${upper}" ` +
+          `title="Copy ${upper}" aria-label="Copy ${upper}">` +
+            `<span class="detail-swatch__hex">${upper}</span>` +
+            `<span class="detail-swatch__meta">` +
+              `<span>${describeColor(hex)}</span>` +
+              `<span>rgb(${r}, ${g}, ${b})</span>` +
+              `<span>hsl(${h}, ${s}%, ${l}%)</span>` +
+              `<span class="detail-swatch__contrast">${onWhite}:1 on white · ${onBlack}:1 on black</span>` +
+            `</span>` +
+          `</button>` +
+          explore +
+        `</div>`
       );
     })
     .join('');
 }
 
+/**
+ * The catalog index, read from the JSON the page embeds.
+ *
+ * Pre-rendered pages get their links at build time. The ones that arrive
+ * through the rewrite fallback are rendered here instead, and they need the
+ * same lookup — but importing the color catalog would drag fifty kilobytes of
+ * page prose into the bundle, so the shell carries a slug/name/hex list only.
+ */
+function readColorIndex() {
+  const node = document.getElementById('color-index');
+  if (!node?.textContent) return [];
+  try {
+    return JSON.parse(node.textContent);
+  } catch {
+    return [];
+  }
+}
+
 function renderSwatches(root, colors) {
-  root.innerHTML = swatchesHTML(colors);
+  root.innerHTML = swatchesHTML(colors, readColorIndex());
 }
 
 /* ==========================================================================
@@ -272,7 +312,7 @@ export function initDetail() {
     .querySelector('meta[name="description"]')
     ?.setAttribute(
       'content',
-      `${name}: colour palette ${hexList}. Copy the HEX codes or download it as a PNG.`,
+      `${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`,
     );
   document.querySelector('link[rel="canonical"]')
     ?.setAttribute('href', `${location.origin}/palette/${slug}/`);
@@ -295,7 +335,7 @@ export function initDetail() {
    */
   const image = root.querySelector('[data-detail-image]');
   if (image) {
-    image.alt = `Colour palette ${hexList}`;
+    image.alt = `Color palette ${hexList}`;
 
     if (!image.getAttribute('src')) {
       renderImage(colors).toBlob((blob) => {
@@ -309,7 +349,7 @@ export function initDetail() {
 
   /* --- Clicks -------------------------------------------------------------- */
   root.addEventListener('click', async (event) => {
-    // Copy a single colour
+    // Copy a single color
     const swatch = event.target.closest('[data-hex]');
     if (swatch) {
       const hex = swatch.dataset.hex;

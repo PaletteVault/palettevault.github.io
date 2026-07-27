@@ -1,0 +1,141 @@
+---
+/**
+ * A single blog post.
+ *
+ * The author is the site rather than a person, so schema.org carries an
+ * Organization. That is a deliberate choice: attributing these to a named
+ * individual would be a stronger E-E-A-T signal, but only if the byline were
+ * real, and an invented one is worse than none.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+};
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const fmt = (date: Date) =>
+	date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const url = `${site.origin}/blog/${post.id}/`;
+
+const schema = [
+	{
+		'@type': 'BlogPosting',
+		headline: post.data.title,
+		description: post.data.description,
+		datePublished: post.data.published.toISOString().slice(0, 10),
+		dateModified: (post.data.updated ?? post.data.published).toISOString().slice(0, 10),
+		url,
+		mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+		author: { '@type': 'Organization', name: 'Palette Vault', url: `${site.origin}/` },
+		publisher: { '@type': 'Organization', name: 'Palette Vault', url: `${site.origin}/` },
+		keywords: post.data.tags.join(', '),
+		/*
+		 * Google's article guidance asks for an image, and JSON-LD does not resolve
+		 * relative paths any more than the og tag does, so it has to be absolute.
+		 */
+		/*
+		 * Same dev-server caveat as the og tag: before the build, `image.src` is a
+		 * Vite `/@fs/` path to the source file. Emitting that in JSON-LD would put
+		 * an absolute filesystem path into structured data.
+		 */
+		...(post.data.image && !post.data.image.src.startsWith('/@fs/')
+			? { image: [new URL(post.data.image.src, site).href] }
+			: {}),
+		isPartOf: { '@id': `${site.origin}/blog/#blog` },
+	},
+	{
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+			{ '@type': 'ListItem', position: 2, name: 'Blog', item: `${site.origin}/blog/` },
+			{ '@type': 'ListItem', position: 3, name: post.data.title },
+		],
+	},
+];
+
+/** Only h2s: a three-level contents list on a 1500-word post is noise. */
+const toc = headings.filter((heading) => heading.depth === 2);
+---
+
+<Layout
+	title={`${post.data.title} — Palette Vault`}
+	description={post.data.description}
+	image={post.data.image?.src}
+	imageWidth={post.data.image?.width}
+	imageHeight={post.data.image?.height}
+	prose
+	schema={schema}>
+	<nav
+		class='crumbs'
+		aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<a href='/blog/'>Blog</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>{post.data.title}</span>
+	</nav>
+
+	<article>
+		<header class='post__head'>
+			<h1>{post.data.title}</h1>
+			<p class='prose-meta'>
+				<time datetime={post.data.published.toISOString().slice(0, 10)}>
+					{fmt(post.data.published)}
+				</time>
+				{
+					post.data.updated && (
+						<>
+							<span aria-hidden='true'> · </span>
+							updated {fmt(post.data.updated)}
+						</>
+					)
+				}
+				{post.data.tags.length > 0 && <span aria-hidden='true'> · </span>}
+				{post.data.tags.join(', ')}
+			</p>
+		</header>
+
+		{
+			toc.length > 2 && (
+				<nav
+					class='post__toc'
+					aria-labelledby='post-toc'>
+					<h2 id='post-toc'>On this page</h2>
+					<ol>
+						{toc.map((heading) => (
+							<li>
+								<a href={`#${heading.slug}`}>{heading.text}</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			)
+		}
+
+		<div class='post__body'>
+			<Content />
+		</div>
+	</article>
+
+	<footer class='page-note'>
+		<h2>Try it on your own colors</h2>
+		<p>
+			Reading about a color space only goes so far. The{' '}
+			<a href='/tools/oklch/'>OKLCH picker</a> shows the gamut boundary as you move the sliders, the <a
+				href='/tools/picker/'>color picker</a
+			> builds a scale from any starting value, and the <a href='/tools/contrast/'
+				>contrast checker</a
+			> confirms whether a pair is legible. Or browse the{' '}
+			<a href='/palettes/'>palette catalog</a> to see the maths applied at scale.
+		</p>
+		<p><a href='/blog/'>← All posts</a></p>
+	</footer>
+</Layout>

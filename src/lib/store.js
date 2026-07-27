@@ -8,8 +8,8 @@
  *       counter honest and the heart correctly filled.
  *    2. "What belongs on the Collection page?" — which is the like list itself.
  *
- *  A palette is keyed by its slug (24 hex characters, four colours in a row).
- *  Because the slug already contains the colours, nothing else has to be
+ *  A palette is keyed by its slug (24 hex characters, four colors in a row).
+ *  Because the slug already contains the colors, nothing else has to be
  *  cached for Collection: the list of slugs is the render data.
  *
  *  Format: one key holding a JSON array of slugs in insertion order (newest
@@ -110,7 +110,7 @@ export function toggleLike(slug) {
 
 /**
  * Gallery rows built from the local collection.
- * Colours come straight out of the slug, so no extra storage is involved.
+ * Colors come straight out of the slug, so no extra storage is involved.
  *
  * @returns {Array<[null, string, string, string, string]>}
  */

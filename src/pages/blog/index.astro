@@ -1,0 +1,96 @@
+---
+/**
+ * Blog index.
+ *
+ * Cards are accented with each post's own colour value rather than a stock
+ * illustration — cheaper, on-brand, and it keeps the page free of images that
+ * would need alt text describing nothing.
+ */
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+
+const fmt = (date: Date) =>
+  date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'Blog',
+    '@id': `${site.origin}/blog/#blog`,
+    name: 'Palette Vault Blog',
+    description: 'Practical writing about color: color spaces, contrast, and building palettes that hold together.',
+    url: `${site.origin}/blog/`,
+    publisher: { '@type': 'Organization', name: 'Palette Vault', url: `${site.origin}/` },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.data.title,
+      description: post.data.description,
+      datePublished: post.data.published.toISOString().slice(0, 10),
+      url: `${site.origin}/blog/${post.id}/`,
+    })),
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog' },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Blog — Practical Writing About Color | Palette Vault"
+  description="Practical writing about color: what OKLCH fixes that HSL cannot, how contrast ratios actually work, and how to build color scales that stay even from end to end."
+  prose
+  schema={schema}
+>
+  <Fragment slot="head">
+    <link rel="alternate" type="application/rss+xml" title="Palette Vault Blog" href="/blog/rss.xml" />
+  </Fragment>
+
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">Blog</span>
+  </nav>
+
+  <header class="page-head">
+    <h1>Blog</h1>
+    <p>
+      Notes on the parts of color work that are easy to get wrong — color
+      spaces, contrast, and building scales that stay even from end to end.{' '}
+      <a href="/blog/rss.xml">RSS</a>.
+    </p>
+  </header>
+
+  {
+    posts.length === 0 ? (
+      <p class="prose">No posts yet.</p>
+    ) : (
+      <ul class="post-list">
+        {posts.map((post) => (
+          <li class="post-card" style={`--accent-swatch:#${post.data.accent}`}>
+            <span class="post-card__swatch" aria-hidden="true" />
+            <div class="post-card__body">
+              <h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
+              <p>{post.data.description}</p>
+              <p class="post-card__meta">
+                <time datetime={post.data.published.toISOString().slice(0, 10)}>
+                  {fmt(post.data.published)}
+                </time>
+                {post.data.tags.length > 0 && <span aria-hidden="true">·</span>}
+                {post.data.tags.join(', ')}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+</Layout>

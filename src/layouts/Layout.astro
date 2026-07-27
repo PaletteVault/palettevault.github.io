@@ -5,6 +5,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Sidebar from '../components/Sidebar.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
@@ -13,28 +14,66 @@ interface Props {
   activeTag?: string | null;
   /** Absolute or root-relative image for social previews. */
   image?: string;
+  /**
+   * Real pixel size of that image.
+   *
+   * Hardcoding 1200x630 is right for the site-wide OG image and wrong for
+   * anything else. Scrapers use the declared size to reserve space before the
+   * file loads, so a wrong value shows up as a crop or a jump in the card.
+   */
+  imageWidth?: number;
+  imageHeight?: number;
   /** Set for pages that should stay out of the index (fallback shells). */
   noindex?: boolean;
   /** Rendered without the category sidebar (tools, standalone pages). */
   wide?: boolean;
+  /**
+   * Text-only page: the shell narrows to a centred reading column.
+   *
+   * `wide` is right for tools, where a panel needs the room. For an article it
+   * leaves the text as a ribbon down the left of an otherwise empty container.
+   */
+  prose?: boolean;
   /** Extra schema.org objects to emit alongside the site-level graph. */
   schema?: Record<string, unknown>[];
+  /**
+   * Override the canonical URL. Used where two routes cover the same topic and
+   * the ranking signals should land on one of them rather than being split.
+   */
+  canonical?: string;
 }
 
 const {
   title,
-  description = 'Thousands of hand-tuned four-colour palettes. Copy any HEX in one click.',
+  // Search results truncate around 155 characters, and a description far
+  // short of that wastes the slot.
+  description =
+    'Four-color palettes built in OKLCH, with hex codes for every shade. Copy any HEX in one ' +
+    'click, save favourites, and extract palettes from any image or website.',
   active = null,
   activeTag = null,
   image = '/og-image.png',
+  imageWidth = 1200,
+  imageHeight = 630,
   noindex = false,
   wide = false,
+  prose = false,
   schema = [],
+  canonical: canonicalOverride,
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
-const canonical = new URL(Astro.url.pathname, site).href;
-const ogImage = new URL(image, site).href;
+const canonical = new URL(canonicalOverride ?? Astro.url.pathname, site).href;
+/*
+ * In `astro dev` an image from a content collection resolves to Vite's
+ * filesystem handler - `/@fs/C:/Users/.../image.png?origWidth=800` - because the
+ * asset has not been built yet. That is correct for the dev server and useless
+ * as an og:image: it leaks the absolute path, and a scraper pointed at a
+ * tunnelled dev server gets a 404. The built output is a hashed `/_astro/` file
+ * and works, so this only guards the development case.
+ */
+const usableImage = image.startsWith('/@fs/') || image.includes('?') ? '/og-image.png' : image;
+const ogImage = new URL(usableImage, site).href;
 
 // Site-level graph. Page-specific objects (breadcrumbs, tool descriptions)
 // arrive through the `schema` prop and are emitted in the same block.
@@ -47,7 +86,7 @@ const jsonLd = {
       url: `${site.origin}/`,
       name: 'Palette Vault',
       description:
-        'Thousands of hand-tuned four-colour palettes with a set of free colour tools.',
+        'Four-color palettes built in OKLCH with a set of free color tools.',
       inLanguage: 'en',
     },
     ...schema,
@@ -73,6 +112,7 @@ const jsonLd = {
     <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="Palette Vault Blog" href="/blog/rss.xml" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14161c" media="(prefers-color-scheme: dark)" />
 
@@ -83,8 +123,8 @@ const jsonLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content={String(usableImage === image ? imageWidth : 1200)} />
+    <meta property="og:image:height" content={String(usableImage === image ? imageHeight : 630)} />
     <meta property="og:locale" content="en" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -95,6 +135,8 @@ const jsonLd = {
     <link rel="preload" href="/data/meta.json" as="fetch" crossorigin="anonymous" />
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
+    <slot name="head" />
 
     <!--
       Theme is applied before first paint, otherwise dark-mode users get a
@@ -118,12 +160,14 @@ const jsonLd = {
 
     <Header active={active} />
 
-    <div class:list={['shell', wide && 'shell--wide']}>
-      {!wide && <Sidebar activeTag={activeTag} />}
+    <div class:list={['shell', prose && 'shell--prose', !prose && wide && 'shell--wide']}>
+      {!wide && !prose && <Sidebar activeTag={activeTag} />}
       <main id="main">
         <slot />
       </main>
     </div>
+
+    <Footer />
 
     <slot name="after" />
   </body>

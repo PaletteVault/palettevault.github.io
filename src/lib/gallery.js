@@ -314,6 +314,7 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
   /* --- 3. Loading further batches ---------------------------------------- */
   let loading = false;
   let done = false;
+  let replaced = false;
   let rendered = mount.querySelectorAll('.card').length;
 
   async function loadMore() {
@@ -330,6 +331,17 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
         status?.classList.remove('is-loading');
         status?.setAttribute('hidden', '');
         return;
+      }
+
+      /*
+       * Popular is ranked live from Firebase, but the page ships with a static
+       * batch so it is not blank before that resolves. The first real batch
+       * therefore replaces the placeholders instead of appending to them.
+       */
+      if (source.type === 'popular' && rendered > 0 && !replaced) {
+        mount.replaceChildren();
+        rendered = 0;
+        replaced = true;
       }
 
       const fragment = document.createElement('div');
@@ -357,6 +369,9 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
   }
 
   /* --- 4. Infinite scroll ------------------------------------------------ */
+  // Without a sentinel the feed is a fixed preview: one batch and stop.
+  if (!sentinel) finite = true;
+
   if (sentinel && typeof IntersectionObserver !== 'undefined') {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -367,8 +382,16 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
     observer.observe(sentinel);
   }
 
-  // Load the first batch immediately rather than waiting for a scroll.
-  await loadMore();
+  /* --- 4b. First batch -----------------------------------------------------
+   * Only fetch immediately when the page rendered no cards of its own.
+   *
+   * Feeds with a pre-rendered batch already have a full first screen, so
+   * fetching chunk 1 during load only lengthens the critical request chain:
+   * it hangs off the end of HTML → CSS → entry script → gallery → palette,
+   * and delays nothing the visitor can see. The sentinel has 800px of root
+   * margin, so the fetch still starts well before anyone reaches the bottom.
+   */
+  if (rendered === 0) await loadMore();
 
   /* --- 5. Click delegation ----------------------------------------------- */
   mount.addEventListener('click', onGridClick);

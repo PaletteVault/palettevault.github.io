@@ -1,13 +1,13 @@
 /**
  * ============================================================================
- *  REFERENCE COLOUR DATA
+ *  REFERENCE COLOR DATA
  * ============================================================================
  *
- *  Two published, factual colour sets used by the reference tools:
+ *  Two published, factual color sets used by the reference tools:
  *
  *    TAILWIND  — the default palette shipped with Tailwind CSS (MIT licensed).
  *                Reproduced here purely as a lookup table.
- *    CSS_NAMED — the named colours defined by the CSS Color specification.
+ *    CSS_NAMED — the named colors defined by the CSS Color specification.
  *
  *  Neither is generated, so both live in source rather than in the data chunks.
  * ============================================================================
@@ -40,7 +40,7 @@ export const TAILWIND = {
   rose: ['fff1f2', 'ffe4e6', 'fecdd3', 'fda4af', 'fb7185', 'f43f5e', 'e11d48', 'be123c', '9f1239', '881337', '4c0519'],
 };
 
-/** Named colours from the CSS Color specification. */
+/** Named colors from the CSS Color specification. */
 export const CSS_NAMED = [
   ['aliceblue', 'f0f8ff'], ['antiquewhite', 'faebd7'], ['aqua', '00ffff'],
   ['aquamarine', '7fffd4'], ['azure', 'f0ffff'], ['beige', 'f5f5dc'],

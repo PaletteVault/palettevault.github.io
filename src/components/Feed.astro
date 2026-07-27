@@ -27,6 +27,16 @@ interface Props {
   /** Empty state copy. */
   emptyTitle?: string;
   emptyText?: string;
+  /**
+   * Whether the feed keeps loading as the visitor scrolls. False renders a
+   * fixed batch with no sentinel — used on the home page, where the grid is a
+   * preview rather than the whole catalog.
+   */
+  infinite?: boolean;
+  /** Cap for the popular feed. */
+  limit?: number;
+  /** Render the heading block. Off where the page supplies its own. */
+  heading?: boolean;
 }
 
 const {
@@ -38,15 +48,30 @@ const {
   preRows = [],
   emptyTitle = 'Nothing here yet',
   emptyText = 'Try another category.',
+  infinite = true,
+  limit,
+  heading = true,
 } = Astro.props;
 
 const meta = getMeta();
 ---
 
-<section class="page-head">
-  <h1>{title}</h1>
-  {subtitle && <p>{subtitle}</p>}
-</section>
+{
+  heading && (
+    <section class="page-head">
+      <h1>{title}</h1>
+      {subtitle && <p>{subtitle}</p>}
+    </section>
+  )
+}
+
+<!--
+  Prose slots. A grid of swatches carries almost no text, which leaves a feed
+  page with nothing for a search engine to read and nothing for a first-time
+  visitor to orient against. `intro` sits above the grid, the default slot
+  below it.
+-->
+<slot name="intro" />
 
 <div
   class="grid"
@@ -55,6 +80,7 @@ const meta = getMeta();
   data-source-base={base}
   data-source-chunks={String(chunks)}
   data-source-skip={String(preRows.length)}
+  data-source-limit={limit ? String(limit) : ''}
 >
   {preRows.map((row) => <PaletteCard row={row} meta={meta} />)}
 </div>
@@ -65,7 +91,9 @@ const meta = getMeta();
 </div>
 
 <div class="status" id="status"></div>
-<div class="sentinel" id="sentinel"></div>
+{infinite && <div class="sentinel" id="sentinel"></div>}
+
+<slot />
 
 <script>
   import { initGallery, updateCollectionBadge } from '../lib/gallery.js';
@@ -85,6 +113,7 @@ const meta = getMeta();
         base: grid.dataset.sourceBase,
         chunks: Number(grid.dataset.sourceChunks) || 0,
         skip: Number(grid.dataset.sourceSkip) || 0,
+        limit: Number(grid.dataset.sourceLimit) || undefined,
       },
     });
   }

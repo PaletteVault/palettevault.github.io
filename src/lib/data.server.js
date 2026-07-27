@@ -107,6 +107,36 @@ export function getPrerenderRows(count = PRERENDER_PALETTES) {
   return rows.slice(0, count);
 }
 
+/**
+ * Every palette that some other page links to with a real `href`.
+ *
+ * The prerender window is the top of the New feed, but tag pages ship their own
+ * server-rendered preview drawn from the tag's feed, and for a rare tag the
+ * newest palette in it can easily sit outside that window. The link is then
+ * correct and the page does not exist — on a host with rewrites the visitor
+ * never notices, but GitHub Pages has no rewrites, so it resolves through
+ * 404.html and answers with a 404 status. Fine for a human, wrong for a
+ * crawler, and wrong in the sitemap.
+ *
+ * So the set to pre-render is the union of the New-feed window and every
+ * statically linked palette. In practice the tag previews overlap the window
+ * almost entirely — one palette out of 5 128 static links was missing — so this
+ * costs a handful of pages, not a thousand.
+ */
+export function getStaticLinkedRows() {
+  const rows = getPrerenderRows();
+  const seen = new Set(rows.map((row) => row[0]));
+
+  for (const tag of getMeta().tags) {
+    for (const row of getFirstRows(`tag/${tag.slug}`, SSG_BATCH)) {
+      if (seen.has(row[0])) continue;
+      seen.add(row[0]);
+      rows.push(row);
+    }
+  }
+  return rows;
+}
+
 /** Tag descriptor by slug. */
 export function getTag(slug) {
   return getMeta().tags.find((tag) => tag.slug === slug) ?? null;
@@ -121,7 +151,7 @@ export function getTagGroups() {
   ];
 }
 
-/** Sample colour for the dot next to each colour tag in the sidebar. */
+/** Sample color for the dot next to each color tag in the sidebar. */
 export const TAG_DOT = {
   red: '#e5484d',
   orange: '#f0851b',

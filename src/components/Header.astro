@@ -18,6 +18,15 @@ const links = [
 ---
 
 <header class="header">
+  <!--
+    The name lives on the image's alt, and the visible wordmark is hidden from
+    assistive tech so the link is announced once rather than twice.
+
+    An empty alt with the text supplying the name would be equally valid, but
+    the text is visually hidden on narrow viewports, which previously left the
+    link with no accessible name at all. Putting the name on the image makes it
+    independent of the responsive styling.
+  -->
   <a class="logo" href="/">
     <img
       class="logo__mark"
@@ -25,13 +34,32 @@ const links = [
       srcset="/favicon-48.png 1x, /icon-192.png 4x"
       width="26"
       height="26"
-      alt=""
+      alt="Palette Vault"
       decoding="async"
     />
-    <span>Palette Vault</span>
+    <span aria-hidden="true">Palette Vault</span>
   </a>
 
-  <nav class="nav" aria-label="Main">
+  <!--
+    The toggle sits before the nav in the DOM so a keyboard user reaches the
+    control before the panel it opens. It is hidden above the breakpoint, where
+    the links fit on one line and a menu button would be pure friction.
+  -->
+  <button
+    type="button"
+    class="icon-button nav-toggle"
+    data-nav-toggle
+    aria-expanded="false"
+    aria-controls="site-nav"
+    aria-label="Menu"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" data-nav-icon="open"></path>
+      <path d="M6 6l12 12M18 6L6 18" data-nav-icon="close" hidden></path>
+    </svg>
+  </button>
+
+  <nav class="nav" id="site-nav" aria-label="Main">
     {
       links.map((link) => (
         <a
@@ -48,7 +76,7 @@ const links = [
 
   <div class="header__spacer"></div>
 
-  <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle colour theme">
+  <button type="button" class="icon-button" data-theme-toggle aria-label="Toggle color theme">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" data-theme-icon="dark"></path>
       <path
@@ -85,4 +113,56 @@ const links = [
   });
 
   paint();
+</script>
+
+<script>
+  /**
+   * Mobile navigation.
+   *
+   * The panel is shown by a data attribute rather than a class so the CSS and
+   * the JS agree on one source of truth, and `aria-expanded` is kept in step —
+   * without it the button announces nothing useful to a screen reader.
+   */
+  const header = document.querySelector('.header');
+  const toggle = document.querySelector('[data-nav-toggle]');
+
+  function setOpen(open) {
+    if (!header || !toggle) return;
+    header.toggleAttribute('data-nav-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    document.querySelector('[data-nav-icon="open"]')?.toggleAttribute('hidden', open);
+    document.querySelector('[data-nav-icon="close"]')?.toggleAttribute('hidden', !open);
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(!header?.hasAttribute('data-nav-open'));
+  });
+
+  // Escape closes it, which is the expected behaviour for any dismissible
+  // overlay and costs one line.
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setOpen(false);
+  });
+
+  // A click anywhere outside dismisses it. Clicks on the toggle are excluded so
+  // this does not fight the handler above.
+  document.addEventListener('click', (event) => {
+    if (!header?.hasAttribute('data-nav-open')) return;
+    const target = event.target;
+    if (target instanceof Node && !header.contains(target)) setOpen(false);
+  });
+
+  // Following a link should leave the menu closed on the next page, and closing
+  // it immediately avoids a flash of the open panel during navigation.
+  document.querySelectorAll('.nav__link').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
+
+  /*
+   * Resizing past the breakpoint hides the panel by CSS but would leave
+   * aria-expanded="true" behind, so the state is reset explicitly.
+   */
+  window.matchMedia('(min-width: 861px)').addEventListener('change', (event) => {
+    if (event.matches) setOpen(false);
+  });
 </script>

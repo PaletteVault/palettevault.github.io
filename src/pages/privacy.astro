@@ -1,0 +1,163 @@
+---
+/**
+ * Privacy policy.
+ *
+ * Written from what the code actually does rather than from a template. Every
+ * claim here is checkable against the source: there is no analytics script, no
+ * cookie is set, `navigator.userAgent` is never read, and the only data that
+ * leaves the browser is a like counter keyed by palette with nothing attached
+ * to identify who sent it.
+ *
+ * The parts we do not control — what a host records in its own server logs —
+ * are stated plainly rather than glossed over, because a policy that claims
+ * "we collect nothing" while sitting behind a CDN that logs IP addresses is
+ * not accurate.
+ */
+import Layout from '../layouts/Layout.astro';
+
+const UPDATED = 'July 2026';
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+	{
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+			{ '@type': 'ListItem', position: 2, name: 'Privacy' },
+		],
+	},
+];
+---
+
+<Layout
+	title='Privacy Policy — Palette Vault'
+	description='What Palette Vault stores and what it does not. No analytics, no cookies, no accounts — the only data that leaves your browser is an anonymous like count.'
+	prose
+	schema={schema}>
+	<nav
+		class='crumbs'
+		aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>Privacy</span>
+	</nav>
+
+	<header class='page-head'>
+		<h1>Privacy Policy</h1>
+		<p>
+			A short policy, because there is little to describe. Palette Vault has no accounts, no
+			analytics and no advertising, and almost everything it remembers about you never leaves your
+			own browser.
+		</p>
+	</header>
+
+	<article>
+		<p class='prose-meta'>Last updated: {UPDATED}</p>
+
+		<h2>The short version</h2>
+		<p>
+			We do not run analytics, we do not set cookies, we do not use advertising or tracking scripts,
+			and there is nothing to sign up for. Your saved palettes live in your browser and are never
+			uploaded. The only thing that travels to a server is a number: how many people have liked a
+			given palette, with nothing recorded about who liked it.
+		</p>
+
+		<h2>What stays in your browser</h2>
+		<p>
+			Two values are written to <code>localStorage</code>, which is storage that belongs to your
+			browser and is not transmitted anywhere:
+		</p>
+		<ul>
+			<li>
+				<code>palette.theme</code> — whether you chose the light or dark theme, so the site does not flash
+				the wrong one on your next visit.
+			</li>
+			<li>
+				<code>palette.likes.v2</code> — the list of palettes you have liked, which is what fills your
+				collection page.
+			</li>
+		</ul>
+		<p>
+			Because this list is held locally and not against an account, it is tied to one browser on one
+			device. Clearing your site data, using private browsing, or switching to another browser or
+			computer will show you an empty collection. That is a real limitation rather than a bug, and
+			it is the direct consequence of not asking you to register.
+		</p>
+		<p>
+			The tools behave the same way. When you extract a palette from an image, the image is read and
+			processed by JavaScript on your own machine — it is never uploaded, and no copy of it exists
+			on any server. The same is true of the eyedropper and page-scanning features in the browser
+			extension.
+		</p>
+
+		<h2>What leaves your browser</h2>
+		<p>
+			One thing: the like counter. When you like a palette, the site asks a Firebase Realtime
+			Database to add one to a number stored under that palette's identifier. The record is a
+			palette and a count, and nothing else — no identifier for you, no session, no timestamp, no
+			address. There is deliberately no per-user record, which is why the site cannot tell your
+			likes apart from anyone else's, and why your collection has to be kept locally instead.
+		</p>
+		<p>
+			Reading is the same request in reverse: to show a like count the browser asks for that number.
+			Those requests reach Google's Firebase infrastructure, so Google can see the connection in the
+			ordinary way any server sees a request, which is covered below.
+		</p>
+
+		<h2>What our hosts can see, which we do not control</h2>
+		<p>
+			This is the part most policies leave out. Serving a page requires a connection, and the
+			companies that serve it keep their own records:
+		</p>
+		<ul>
+			<li>
+				<strong>GitHub Pages</strong> hosts the site's files. GitHub receives your IP address and request
+				details as part of delivering the page and handles them under its own privacy statement. We have
+				no access to those logs and no ability to switch them off.
+			</li>
+			<li>
+				<strong>Google Firebase</strong> receives the like requests described above, and likewise sees
+				the connection they arrive on. We can see the counters; we cannot see who produced them.
+			</li>
+		</ul>
+		<p>
+			We have not added anything on top of this. No third-party script runs on the site, so nothing
+			beyond these two services is contacted while you use it.
+		</p>
+
+		<h2>The browser extension</h2>
+		<p>
+			The extension asks for the narrowest permissions that let it work: permission to act on the
+			tab you are currently looking at, and only at the moment you invoke it. It deliberately does
+			not request broad access to every site you visit. It generates palettes locally, keeps its
+			saved palettes in the browser's own storage, and sends nothing anywhere.
+		</p>
+
+		<h2>Children</h2>
+		<p>
+			The site is a color reference and is suitable for general audiences. We do not knowingly
+			collect personal information from anyone, of any age, because we do not collect personal
+			information at all.
+		</p>
+
+		<h2>Changes</h2>
+		<p>
+			If this policy changes, the date at the top changes with it. Because the site is open source,
+			the full history of this page is public in the repository, so you can see exactly what was
+			altered and when rather than taking our word for it.
+		</p>
+
+		<h2>Contact</h2>
+		<p>
+			Questions about this policy, or about anything the site does, can go through the project's{
+				' '
+			}
+			<a
+				href='https://github.com/PaletteVault'
+				rel='noopener'
+				>GitHub repository</a
+			>, where issues are public and answered in the open. The{' '}
+			<a href='/about/'>about page</a> explains who runs the site and how it is built.
+		</p>
+	</article>
+</Layout>

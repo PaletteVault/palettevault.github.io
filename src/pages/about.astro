@@ -1,0 +1,107 @@
+---
+/**
+ * About page.
+ *
+ * Explains where the palettes come from and what may be done with them.
+ * Both questions come up constantly for a site full of generated content, and
+ * leaving them unanswered is what makes a catalogue look like filler.
+ */
+import Layout from '../layouts/Layout.astro';
+import { getMeta } from '../lib/data.server.js';
+
+const meta = getMeta();
+const tags = meta.tags.length;
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+	{
+		'@type': 'AboutPage',
+		name: 'About Palette Vault',
+		url: `${site.origin}/about/`,
+	},
+];
+---
+
+<Layout
+	title='About — Palette Vault'
+	description='How Palette Vault generates its color palettes, what the tools do, and how the palettes may be used. Built in OKLCH, free for any project.'
+	prose
+	schema={schema}>
+	<article>
+		<h1>About</h1>
+
+		<p class='prose__lead'>
+			Palette Vault is a catalogue of four-color palettes, a set of free color tools, and a Chrome
+			extension. Everything is free to use and nothing requires an account.
+		</p>
+
+		<h2>How the palettes are put together</h2>
+
+		<p>
+			Each one is built in <strong>OKLCH</strong>, a perceptually uniform color space, which is the
+			reason they look considered rather than arbitrary: in OKLCH an equal step in lightness looks
+			like an equal step to the eye, so a ramp holds together where the same approach in RGB or HSL
+			falls apart.
+		</p>
+
+		<p>
+			Within that, three things do the work. The four hues follow a classical relationship —
+			monochrome, analogous, complementary, split complementary, triad or tetrad — rather than
+			sitting at arbitrary angles. Lightness is laid out as a deliberate ladder from light to dark,
+			so every palette has somewhere to put text. And chroma tapers at both extremes, because very
+			light and very dark colors physically hold less of it, which keeps the pale end from going
+			chalky and the dark end from turning muddy.
+		</p>
+
+		<p>
+			Tags come from the result rather than the intent: a palette is listed under <em>Blue</em> because
+			its colors measure as blue, not because anything set out to make a blue palette. There are {
+				tags
+			} categories in all, covering both moods — pastel, vintage, neon, night — and color families.
+		</p>
+
+		<h2>Licence</h2>
+
+		<p>
+			<strong>Colors cannot be owned, and these are free for anything.</strong>
+			Commercial work, client projects, products for sale — no permission and no attribution needed. A
+			palette is four numbers; there is nothing here to license.
+		</p>
+
+		<h2>Likes and privacy</h2>
+
+		<p>
+			Like counts are the only thing stored on a server, in a Firebase Realtime Database that holds
+			nothing but a number per palette. Your collection lives in your own browser's local storage
+			and is never sent anywhere. There is no analytics script, no cookie banner, and no account to
+			create — the site cannot identify you because it never learns anything about you.
+		</p>
+
+		<h2>The tools</h2>
+
+		<p>
+			Eight of them, all running entirely in your browser: a palette generator, an image extractor,
+			a WCAG contrast checker, a color picker, the Tailwind palette, every named CSS color, a
+			gradient library and a gradient builder. Images you drop into the extractor are never
+			uploaded.
+		</p>
+
+		<p>
+			The <a href='/tools/extract/'>image extractor</a> is worth a note on method. It clusters pixels
+			with k-means in OKLab rather than counting frequent RGB values, because distance in OKLab tracks
+			how different two colors actually look. Cluster a landscape photograph in RGB and you get five near-identical
+			browns while the one red jacket that defines the shot disappears.
+		</p>
+
+		<h2>Open source</h2>
+
+		<p>
+			The site and the extension are on{' '}
+			<a
+				href='https://github.com/PaletteVault'
+				rel='noopener'
+				>GitHub</a
+			>. Corrections and issues are welcome there.
+		</p>
+	</article>
+</Layout>

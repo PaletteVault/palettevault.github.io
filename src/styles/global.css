@@ -5,38 +5,59 @@
  * ========================================================================== */
 
 :root {
-  /* Interface palette */
-  --bg: #ffffff;
-  --bg-soft: #f6f7f9;
-  --surface: #ffffff;
-  --border: #e7e9ee;
-  --text: #16181d;
-  --text-muted: #767c8a;
-  --accent: #ff4d67;
-  --shadow: 0 1px 2px rgb(16 18 29 / 6%), 0 8px 24px rgb(16 18 29 / 6%);
-  --shadow-hover: 0 2px 4px rgb(16 18 29 / 8%), 0 16px 40px rgb(16 18 29 / 12%);
+	/* Interface palette */
+	--bg: #ffffff;
+	--bg-soft: #f6f7f9;
+	--surface: #ffffff;
+	--border: #e7e9ee;
+	--text: #16181d;
+	/* 4.90:1 on --bg and 4.57:1 on --bg-soft. The soft background is the
+     binding case: muted text sits on it in .level and .hint. */
+	--text-muted: #6b717e;
+	--accent: #ff4d67;
+	/* --accent is only ever a fill or a border, where 3:1 is enough. White text
+     on it reaches just 3.23:1, so anything with a label uses the darker pair. */
+	--accent-strong: #df2a4e;
+	--success: #16a34a;
+	--success-strong: #00883a;
+	--shadow: 0 1px 2px rgb(16 18 29 / 6%), 0 8px 24px rgb(16 18 29 / 6%);
+	--shadow-hover: 0 2px 4px rgb(16 18 29 / 8%), 0 16px 40px rgb(16 18 29 / 12%);
 
-  /* Metrics */
-  --radius: 14px;
-  --radius-sm: 9px;
-  --header-h: 64px;
-  --sidebar-w: 232px;
-  --gap: 26px;
+	/* Metrics */
+	--radius: 14px;
+	--radius-sm: 9px;
+	--header-h: 64px;
+	--sidebar-w: 232px;
+	--gap: 26px;
+	/*
+	 * Three widths, one per kind of content, and the reason each exists.
+	 *
+	 * Collapsing all of them into one number was a mistake: it squeezed the
+	 * palette grid — the actual product — down to a reading column, so the
+	 * gallery showed three cards a row instead of five. A grid wants the screen;
+	 * an article wants about 70 characters. Those are not the same requirement
+	 * and pretending otherwise breaks the more important one.
+	 */
+	--shell-max: 1560px;
+	--shell-wide: 1200px;
+	/* Article column: ~1200px of content at 17px is close to 90 characters. */
+	--content: 1200px;
+	--pad: 22px;
 
-  --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+	--font:
+		ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 :root[data-theme='dark'] {
-  --bg: #14161c;
-  --bg-soft: #1a1d25;
-  --surface: #1c1f28;
-  --border: #2b2f3a;
-  --text: #eef0f5;
-  --text-muted: #98a0b0;
-  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 28%);
-  --shadow-hover: 0 2px 4px rgb(0 0 0 / 36%), 0 16px 40px rgb(0 0 0 / 44%);
+	--bg: #14161c;
+	--bg-soft: #1a1d25;
+	--surface: #1c1f28;
+	--border: #2b2f3a;
+	--text: #eef0f5;
+	--text-muted: #99a1b1;
+	--shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 28%);
+	--shadow-hover: 0 2px 4px rgb(0 0 0 / 36%), 0 16px 40px rgb(0 0 0 / 44%);
 }
 
 /* ---------------------------------------------------------------- reset -- */
@@ -44,306 +65,402 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
+	-webkit-text-size-adjust: 100%;
+	scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 15px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: var(--font);
+	font-size: 15px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+	color: inherit;
+	text-decoration: none;
 }
 
 button {
-  font: inherit;
-  color: inherit;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  padding: 0;
+	font: inherit;
+	color: inherit;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	padding: 0;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
+	}
 }
 
 /* =============================================================== header == */
 
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 0 22px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(180%) blur(14px);
-  border-bottom: 1px solid var(--border);
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	height: var(--header-h);
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 0 22px;
+	background: color-mix(in srgb, var(--bg) 88%, transparent);
+	backdrop-filter: saturate(180%) blur(14px);
+	border-bottom: 1px solid var(--border);
 }
 
 .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-weight: 700;
+	font-size: 17px;
+	letter-spacing: -0.02em;
+	white-space: nowrap;
 }
 
 .logo__mark {
-  display: block;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+	display: block;
+	width: 26px;
+	height: 26px;
+	border-radius: 7px;
 }
 
 /* Keyboard users need a way past the header and sidebar. */
 .skip-link {
-  position: absolute;
-  left: -9999px;
-  z-index: 200;
-  padding: 10px 16px;
-  border-radius: 0 0 var(--radius-sm) 0;
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 600;
+	position: absolute;
+	left: -9999px;
+	z-index: 200;
+	padding: 10px 16px;
+	border-radius: 0 0 var(--radius-sm) 0;
+	background: var(--text);
+	color: var(--bg);
+	font-weight: 600;
 }
 
 .skip-link:focus {
-  left: 0;
-  top: 0;
+	left: 0;
+	top: 0;
 }
 
 .nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	padding-left: 6rem;
 }
 
 .nav::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 .nav__link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 13px;
-  border-radius: 999px;
-  font-weight: 600;
-  color: var(--text-muted);
-  white-space: nowrap;
-  transition: background-color 0.15s, color 0.15s;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 13px;
+	border-radius: 999px;
+	font-weight: 600;
+	color: var(--text-muted);
+	white-space: nowrap;
+	transition:
+		background-color 0.15s,
+		color 0.15s;
 }
 
 .nav__link:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .nav__link[aria-current='page'] {
-  background: var(--text);
-  color: var(--bg);
+	background: var(--text);
+	color: var(--bg);
 }
 
 .badge {
-  min-width: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 18px;
-  text-align: center;
+	min-width: 18px;
+	padding: 0 5px;
+	border-radius: 999px;
+	background: var(--accent-strong);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 18px;
+	text-align: center;
 }
 
 .header__spacer {
-  flex: 1;
+	flex: 1;
 }
 
 .icon-button {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  color: var(--text-muted);
-  transition: background-color 0.15s, color 0.15s;
+	display: inline-grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	color: var(--text-muted);
+	transition:
+		background-color 0.15s,
+		color 0.15s;
 }
 
 .icon-button:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .icon-button svg {
-  width: 19px;
-  height: 19px;
-  fill: currentcolor;
+	width: 19px;
+	height: 19px;
+	fill: currentcolor;
+}
+
+/*
+ * The menu icon is drawn with lines, not shapes.
+ *
+ * `.icon-button svg` fills its paths, which is right for the theme icons —
+ * those are closed outlines. A hamburger is three horizontal strokes with zero
+ * enclosed area, so filling it paints nothing at all: the button was present,
+ * focusable and completely invisible. It needs stroking instead.
+ */
+.nav-toggle svg {
+	width: 21px;
+	height: 21px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* =============================================================== layout == */
 
 .shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-  gap: var(--gap);
-  max-width: 1560px;
-  margin: 0 auto;
-  padding: 26px 22px 80px;
+	display: grid;
+	grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+	gap: var(--gap);
+	max-width: var(--shell-max);
+	margin: 0 auto;
+	padding: 26px var(--pad) 80px;
 }
 
 /* Tool pages drop the category sidebar and centre their own content. */
 .shell--wide {
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 1180px;
+	grid-template-columns: minmax(0, 1fr);
+	max-width: var(--shell-wide);
+}
+
+/* In the reading column the shell is the measure; per-block caps would shrink
+   the text a second time. */
+
+/*
+ * Text-only pages: the shell itself becomes the reading column.
+ *
+ * Capping the measure on each block instead left the text as a narrow ribbon
+ * pinned to the left of a 1180px container, with the rest of the page empty —
+ * technically the right line length, and it looked broken. Making the
+ * container the measure means the crumbs, the heading and the body all align
+ * to the same edges and the whole column sits in the middle of the viewport.
+ */
+.shell--prose {
+	grid-template-columns: minmax(0, 1fr);
+	max-width: calc(var(--content) + var(--pad) * 2);
+}
+
+/*
+ * Long-form pages read at a larger size than the interface.
+ *
+ * Worth being straight about the trade here. 880px of content at 17px works out
+ * around 90 characters per line, which is above the 60-75 that typographic
+ * practice recommends and not far off the 94ch this started from. Raising the
+ * body size from 15px to 17px is what keeps it tolerable: larger glyphs are
+ * easier for the eye to track back to the start of the next line, so a wide
+ * column at 17px reads better than the same width at 15px would.
+ *
+ * It is a deliberate choice for a wider column, not a claim that the measure is
+ * ideal. Drop `max-width` to about 720px if it starts to feel like work.
+ */
+/*
+ * Article type belongs to the reading column only.
+ *
+ * Applying 17px to the copy on a gallery page was the other half of the
+ * mistake: 17px in a capped block beside a full-width grid reads as an article
+ * that got cut off. At the interface size the same block reads as what it is —
+ * supporting copy under the cards.
+ */
+.shell--prose .prose,
+.shell--prose .post__body,
+.shell--prose .page-note {
+	font-size: 17px;
+	line-height: 1.72;
+}
+
+.shell--prose .prose li,
+.shell--prose .post__body li {
+	margin-bottom: 6px;
+}
+
+/* Code keeps the interface size: monospace at 17px is disproportionately wide
+   and would break lines that fit fine elsewhere. */
+.post__body pre,
+.prose pre {
+	font-size: 13.5px;
+}
+
+/* On a tool page the panel needs the full width but the article below it does
+   not, so the prose is centred under it rather than left-aligned. */
+.shell--wide .tool-prose {
+	margin-inline: auto;
 }
 
 /* ============================================================== sidebar == */
 
 .sidebar {
-  position: sticky;
-  top: calc(var(--header-h) + 26px);
-  align-self: start;
-  max-height: calc(100vh - var(--header-h) - 52px);
-  overflow-y: auto;
-  padding-right: 6px;
-  scrollbar-width: thin;
+	position: sticky;
+	top: calc(var(--header-h) + 26px);
+	align-self: start;
+	max-height: calc(100vh - var(--header-h) - 52px);
+	overflow-y: auto;
+	padding-right: 6px;
+	scrollbar-width: thin;
 }
 
 .sidebar__title {
-  margin: 0 0 10px;
-  padding-left: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+	margin: 0 0 10px;
+	padding-left: 10px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--text-muted);
 }
 
 .sidebar__group + .sidebar__group {
-  margin-top: 26px;
+	margin-top: 26px;
 }
 
 .sidebar__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 
 .tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text-muted);
+	transition:
+		background-color 0.15s,
+		color 0.15s,
+		border-color 0.15s;
 }
 
 .tag:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .tag[aria-current='page'] {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
+	background: var(--text);
+	border-color: var(--text);
+	color: var(--bg);
 }
 
 .tag__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px solid rgb(0 0 0 / 12%);
-  background: var(--dot, transparent);
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border: 1px solid rgb(0 0 0 / 12%);
+	background: var(--dot, transparent);
 }
 
 /* ============================================================== content == */
 
 .page-head {
-  margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .page-head h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+	margin: 0;
+	/* Fixed pixel headings are the first thing to look wrong on a narrow
+	   screen: a 24px h1 next to 15px body copy loses its hierarchy once the
+	   line breaks three times. */
+	font-size: clamp(20px, 4.5vw, 24px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
 }
 
 .page-head p {
-  margin: 5px 0 0;
-  color: var(--text-muted);
+	margin: 5px 0 0;
+	color: var(--text-muted);
+	line-height: 1.6;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
-  gap: 22px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+	gap: 22px;
 }
 
 /* ================================================================= card === */
 
 .card {
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--radius);
+	background: var(--surface);
+	box-shadow: var(--shadow);
+	overflow: hidden;
+	transition:
+		transform 0.18s ease,
+		box-shadow 0.18s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-hover);
 }
 
 .card__swatches {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 260px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 260px;
 }
 
 /*
@@ -351,384 +468,406 @@ button {
  * Sits below the copy buttons, which intercept clicks on themselves.
  */
 .card__hit {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+	position: absolute;
+	inset: 0;
+	z-index: 1;
 }
 
 .swatch {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-  flex-grow: var(--swatch-grow, 25);
-  flex-basis: 0;
-  padding: 0 10px 0 14px;
-  background: var(--swatch-bg);
-  transition: filter 0.15s;
-  overflow: hidden;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+	flex-grow: var(--swatch-grow, 25);
+	flex-basis: 0;
+	padding: 0 10px 0 14px;
+	background: var(--swatch-bg);
+	transition: filter 0.15s;
+	overflow: hidden;
 }
 
 .card__hit:hover ~ .swatch:hover,
 .swatch:hover {
-  filter: brightness(1.04);
+	filter: brightness(1.04);
 }
 
 .swatch.is-copied {
-  filter: brightness(1.14);
+	filter: brightness(1.14);
 }
 
 .swatch__hex {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  opacity: 0;
-  transition: opacity 0.15s;
-  pointer-events: none;
+	font-family: var(--font-mono);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	opacity: 0;
+	transition: opacity 0.15s;
+	pointer-events: none;
 }
 
 /* The copy button is the only interactive element above the link. */
 .swatch__copy {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  opacity: 0;
-  transition: opacity 0.15s, background-color 0.15s;
+	position: relative;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	flex: none;
+	width: 26px;
+	height: 26px;
+	border-radius: 7px;
+	opacity: 0;
+	transition:
+		opacity 0.15s,
+		background-color 0.15s;
 }
 
 .swatch__copy svg {
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.9;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 .swatch.on-dark {
-  color: rgb(255 255 255 / 92%);
+	color: rgb(255 255 255 / 92%);
 }
 
 .swatch.on-light {
-  color: rgb(0 0 0 / 62%);
+	color: rgb(0 0 0 / 62%);
 }
 
 .swatch.on-dark .swatch__copy:hover {
-  background: rgb(255 255 255 / 18%);
+	background: rgb(255 255 255 / 18%);
 }
 
 .swatch.on-light .swatch__copy:hover {
-  background: rgb(0 0 0 / 10%);
+	background: rgb(0 0 0 / 10%);
 }
 
 .card:hover .swatch__hex,
 .card:hover .swatch__copy,
 .swatch__copy:focus-visible {
-  opacity: 1;
+	opacity: 1;
 }
 
 /* :hover never fires on touch devices, so keep the controls visible. */
 @media (hover: none) {
-  .swatch__hex,
-  .swatch__copy {
-    opacity: 1;
-  }
+	.swatch__hex,
+	.swatch__copy {
+		opacity: 1;
+	}
 }
 
 .card__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 13px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 10px 13px;
 }
 
 .like {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px 4px 5px;
-  border-radius: 999px;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  transition: background-color 0.15s, color 0.15s;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 8px 4px 5px;
+	border-radius: 999px;
+	color: var(--text-muted);
+	font-size: 13px;
+	font-weight: 600;
+	transition:
+		background-color 0.15s,
+		color 0.15s;
 }
 
 .like:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .like__icon {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.8;
-  stroke-linejoin: round;
-  transition: fill 0.15s, stroke 0.15s, transform 0.15s;
+	width: 17px;
+	height: 17px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.8;
+	stroke-linejoin: round;
+	transition:
+		fill 0.15s,
+		stroke 0.15s,
+		transform 0.15s;
 }
 
 .like.is-liked {
-  color: var(--accent);
+	color: var(--accent);
 }
 
 .like.is-liked .like__icon {
-  fill: var(--accent);
-  stroke: var(--accent);
+	fill: var(--accent);
+	stroke: var(--accent);
 }
 
 .like.is-bumping .like__icon {
-  animation: heart-pop 0.35s ease;
+	animation: heart-pop 0.35s ease;
 }
 
 @keyframes heart-pop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.32); }
-  100% { transform: scale(1); }
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.32);
+	}
+	100% {
+		transform: scale(1);
+	}
 }
 
 .card__date {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  white-space: nowrap;
+	font-size: 12.5px;
+	color: var(--text-muted);
+	white-space: nowrap;
 }
 
 /* ============================== card footer: link to the palette page === */
 
 .card__open {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0; /* without this the name ellipsis fails inside flex */
-  padding: 4px 6px;
-  border-radius: 8px;
-  font-size: 12.5px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  transition: background-color 0.15s, color 0.15s;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0; /* without this the name ellipsis fails inside flex */
+	padding: 4px 6px;
+	border-radius: 8px;
+	font-size: 12.5px;
+	color: var(--text-muted);
+	white-space: nowrap;
+	transition:
+		background-color 0.15s,
+		color 0.15s;
 }
 
 .card__open:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .card__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .card__open-icon {
-  flex: none;
-  width: 13px;
-  height: 13px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0;
-  transition: opacity 0.15s;
+	flex: none;
+	width: 13px;
+	height: 13px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0;
+	transition: opacity 0.15s;
 }
 
 .card:hover .card__open-icon,
 .card__open:focus-visible .card__open-icon {
-  opacity: 1;
+	opacity: 1;
 }
 
 /* ===================================================== palette page ===== */
 
 .detail {
-  max-width: 880px;
+	max-width: 880px;
 }
 
 .detail-nav {
-  margin-bottom: 18px;
+	margin-bottom: 18px;
 }
 
 .detail-back {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  transition: background-color 0.15s, color 0.15s;
+	display: inline-block;
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text-muted);
+	transition:
+		background-color 0.15s,
+		color 0.15s;
 }
 
 .detail-back:hover {
-  background: var(--bg-soft);
-  color: var(--text);
+	background: var(--bg-soft);
+	color: var(--text);
 }
 
 .detail-head h1 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+	margin: 0;
+	font-size: 27px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
 .detail-head__hex {
-  margin: 6px 0 22px;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-  word-break: break-word;
+	margin: 6px 0 22px;
+	font-family: var(--font-mono);
+	font-size: 14px;
+	color: var(--text-muted);
+	letter-spacing: 0.02em;
+	word-break: break-word;
 }
 
 .detail-swatches {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 26px;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 26px;
 }
 
 .detail-swatch {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 8px;
-  min-height: 250px;
-  padding: 16px;
-  border-radius: var(--radius);
-  background: var(--swatch-bg);
-  text-align: left;
-  transition: transform 0.15s, filter 0.15s;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: flex-start;
+	gap: 8px;
+	min-height: 250px;
+	padding: 16px;
+	border-radius: var(--radius);
+	background: var(--swatch-bg);
+	text-align: left;
+	transition:
+		transform 0.15s,
+		filter 0.15s;
 }
 
 .detail-swatch:hover {
-  transform: translateY(-3px);
-  filter: brightness(1.03);
+	transform: translateY(-3px);
+	filter: brightness(1.03);
 }
 
 .detail-swatch.is-copied {
-  filter: brightness(1.14);
+	filter: brightness(1.14);
 }
 
 .detail-swatch__hex {
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+	font-family: var(--font-mono);
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
 }
 
 .detail-swatch__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 12px;
-  line-height: 1.45;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	font-size: 12px;
+	line-height: 1.45;
 }
 
 .detail-swatch__contrast {
-  margin-top: 3px;
-  font-size: 11px;
+	margin-top: 3px;
+	font-size: 11px;
 }
 
 .detail-swatch.on-dark {
-  color: rgb(255 255 255 / 94%);
+	color: rgb(255 255 255 / 94%);
 }
 
 .detail-swatch.on-dark .detail-swatch__meta {
-  color: rgb(255 255 255 / 70%);
+	color: rgb(255 255 255 / 70%);
 }
 
 .detail-swatch.on-light {
-  color: rgb(0 0 0 / 80%);
+	color: rgb(0 0 0 / 80%);
 }
 
 .detail-swatch.on-light .detail-swatch__meta {
-  color: rgb(0 0 0 / 55%);
+	color: rgb(0 0 0 / 55%);
 }
 
 /* --- actions -------------------------------------------------------------- */
 
 .detail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 26px;
-  padding: 20px 0 24px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 26px;
+	padding: 20px 0 24px;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 .detail-actions__label {
-  display: block;
-  margin-bottom: 9px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+	display: block;
+	margin-bottom: 9px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--text-muted);
 }
 
 .detail-actions__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
 }
 
 .action {
-  padding: 9px 15px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13.5px;
-  font-weight: 500;
-  transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+	padding: 9px 15px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--surface);
+	font-size: 13.5px;
+	font-weight: 500;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s,
+		transform 0.1s;
 }
 
 .action:hover {
-  background: var(--bg-soft);
-  border-color: var(--text-muted);
+	background: var(--bg-soft);
+	border-color: var(--text-muted);
 }
 
 .action:active {
-  transform: scale(0.97);
+	transform: scale(0.97);
 }
 
 .action--primary {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
+	background: var(--text);
+	border-color: var(--text);
+	color: var(--bg);
 }
 
 .action--primary:hover {
-  background: var(--text);
-  opacity: 0.87;
+	background: var(--text);
+	opacity: 0.87;
 }
 
 .like--lg {
-  padding: 8px 14px 8px 11px;
-  border: 1px solid var(--border);
-  font-size: 13.5px;
+	padding: 8px 14px 8px 11px;
+	border: 1px solid var(--border);
+	font-size: 13.5px;
 }
 
 .like--lg .like__icon {
-  width: 18px;
-  height: 18px;
+	width: 18px;
+	height: 18px;
 }
 
 /* --- image preview -------------------------------------------------------- */
 
 .detail-preview {
-  margin: 26px 0 0;
+	margin: 26px 0 0;
 }
 
 /*
@@ -737,176 +876,1206 @@ button {
  * still being produced on pages that have no pre-rendered file.
  */
 .detail-preview__img {
-  display: block;
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  min-height: 120px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--bg-soft);
+	display: block;
+	width: 100%;
+	max-width: 600px;
+	height: auto;
+	min-height: 120px;
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+	background: var(--bg-soft);
 }
 
 .action--pin {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
 }
 
 .action--pin svg {
-  width: 15px;
-  height: 15px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 .detail-preview figcaption {
-  margin-top: 9px;
-  font-size: 12.5px;
-  color: var(--text-muted);
+	margin-top: 9px;
+	font-size: 12.5px;
+	color: var(--text-muted);
 }
 
 .detail code {
-  padding: 2px 6px;
-  border-radius: 5px;
-  background: var(--bg-soft);
-  font-family: var(--font-mono);
-  font-size: 12.5px;
+	padding: 2px 6px;
+	border-radius: 5px;
+	background: var(--bg-soft);
+	font-family: var(--font-mono);
+	font-size: 12.5px;
 }
 
 @media (max-width: 720px) {
-  .detail-swatches {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
+	.detail-swatches {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
 
-  .detail-swatch {
-    min-height: 190px;
-  }
+	.detail-swatch {
+		min-height: 190px;
+	}
 
-  .detail-actions {
-    gap: 18px;
-  }
+	.detail-actions {
+		gap: 18px;
+	}
 }
 
 /* ============================================================== states === */
 
 .status {
-  display: flex;
-  justify-content: center;
-  padding: 34px 0;
-  color: var(--text-muted);
-  font-size: 13px;
+	display: flex;
+	justify-content: center;
+	padding: 34px 0;
+	color: var(--text-muted);
+	font-size: 13px;
 }
 
 .status::after {
-  content: 'Loading…';
-  opacity: 0;
-  transition: opacity 0.2s;
+	content: 'Loading…';
+	opacity: 0;
+	transition: opacity 0.2s;
 }
 
 .status.is-loading::after {
-  opacity: 1;
+	opacity: 1;
 }
 
 .sentinel {
-  height: 1px;
+	height: 1px;
 }
 
 .empty {
-  padding: 64px 20px;
-  text-align: center;
-  color: var(--text-muted);
+	padding: 64px 20px;
+	text-align: center;
+	color: var(--text-muted);
 }
 
 .empty h2 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: var(--text);
+	margin: 0 0 8px;
+	font-size: 18px;
+	color: var(--text);
 }
 
 .empty p {
-  margin: 0;
+	margin: 0;
 }
 
 /* ================================================================ toast == */
 
 .toast {
-  position: fixed;
-  left: 50%;
-  bottom: 30px;
-  z-index: 100;
-  transform: translate(-50%, 14px);
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: var(--text);
-  color: var(--bg);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  letter-spacing: 0.02em;
-  box-shadow: var(--shadow-hover);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+	position: fixed;
+	left: 50%;
+	bottom: 30px;
+	z-index: 100;
+	transform: translate(-50%, 14px);
+	padding: 10px 18px;
+	border-radius: 999px;
+	background: var(--text);
+	color: var(--bg);
+	font-size: 13px;
+	font-weight: 600;
+	font-family: var(--font-mono);
+	letter-spacing: 0.02em;
+	box-shadow: var(--shadow-hover);
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		opacity 0.18s ease,
+		transform 0.18s ease;
 }
 
 .toast.is-visible {
-  opacity: 1;
-  transform: translate(-50%, 0);
+	opacity: 1;
+	transform: translate(-50%, 0);
 }
 
 /* =========================================================== responsive == */
 
 @media (max-width: 1000px) {
-  .shell {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 18px 16px 70px;
-  }
+	.shell {
+		grid-template-columns: minmax(0, 1fr);
+		padding: 18px 16px 70px;
+	}
 
-  .sidebar {
-    position: static;
-    max-height: none;
-    overflow: visible;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
+	.sidebar {
+		position: static;
+		max-height: none;
+		overflow: visible;
+		padding-bottom: 6px;
+		border-bottom: 1px solid var(--border);
+	}
 
-  .sidebar__list {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scrollbar-width: none;
-  }
+	.sidebar__list {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		padding-bottom: 10px;
+		scrollbar-width: none;
+	}
 
-  .sidebar__list::-webkit-scrollbar {
-    display: none;
-  }
+	.sidebar__list::-webkit-scrollbar {
+		display: none;
+	}
 
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
-  }
+	.grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 14px;
+	}
 
-  .card__swatches {
-    height: 210px;
-  }
+	.card__swatches {
+		height: 210px;
+	}
 }
 
 @media (max-width: 560px) {
-  .header {
-    padding: 0 14px;
-    gap: 10px;
-  }
+	.header {
+		padding: 0 14px;
+		gap: 10px;
+	}
 
-  .logo span {
-    display: none;
-  }
+	/* Visually hidden rather than display:none. The logo image is decorative
+     (alt=""), so removing this text outright would leave the link with no
+     accessible name — which is exactly what an audit flags, and only at
+     mobile widths where the rule applies. */
+	.logo span {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
 
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+	.grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* ================================================================ footer == */
+
+.footer {
+	margin-top: 40px;
+	padding: 26px 22px 34px;
+	border-top: 1px solid var(--border);
+}
+
+/* (The old flex .footer__inner lived here. It was dead code: the grid rule
+   further down overrides it entirely.) */
+
+.footer__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px;
+	font-size: 13.5px;
+	font-weight: 500;
+}
+
+.footer__nav a {
+	color: var(--text-muted);
+	transition: color 0.15s;
+}
+
+.footer__nav a:hover {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.footer__note {
+	flex: 1;
+	min-width: 260px;
+	margin: 0;
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+/* =========================================================== breadcrumbs == */
+
+/*
+ * These rules used to live in tools.css, which only the tool pages import. So
+ * on the blog, the privacy page and all 57 color pages the class matched
+ * nothing and the trail rendered as plain body copy at full size — which is
+ * what it looked like, because it was not styled at all.
+ */
+.crumbs {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 18px;
+	font-size: 12.5px;
+	letter-spacing: 0.01em;
+	color: var(--text-muted);
+}
+
+.crumbs a {
+	padding-bottom: 1px;
+	border-bottom: 1px solid transparent;
+	transition:
+		color 0.15s,
+		border-color 0.15s;
+}
+
+.crumbs a:hover {
+	color: var(--text);
+	border-bottom-color: currentcolor;
+}
+
+/* Decorative: it separates the labels and should not compete with them. */
+.crumbs span[aria-hidden='true'] {
+	opacity: 0.45;
+	user-select: none;
+}
+
+/* The last crumb is where you already are, so it is text rather than a link. */
+.crumbs [aria-current='page'] {
+	color: var(--text);
+	font-weight: 600;
+}
+
+/* ================================================================= prose == */
+
+.prose {
+	/* Inside the reading column the shell is the measure, so this only bites on
+	   gallery and tool pages, where the copy sits beside something wider. */
+	max-width: 88ch;
+}
+
+.prose h1 {
+	margin: 0 0 14px;
+	font-size: clamp(23px, 5.5vw, 28px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.prose h2 {
+	margin: 34px 0 10px;
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.prose p {
+	margin: 0 0 16px;
+	/* A shorter line needs slightly more leading, not less. */
+	line-height: 1.72;
+}
+
+.prose__lead {
+	font-size: 17px;
+	color: var(--text-muted);
+}
+
+.prose a {
+	color: var(--text);
+	text-decoration: underline;
+	/*
+   * Body copy is set larger than the UI, so a 3px offset still crowds the
+   * descenders. Dropping the line further and thinning it keeps the link
+   * readable as a word first and a link second, and skip-ink stops the rule
+   * cutting through g, p and y.
+   */
+	text-underline-offset: 4px;
+	text-decoration-thickness: 1px;
+	text-decoration-skip-ink: auto;
+}
+
+.prose strong {
+	font-weight: 600;
+}
+
+/* ============================================================ page prose == */
+
+.page-intro {
+	max-width: 92ch;
+	margin: 0 0 24px;
+}
+
+.page-intro p {
+	margin: 0 0 10px;
+	color: var(--text-muted);
+	line-height: 1.65;
+}
+
+/* Sits below the grid: context for a first-time visitor, and the only real
+   text on a page that is otherwise a wall of swatches. */
+.page-note {
+	margin: 48px 0 0;
+	padding-top: 28px;
+	border-top: 1px solid var(--border);
+}
+
+.page-note h2 {
+	margin: 26px 0 10px;
+	font-size: 17px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.page-note h2:first-child {
+	margin-top: 0;
+}
+
+.page-note p {
+	margin: 0 0 14px;
+	color: var(--text-muted);
+	line-height: 1.68;
+}
+
+/* Byline / last-updated line at the top of a long-form page. */
+.prose-meta {
+	margin: -0.35rem 0 1.75rem;
+	font-size: 0.85rem;
+	color: var(--text-muted);
+}
+
+.page-note a {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 4px;
+	text-decoration-thickness: 1px;
+	text-decoration-skip-ink: auto;
+}
+
+.page-note strong {
+	color: var(--text);
+	font-weight: 600;
+}
+
+/* ============================================== named shades + FAQ block == */
+
+.shade-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: 8px;
+	margin: 0 0 20px;
+}
+
+.shade {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 9px 11px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+	text-align: left;
+	transition:
+		border-color 0.15s,
+		background-color 0.15s;
+}
+
+.shade:hover {
+	border-color: var(--text-muted);
+	background: var(--bg-soft);
+}
+
+.shade__chip {
+	width: 38px;
+	height: 38px;
+	flex: none;
+	border-radius: 8px;
+	border: 1px solid rgb(0 0 0 / 10%);
+}
+
+.shade__body {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+}
+
+.shade__name {
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.shade__hex {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.shade__meta {
+	overflow: hidden;
+	font-size: 11px;
+	color: var(--text-muted);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.faq {
+	margin: 0 0 14px;
+}
+
+.faq dt {
+	margin: 16px 0 5px;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.faq dd {
+	margin: 0;
+	color: var(--text-muted);
+	line-height: 1.68;
+}
+
+.page-note__more {
+	margin-top: 26px;
+	padding-top: 18px;
+	border-top: 1px solid var(--border);
+	font-size: 13.5px;
+}
+
+/* ================================================== shade ramp strip ===== */
+
+.ramp-strip {
+	display: flex;
+	height: 62px;
+	margin: 16px 0 0;
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+	border: 1px solid var(--border);
+}
+
+.ramp-strip__step {
+	flex: 1;
+	display: grid;
+	place-items: end center;
+	padding-bottom: 6px;
+	transition: flex 0.2s;
+}
+
+.ramp-strip__step:hover {
+	flex: 1.35;
+}
+
+/* Step numbers read against the light half of the ramp and disappear into the
+   dark half, so they are only shown on hover where the tooltip backs them up. */
+.ramp-strip__label {
+	font-family: var(--font-mono);
+	font-size: 10px;
+	font-weight: 700;
+	color: rgb(0 0 0 / 45%);
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+.ramp-strip:hover .ramp-strip__label {
+	opacity: 1;
+}
+
+.ramp-strip__step:nth-child(n + 7) .ramp-strip__label {
+	color: rgb(255 255 255 / 80%);
+}
+
+.shade__note {
+	font-style: normal;
+	font-weight: 400;
+	color: var(--text-muted);
+}
+
+/* ====================================================== home + colors ===== */
+
+.section-cta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+	margin: 26px 0 0;
+}
+
+.section-cta__note {
+	font-size: 13.5px;
+	color: var(--text-muted);
+}
+
+.btn {
+	display: inline-block;
+	padding: 11px 22px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	background: var(--surface);
+	font-size: 14.5px;
+	font-weight: 600;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
+}
+
+.btn:hover {
+	background: var(--bg-soft);
+	border-color: var(--text-muted);
+}
+
+.btn--primary {
+	background: var(--text);
+	border-color: var(--text);
+	color: var(--bg);
+}
+
+.btn--primary:hover {
+	background: var(--text);
+	opacity: 0.88;
+}
+
+/*
+ * Compact variant for controls inside a tool panel, where the default pill is
+ * too heavy. Also resets what a <button> does not inherit from `.btn`, which
+ * was written for links.
+ */
+.btn--ghost {
+	padding: 7px 14px;
+	font-family: inherit;
+	font-size: 13.5px;
+	color: var(--text);
+	cursor: pointer;
+}
+
+.home-section {
+	margin-top: 52px;
+	padding-top: 30px;
+	border-top: 1px solid var(--border);
+}
+
+.home-section__head h2 {
+	margin: 0 0 4px;
+	font-size: 21px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.home-section__head p {
+	margin: 0 0 18px;
+	color: var(--text-muted);
+}
+
+/* One row on the home page, a full grid on /colors/. */
+.color-row,
+.color-index {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.color-tile {
+	display: block;
+}
+
+.color-tile__swatch {
+	display: grid;
+	place-items: center;
+	height: 78px;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgb(0 0 0 / 8%);
+}
+
+.color-tile__hex {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 600;
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+.color-tile:hover .color-tile__hex {
+	opacity: 1;
+}
+
+.color-tile__swatch.on-dark {
+	color: rgb(255 255 255 / 92%);
+}
+
+.color-tile__swatch.on-light {
+	color: rgb(0 0 0 / 62%);
+}
+
+.color-tile__name {
+	display: block;
+	margin-top: 7px;
+	font-size: 13.5px;
+	font-weight: 600;
+}
+
+.color-tile__meta {
+	display: block;
+	overflow: hidden;
+	font-size: 11.5px;
+	color: var(--text-muted);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.color-group {
+	margin-bottom: 38px;
+}
+
+.color-group h2 {
+	margin: 0 0 14px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+/* --------------------------------------------------------- value card --- */
+
+.value-card {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px;
+	margin: 0 0 22px;
+	padding: 16px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+}
+
+.value-card__chip {
+	display: grid;
+	place-items: center;
+	width: 148px;
+	height: 116px;
+	flex: none;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgb(0 0 0 / 8%);
+	font-family: var(--font-mono);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.value-card__chip.on-dark {
+	color: rgb(255 255 255 / 94%);
+}
+
+.value-card__chip.on-light {
+	color: rgb(0 0 0 / 70%);
+}
+
+.value-card__list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: 4px 20px;
+	flex: 1;
+	margin: 0;
+	align-content: center;
+}
+
+.value-card__list > div {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	padding: 4px 0;
+}
+
+.value-card__list dt {
+	width: 62px;
+	flex: none;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.value-card__list dd {
+	margin: 0;
+	font-size: 13px;
+}
+
+.value-card__list code {
+	font-family: var(--font-mono);
+	font-size: 12.5px;
+}
+
+/* =============================================================== footer == */
+
+.footer {
+	margin-top: 56px;
+	border-top: 1px solid var(--border);
+	background: var(--bg-soft);
+}
+
+.footer__inner {
+	display: grid;
+	grid-template-columns: 2fr repeat(4, 1fr);
+	gap: 32px;
+	max-width: var(--shell-max);
+	margin: 0 auto;
+	padding: 40px var(--pad) 34px;
+}
+
+.footer__brand p {
+	margin: 12px 0 0;
+	max-width: 42ch;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--text-muted);
+}
+
+.footer__logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-weight: 700;
+	font-size: 15px;
+	letter-spacing: -0.02em;
+}
+
+.footer__logo img {
+	border-radius: 6px;
+}
+
+.footer__col h2 {
+	margin: 0 0 12px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.footer__col ul {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.footer__col a {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 13.5px;
+	color: var(--text-muted);
+	transition: color 0.15s;
+}
+
+.footer__col a:hover {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.footer__dot {
+	width: 11px;
+	height: 11px;
+	flex: none;
+	border-radius: 50%;
+	border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.footer__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	max-width: var(--shell-max);
+	margin: 0 auto;
+	padding: 16px 22px 26px;
+	border-top: 1px solid var(--border);
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+.footer__bar p {
+	margin: 0;
+}
+
+.footer__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px;
+}
+
+.footer__meta a:hover {
+	color: var(--text);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+	.footer__inner {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 26px;
+	}
+
+	.footer__brand {
+		grid-column: 1 / -1;
+	}
+
+	/* Spanning the full row while the text stays capped at 42ch is what left a
+	   large blank area to the right of the brand block. */
+	.footer__brand p {
+		max-width: none;
+	}
+}
+
+/* ================================================================== blog == */
+
+.post-list {
+	list-style: none;
+	margin: 0 0 34px;
+	padding: 0;
+	display: grid;
+	gap: 16px;
+}
+
+.post-card {
+	display: grid;
+	grid-template-columns: 6px minmax(0, 1fr);
+	overflow: hidden;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+	transition:
+		border-color 0.15s,
+		box-shadow 0.15s;
+}
+
+.post-card:hover {
+	border-color: var(--text-muted);
+	box-shadow: var(--shadow);
+}
+
+/* The post's own accent, in place of a stock illustration. */
+.post-card__swatch {
+	background: var(--accent-swatch, var(--text-muted));
+}
+
+.post-card__body {
+	padding: 18px 22px;
+}
+
+.post-card h2 {
+	margin: 0 0 6px;
+	font-size: 19px;
+	letter-spacing: -0.01em;
+}
+
+.post-card h2 a:hover {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+	text-decoration-thickness: 1px;
+}
+
+.post-card p {
+	margin: 0;
+	color: var(--text-muted);
+	max-width: 92ch;
+}
+
+.post-card__meta {
+	margin-top: 10px;
+	font-size: 13px;
+}
+
+/* ---------------------------------------------------------- single post -- */
+
+/* Same measure as the rest of the prose on the site. */
+
+.post__head h1 {
+	margin: 0 0 6px;
+	font-size: clamp(24px, 6vw, 30px);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.22;
+}
+
+/* A rule in the post's accent, tying the page to its index card. */
+.post__head {
+	padding-bottom: 18px;
+	margin-bottom: 26px;
+	border-bottom: 3px solid var(--accent-swatch, var(--border));
+}
+
+.post__toc {
+	margin: 0 0 30px;
+	padding: 16px 20px;
+	border-radius: var(--radius-sm);
+	background: var(--bg-soft);
+}
+
+.post__toc h2 {
+	margin: 0 0 8px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.post__toc ol {
+	margin: 0;
+	padding-left: 1.2rem;
+	display: grid;
+	gap: 4px;
+	font-size: 14px;
+}
+
+.post__toc a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/*
+ * Headings get scroll-margin so that following a contents link does not park
+ * the heading underneath the sticky header.
+ */
+.post__body h2,
+.post__body h3 {
+	scroll-margin-top: calc(var(--header-h) + 20px);
+	margin-top: 2.2em;
+	letter-spacing: -0.015em;
+}
+
+.post__body h2 {
+	font-size: 21px;
+}
+
+.post__body h3 {
+	font-size: 17px;
+}
+
+.post__body pre {
+	padding: 15px 18px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	background: var(--bg-soft);
+	overflow-x: auto;
+	font-size: 13px;
+	line-height: 1.55;
+}
+
+/* Inline code needs a tint; code inside a pre already has the block's. */
+.post__body :not(pre) > code {
+	padding: 1px 5px;
+	border-radius: 5px;
+	background: var(--bg-soft);
+	font-family: var(--font-mono);
+	font-size: 0.88em;
+}
+
+.post__body blockquote {
+	margin: 1.6em 0;
+	padding-left: 18px;
+	border-left: 3px solid var(--border);
+	color: var(--text-muted);
+}
+
+/* ============================================================== responsive == */
+
+/*
+ * One breakpoint set, in one place, rather than tweaks scattered per component.
+ *
+ * 860px is where the five nav links plus the wordmark stop fitting on one line
+ * and start scrolling out of view with no indication they are there — which is
+ * exactly what a horizontal-scroll nav does on a phone.
+ */
+
+.nav-toggle {
+	display: none;
+}
+
+@media (max-width: 860px) {
+	.nav-toggle {
+		display: inline-grid;
+		order: 3;
+	}
+
+	/*
+	 * The panel is anchored to the header rather than the button so it spans the
+	 * full width and cannot be clipped by the header's own padding.
+	 */
+	.nav {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		z-index: 60;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 2px;
+		/* The desktop rule nudges the links toward the centre; in a stacked
+		   panel that would indent every item. */
+		padding: 10px 14px 14px;
+		overflow: visible;
+		background: var(--bg);
+		border-bottom: 1px solid var(--border);
+		box-shadow: var(--shadow);
+
+		/* Hidden by default, revealed by the attribute the toggle sets. Kept out
+		   of the accessibility tree while closed, so a screen reader does not
+		   read five links that are not on screen. */
+		display: none;
+	}
+
+	.header[data-nav-open] .nav {
+		display: flex;
+	}
+
+	.nav__link {
+		justify-content: flex-start;
+		border-radius: var(--radius-sm);
+		padding: 11px 13px;
+		font-size: 15px;
+	}
+
+	.header {
+		/* The panel is positioned against this. */
+		position: sticky;
+	}
+
+	.header__spacer {
+		order: 1;
+	}
+}
+
+/* -------------------------------------------------- tighter on small screens */
+
+/*
+ * Vertical rhythm set for a desktop viewport wastes a lot of a phone screen:
+ * 26px top and 80px bottom on the shell alone is most of a thumb's reach before
+ * any content appears.
+ */
+@media (max-width: 620px) {
+	.shell {
+		padding: 14px 14px 44px;
+		gap: 18px;
+	}
+
+	.page-head {
+		margin-bottom: 14px;
+	}
+
+	.page-note {
+		margin-top: 32px;
+		padding-top: 20px;
+	}
+
+	.prose h2 {
+		margin-top: 26px;
+	}
+
+	.post__head {
+		padding-bottom: 14px;
+		margin-bottom: 20px;
+	}
+
+	.post__body h2,
+	.post__body h3 {
+		margin-top: 1.7em;
+	}
+
+	.post__toc {
+		margin-bottom: 22px;
+		padding: 13px 16px;
+	}
+
+	.footer {
+		margin-top: 28px;
+	}
+
+	.footer__inner {
+		padding: 26px 14px 24px;
+		gap: 22px;
+	}
+
+	.post-list {
+		gap: 12px;
+	}
+
+	.post-card__body {
+		padding: 14px 16px;
+	}
+
+	/* Code blocks are the one thing that should not shrink its padding away,
+	   but they do need to scroll rather than force the page wide. */
+	.post__body pre {
+		padding: 12px 14px;
+		font-size: 12.5px;
+	}
+}
+
+@media (max-width: 400px) {
+	.shell {
+		padding: 12px 12px 36px;
+	}
+
+	.header {
+		padding: 0 12px;
+	}
+}
+
+/* ------------------------------------------- explore link under a swatch -- */
+
+/*
+ * The swatch itself is a button that copies the hex, so the link to the color
+ * page has to be a sibling below it rather than a child: an <a> inside a
+ * <button> is invalid and the browser hoists it out.
+ */
+.detail-swatch-cell {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+}
+
+.detail-swatch-cell .detail-swatch {
+	flex: 1;
+}
+
+.detail-swatch__explore {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s,
+		color 0.15s;
+}
+
+.detail-swatch__explore:hover {
+	background: var(--bg-soft);
+	border-color: var(--text-muted);
+	color: var(--text);
+}
+
+/* The arrow leans into the direction of travel on hover. */
+.detail-swatch__explore span {
+	transition: transform 0.15s;
+}
+
+.detail-swatch__explore:hover span {
+	transform: translateX(2px);
 }

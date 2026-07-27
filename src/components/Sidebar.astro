@@ -1,5 +1,5 @@
 ---
-/** Category sidebar: style tags and base colours. */
+/** Category sidebar: style tags and base colors. */
 import { getTagGroups, TAG_DOT } from '../lib/data.server.js';
 
 interface Props {
@@ -23,7 +23,7 @@ const groups = getTagGroups();
                 <a
                   class="tag"
                   href={`/tag/${tag.slug}/`}
-                  title={`${tag.label} — ${tag.count.toLocaleString('en-US')} palettes`}
+                  title={`${tag.label} color palettes`}
                   aria-current={activeTag === tag.slug ? 'page' : undefined}
                 >
                   {TAG_DOT[tag.slug] && (

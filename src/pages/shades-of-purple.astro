@@ -1,0 +1,28 @@
+---
+/**
+ * Retired address.
+ *
+ * The color pages were consolidated under /colors/ so one scheme covers all of
+ * them. GitHub Pages cannot issue a real 301, so this is the next best thing:
+ * a canonical tag pointing at the new URL, noindex so the stub itself is not
+ * listed, and a meta refresh plus a visible link for anyone who lands here.
+ */
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Moved — Shades of purple"
+  description="This page has moved to /colors/purple/"
+  canonical="/colors/purple/"
+  noindex
+  prose
+>
+  <Fragment slot="head">
+    <meta http-equiv="refresh" content="0; url=/colors/purple/" />
+  </Fragment>
+
+  <article class="prose">
+    <h1>This page has moved</h1>
+    <p><a href="/colors/purple/">Shades of purple is now at /colors/purple/</a></p>
+  </article>
+</Layout>

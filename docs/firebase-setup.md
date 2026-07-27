@@ -133,7 +133,7 @@ number:
 ```
 
 The key is the palette slug, the same 24 hex characters used in the page URL.
-Colours are not stored separately: the key is the data.
+Colors are not stored separately: the key is the data.
 
 The rules allow:
 

@@ -3,19 +3,7 @@
  *  Loaded only by ToolLayout, so the gallery pages stay lean.
  * ========================================================================== */
 
-.crumbs {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 14px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.crumbs a:hover {
-  color: var(--text);
-  text-decoration: underline;
-}
+/* .crumbs now lives in global.css — every page needs it, not just tools. */
 
 .tool-subhead {
   margin: 30px 0 12px;
@@ -410,7 +398,8 @@ kbd {
 }
 
 .contrast__ratio.is-pass {
-  color: #16a34a;
+  /* 34px bold counts as large text, so 3:1 applies and this passes at 3.30. */
+  color: var(--success);
 }
 
 .contrast__ratio.is-fail {
@@ -446,11 +435,12 @@ kbd {
 }
 
 .level.is-pass .level__badge {
-  background: #16a34a;
+  /* An 11px label is normal text: needs 4.5:1 against white. */
+  background: var(--success-strong);
 }
 
 .level.is-fail .level__badge {
-  background: var(--accent);
+  background: var(--accent-strong);
 }
 
 .level__label {
@@ -646,7 +636,7 @@ kbd {
   color: rgb(0 0 0 / 62%);
 }
 
-/* ------------------------------------------------------ named colours --- */
+/* ------------------------------------------------------ named colors --- */
 
 .named-grid {
   display: grid;

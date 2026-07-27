@@ -1,43 +1,142 @@
 ---
 /**
- * Home page — the New feed.
- * Chunks are already stored newest-first, so no sorting is needed here.
+ * Home page.
+ *
+ * A landing rather than a feed: a preview of what the site holds, with a route
+ * into each section. The full catalog moved to /palettes/, which is what the
+ * Explore button points at.
+ *
+ * The palette grid is worth a note. Popular is ranked live from Firebase, but
+ * the page ships with 20 statically rendered palettes so it is never blank
+ * before that resolves — and so the HTML contains real content for crawlers,
+ * which never see the Firebase result. gallery.js swaps them for the live
+ * ranking once it arrives.
  */
 import Layout from '../layouts/Layout.astro';
 import Feed from '../components/Feed.astro';
-import { getFirstRows, getMeta, SSG_BATCH } from '../lib/data.server.js';
+import { getFirstRows, getMeta } from '../lib/data.server.js';
+import { FEATURED_COLORS } from '../lib/colors.js';
+import { isDark } from '../lib/palette.js';
 
 const meta = getMeta();
-const chunks = meta.feeds?.new?.chunks ?? 0;
-const preRows = getFirstRows('new', SSG_BATCH);
+const preRows = getFirstRows('new', 20);
 
-const total = meta.total.toLocaleString('en-US');
+const tagCount = meta.tags.length;
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
 const schema = [
-  {
-    '@type': 'CollectionPage',
-    name: 'New colour palettes',
-    description: `Browse ${total} four-colour palettes.`,
-    url: `${site.origin}/`,
-  },
+	{
+		'@type': 'CollectionPage',
+		name: 'Color palettes',
+		description: `Browse four-color palettes and ${FEATURED_COLORS.length}+ colors, with hex codes for each.`,
+		url: `${site.origin}/`,
+	},
 ];
 ---
 
 <Layout
-  title="Palette Vault — fresh colour palettes"
-  description={`Browse ${total} four-colour palettes. Click any swatch to copy its HEX.`}
-  active="new"
-  schema={schema}
->
-  <Feed
-    title="New palettes"
-    subtitle={`${total} palettes and counting — click a swatch to copy its HEX.`}
-    type="chunks"
-    base="/data/new"
-    chunks={chunks}
-    preRows={preRows}
-    emptyTitle="No palettes yet"
-    emptyText="Run npm run generate to build the dataset."
-  />
+	title='Color Palettes — Free Palettes and Hex Codes'
+	description={'Browse color palettes built in OKLCH, plus hex codes and shades for ' +
+		'every color. Click a swatch to copy it. Free for commercial use, no sign-up.'}
+	active='new'
+	schema={schema}>
+	<Feed
+		title='Color palettes for designers and developers'
+		subtitle='Four-color palettes built in OKLCH. Click any swatch to copy its HEX.'
+		type='popular'
+		limit={20}
+		preRows={preRows}
+		infinite={false}
+		emptyTitle='No palettes yet'
+		emptyText='Run npm run generate to build the dataset.'>
+		<div
+			slot='intro'
+			class='page-intro'>
+			<p>
+				Every color palette here is four colors chosen to work together, ready to drop into a
+				design, a website or a slide deck. Click a swatch to copy its HEX code, or open a palette to
+				take all four at once and download it as a PNG. Free for commercial work, no attribution, no
+				sign-up.
+			</p>
+		</div>
+
+		<div class='section-cta'>
+			<a class="btn btn--primary" href="/palettes/">Explore palettes</a>
+			<span class='section-cta__note'>The full catalog, loading as you scroll</span>
+		</div>
+
+		<!-- ------------------------------------------------------------ colors -->
+		<section class='home-section'>
+			<header class='home-section__head'>
+				<h2>Colors</h2>
+				<p> Hex codes, shade scales and matching palettes for every color name. </p>
+			</header>
+
+			<ul class='color-row'>
+				{
+					FEATURED_COLORS.map((color) => (
+						<li>
+							<a
+								class='color-tile'
+								href={`/colors/${color.slug}/`}>
+								<span
+									class:list={['color-tile__swatch', isDark(color.hex) ? 'on-dark' : 'on-light']}
+									style={`background:#${color.hex}`}>
+									<span class='color-tile__hex'>#{color.hex.toUpperCase()}</span>
+								</span>
+								<span class='color-tile__name'>{color.name}</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+
+			<div class='section-cta'>
+				<a class="btn" href="/colors/">View all colors</a>
+			</div>
+		</section>
+
+		<!-- ------------------------------------------------------------- prose -->
+		<section class='page-note'>
+			<h2>What makes a four-color palette work</h2>
+
+			<p>
+				Every palette here is built in <strong>OKLCH</strong>, a perceptually uniform color space,
+				and that choice does most of the work. In OKLCH an equal step in lightness looks like an
+				equal step to the eye, which is not true of RGB or HSL — in HSL a yellow and a blue at the
+				same stated lightness look nothing alike. Working in a space that matches perception is why
+				these four-color sets hold together instead of reading as four colors that happen to share
+				a card.
+			</p>
+
+			<p>
+				Beyond the color space, three things separate a palette that works from one that merely
+				varies. The four hues follow a classical relationship — monochrome, analogous,
+				complementary, split complementary, triad or tetrad — rather than sitting at arbitrary
+				angles. Lightness runs as a deliberate ladder from light to dark, because a palette with
+				four mid-tones has nowhere to put text. And chroma tapers at the extremes, since very light
+				and very dark colors physically hold less of it, which is what keeps the pale end from
+				going chalky and the dark end from turning to mud.
+			</p>
+
+			<h2>Finding the color palette you need</h2>
+
+			<p>
+				The sidebar holds {tagCount} categories. Style tags — pastel, vintage, retro, neon, warm, cold,
+				sunset, night — describe the mood, while color tags narrow things to a family such as blue, green
+				or pink. Tags come from the measured result rather than the intent behind it: a palette appears
+				under <a href="/tag/blue/" title="Blue color palettes">Blue</a>{' '}
+				because its colors measure as blue, not because the preset that produced it was aiming that way.
+			</p>
+
+			<p>
+				If you already have one color in mind, the{' '}
+				<a href="/tools/generate/" title="Generate color palettes from a base color">palette generator</a> builds a scheme around it and lets you lock the shades worth keeping. To pull a palette out
+				of a photograph instead, the{' '}
+				<a href="/tools/extract/" title="Extract a color palette from an image">image extractor</a> clusters the pixels and returns the colors that actually define the picture. There are eight{' '}
+				<a href="/tools/" title="Free color tools">free color tools</a>{' '}
+				in all, and every one of them runs entirely in your browser.
+			</p>
+		</section>
+	</Feed>
 </Layout>

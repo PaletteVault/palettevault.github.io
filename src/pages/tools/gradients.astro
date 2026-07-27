@@ -11,7 +11,7 @@ const tool = getTool('gradients');
  *
  * Built in OKLCH for one specific reason: a two-stop gradient interpolated in
  * sRGB passes through a desaturated middle, which is where the classic "muddy
- * grey band" between complementary colours comes from. Walking hue and chroma
+ * grey band" between complementary colors comes from. Walking hue and chroma
  * in a perceptual space keeps the midpoint as vivid as the ends.
  *
  * Deterministic: no RNG, so the library is stable across builds and the pairs
@@ -48,7 +48,7 @@ for (const family of FAMILIES) {
       name: `${family.name} ${step + 1}`,
       from,
       to,
-      // Pre-computed midpoint, used for the readable label colour.
+      // Pre-computed midpoint, used for the readable label color.
       mid: mix(from, to, 0.5),
       angle: 135,
     });

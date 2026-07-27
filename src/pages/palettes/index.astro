@@ -1,0 +1,93 @@
+---
+/**
+ * The full palette catalog with infinite scroll.
+ *
+ * This is what the home page used to be. It moved here when the home page
+ * became a landing: a visitor arriving at the root wants to see what the site
+ * is, while a visitor who clicks Explore wants to browse without interruption.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Feed from '../../components/Feed.astro';
+import { getFirstRows, getMeta, SSG_BATCH } from '../../lib/data.server.js';
+
+const meta = getMeta();
+const chunks = meta.feeds?.new?.chunks ?? 0;
+const preRows = getFirstRows('new', SSG_BATCH);
+const tagCount = meta.tags.length;
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Palettes' },
+    ],
+  },
+  {
+    '@type': 'CollectionPage',
+    name: 'Color palettes',
+    description: 'Browse every four-color palette in the catalog, free to copy and use.',
+    url: `${site.origin}/palettes/`,
+  },
+];
+---
+
+<Layout
+  title="Browse All Color Palettes — Free to Copy | Palette Vault"
+  description={`Explore every color palette in the catalog, built in OKLCH. Click a swatch `
+    + `to copy its HEX, save the ones you like, or filter by ${tagCount} categories.`}
+  active="new"
+  schema={schema}
+>
+  <Feed
+    title="Browse all color palettes"
+    subtitle="Every four-color palette, newest first. Click any swatch to copy its HEX."
+    type="chunks"
+    base="/data/new"
+    chunks={chunks}
+    preRows={preRows}
+    emptyTitle="No palettes yet"
+    emptyText="Run npm run generate to build the dataset."
+  >
+    <div slot="intro" class="page-intro">
+      <p>
+        Every palette here is four colors chosen to work together. Click a
+        swatch to copy its HEX code, or open a palette to take all four at once
+        as RGB, CSS variables or a JSON array, and download it as a PNG.
+      </p>
+      <p>
+        The feed loads as you scroll, so there is no pagination to work
+        through. Narrow it down using the {tagCount} categories in the sidebar,
+        or jump to a specific{' '}
+        <a href="/colors/" title="All color names with hex codes">color</a>.
+      </p>
+    </div>
+
+    <section class="page-note">
+      <h2>What holds these palettes together</h2>
+      <p>
+        Every palette is built in <strong>OKLCH</strong>, a perceptually uniform
+        color space: an equal step in lightness looks like an equal step to the
+        eye, which is not true in RGB or HSL. That is what keeps a four-color
+        set feeling related rather than merely varied.
+      </p>
+      <p>
+        The four hues follow a classical relationship — monochrome, analogous,
+        complementary, split complementary, triad or tetrad — instead of sitting
+        at arbitrary angles. Lightness runs as a ladder from light to dark, so
+        there is always somewhere to put text. And chroma tapers at both
+        extremes, because very light and very dark colors hold less of it, which
+        is what stops the pale end going chalky and the dark end turning muddy.
+      </p>
+
+      <h2>Sorting and saving</h2>
+      <p>
+        This page is ordered newest first. <a href="/popular/">Popular</a> ranks
+        by likes, <a href="/random/">Random</a> reshuffles on every visit, and
+        anything you like lands in <a href="/collection/">your collection</a>,
+        which is stored in your own browser rather than on a server.
+      </p>
+    </section>
+  </Feed>
+</Layout>

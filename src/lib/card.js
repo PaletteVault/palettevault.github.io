@@ -68,14 +68,14 @@ export function relativeDate(timestamp, now = Date.now()) {
   return 'just now';
 }
 
-/* Colour maths and addressing live in palette.js. */
+/* Color maths and addressing live in palette.js. */
 
 /* --------------------------------------------------------------------------
  * Heart icon
  * -------------------------------------------------------------------------- */
 const HEART_SVG = `<svg class="like__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.7 4.3 13a5 5 0 0 1 7.1-7.1l.6.6.6-.6A5 5 0 1 1 19.7 13Z"/></svg>`;
 
-/** Copy icon shown on a colour band. */
+/** Copy icon shown on a color band. */
 const COPY_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg>`;
 
 /** Open icon in the card footer. */

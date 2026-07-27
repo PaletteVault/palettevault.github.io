@@ -1,0 +1,801 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('oklch');
+
+/** Answers people actually search for, kept short enough to be useful. */
+const FAQ = [
+	{
+		q: 'What does OKLCH stand for?',
+		a:
+			'Ok — from the Oklab color space it is built on — plus Lightness, Chroma and Hue. ' +
+			'It is the cylindrical form of Oklab, the same relationship HSL has to a cube of RGB.',
+	},
+	{
+		q: 'Why does chroma have no maximum?',
+		a:
+			'Because the maximum depends on the other two values. OKLCH describes colors ' +
+			'independently of any screen, and how much chroma a screen can actually show changes ' +
+			'with lightness and hue. A chroma of 0.2 is ordinary for a mid blue and impossible for ' +
+			'a pale yellow. In practice values run from 0 to about 0.37.',
+	},
+	{
+		q: 'Is OKLCH better than HSL?',
+		a:
+			'For anything involving a series of colors, yes. HSL lightness is not perceptual: ' +
+			'hsl(60 100% 50%) and hsl(240 100% 50%) claim the same lightness while yellow looks ' +
+			'far brighter than blue. OKLCH lightness matches what the eye sees, so ramps step ' +
+			'evenly and gradients do not go grey in the middle.',
+	},
+	{
+		q: 'Can I use oklch() in production?',
+		a:
+			'Yes. It is supported in current Chrome, Edge, Safari and Firefox. If you need to ' +
+			'support older versions, declare a hex or rgb() value first and override it inside ' +
+			'@supports (color: oklch(0% 0 0)), so old browsers take the fallback and new ones the ' +
+			'wide-gamut value.',
+	},
+	{
+		q: 'What happens if a color is outside sRGB?',
+		a:
+			'The browser gamut-maps it to something displayable, and on an sRGB monitor you see the ' +
+			'approximation rather than the value you wrote. The color is still valid — it simply ' +
+			'needs a fallback so the mapping is your choice rather than the browser’s.',
+	},
+];
+
+const schema = [
+	{
+		'@type': 'FAQPage',
+		mainEntity: FAQ.map(({ q, a }) => ({
+			'@type': 'Question',
+			name: q,
+			acceptedAnswer: { '@type': 'Answer', text: a },
+		})),
+	},
+];
+---
+
+<ToolLayout
+	slug={tool.slug}
+	title={tool.title}
+	description={tool.description}
+	intro='Move lightness, chroma and hue independently and read the result back in every CSS format. The chroma track marks the point where the color leaves sRGB, so you can see how much headroom you actually have before anything gets clamped.'
+	schema={schema}>
+	<section
+		class='tool-panel okl'
+		data-oklch-tool>
+		<p
+			class='okl-warning'
+			data-support-warning
+			hidden>
+			This browser does not support <code>oklch()</code>, so the swatches below are drawn from their
+			sRGB fallbacks. The values are still correct.
+		</p>
+
+		<div class='okl-top'>
+			<div
+				class='okl-preview'
+				data-preview>
+				<span
+					class='okl-preview__value'
+					data-preview-value
+				></span>
+				<span
+					class='okl-badge'
+					data-gamut-badge
+				></span>
+			</div>
+
+			<div class='okl-controls'>
+				<label class='field'>
+					<span class='field__label'>Any CSS color</span>
+					<span class='field__pair'>
+						<input
+							type='color'
+							data-native
+							aria-label='Pick a color'
+						/>
+						<input
+							type='text'
+							class='input-hex okl-input'
+							data-input
+							spellcheck='false'
+							autocomplete='off'
+							placeholder='oklch(70% 0.15 250), #4f7cf0, rebeccapurple…'
+						/>
+					</span>
+				</label>
+
+				<div class='okl-slider'>
+					<div class='okl-slider__head'>
+						<label for='okl-L'>Lightness</label>
+						<span class='okl-slider__num'>
+							<input
+								id='okl-L-num'
+								type='number'
+								data-axis='L'
+								min='0'
+								max='100'
+								step='0.5'
+								aria-label='Lightness percent'
+							/>
+							<span aria-hidden='true'>%</span>
+						</span>
+					</div>
+					<div
+						class='okl-track'
+						data-track='L'>
+						<input
+							id='okl-L'
+							type='range'
+							data-axis='L'
+							min='0'
+							max='100'
+							step='0.1'
+						/>
+					</div>
+					<p class='okl-slider__hint'
+						>0% is black, 100% is white, and the steps between are perceptually even.</p
+					>
+				</div>
+
+				<div class='okl-slider'>
+					<div class='okl-slider__head'>
+						<label for='okl-C'>Chroma</label>
+						<span class='okl-slider__num'>
+							<input
+								id='okl-C-num'
+								type='number'
+								data-axis='C'
+								min='0'
+								max='0.4'
+								step='0.005'
+								aria-label='Chroma'
+							/>
+						</span>
+					</div>
+					<div
+						class='okl-track okl-track--marked'
+						data-track='C'>
+						<span
+							class='okl-mark'
+							data-mark='srgb'
+							hidden
+							><span>sRGB</span></span
+						>
+						<span
+							class='okl-mark okl-mark--p3'
+							data-mark='p3'
+							hidden
+							><span>P3</span></span
+						>
+						<input
+							id='okl-C'
+							type='range'
+							data-axis='C'
+							min='0'
+							max='0.4'
+							step='0.001'
+						/>
+					</div>
+					<p class='okl-slider__hint'>
+						Colorfulness, with no fixed upper bound. The markers show where this lightness and hue
+						leave sRGB and Display P3.
+					</p>
+				</div>
+
+				<div class='okl-slider'>
+					<div class='okl-slider__head'>
+						<label for='okl-h'>Hue</label>
+						<span class='okl-slider__num'>
+							<input
+								id='okl-h-num'
+								type='number'
+								data-axis='h'
+								min='0'
+								max='360'
+								step='1'
+								aria-label='Hue in degrees'
+							/>
+							<span aria-hidden='true'>°</span>
+						</span>
+					</div>
+					<div
+						class='okl-track'
+						data-track='h'>
+						<input
+							id='okl-h'
+							type='range'
+							data-axis='h'
+							min='0'
+							max='360'
+							step='0.5'
+						/>
+					</div>
+					<p class='okl-slider__hint'
+						>Degrees around the hue circle. Holding hue while changing the other two keeps the color
+						recognisable.</p
+					>
+				</div>
+
+				<div class='okl-slider'>
+					<div class='okl-slider__head'>
+						<label for='okl-alpha'>Alpha</label>
+						<span class='okl-slider__num'>
+							<input
+								id='okl-alpha-num'
+								type='number'
+								data-axis='alpha'
+								min='0'
+								max='1'
+								step='0.01'
+								aria-label='Alpha'
+							/>
+						</span>
+					</div>
+					<div
+						class='okl-track okl-track--alpha'
+						data-track='alpha'>
+						<input
+							id='okl-alpha'
+							type='range'
+							data-axis='alpha'
+							min='0'
+							max='1'
+							step='0.01'
+						/>
+					</div>
+				</div>
+
+				<div class='okl-actions'>
+					<button
+						type='button'
+						class='btn btn--ghost'
+						data-fit='srgb'
+						>Fit to sRGB</button
+					>
+					<button
+						type='button'
+						class='btn btn--ghost'
+						data-fit='p3'
+						>Fit to P3</button
+					>
+					<button
+						type='button'
+						class='btn btn--ghost'
+						data-random
+						>Random</button
+					>
+				</div>
+			</div>
+		</div>
+
+		<h2 class='tool-subhead'>Every format</h2>
+		<ul
+			class='okl-formats'
+			data-formats
+		></ul>
+
+		<h2 class='tool-subhead'>Gamut</h2>
+		<div class='okl-gamut'>
+			<ul class='okl-gamut__list'>
+				<li data-gamut-check='srgb'>
+					<span class='okl-gamut__name'>sRGB</span>
+					<span
+						class='okl-gamut__mark'
+						data-gamut-mark
+					></span>
+					<span class='okl-gamut__note'>Every screen, every browser</span>
+				</li>
+				<li data-gamut-check='p3'>
+					<span class='okl-gamut__name'>Display P3</span>
+					<span
+						class='okl-gamut__mark'
+						data-gamut-mark
+					></span>
+					<span class='okl-gamut__note'>Recent Apple hardware, most OLED phones</span>
+				</li>
+				<li data-gamut-check='rec2020'>
+					<span class='okl-gamut__name'>Rec. 2020</span>
+					<span
+						class='okl-gamut__mark'
+						data-gamut-mark
+					></span>
+					<span class='okl-gamut__note'>Broadcast HDR; no consumer display covers it fully</span>
+				</li>
+			</ul>
+			<p
+				class='okl-gamut__advice'
+				data-gamut-advice
+			></p>
+			<p
+				class='tool-note'
+				data-screen-note
+			></p>
+		</div>
+	</section>
+
+	<article class='tool-prose'>
+		<h2>Reading the three axes</h2>
+		<p>
+			OKLCH describes a color the way a person would: how light it is, how colorful it is, and what
+			hue it is. That sounds like HSL, and the syntax looks similar, but the numbers behave very
+			differently — which is the whole reason to use it.
+		</p>
+		<p>
+			<strong>Lightness</strong> runs from 0% to 100% and is perceptual. Move it from 40% to 50% and the
+			color looks exactly as much lighter as moving from 70% to 80%. HSL does not give you this: <code
+				>hsl(60 100% 50%)</code
+			> and <code>hsl(240 100% 50%)</code> both claim 50% lightness, while the yellow is obviously bright
+			and the blue is obviously dark. That single difference is why a ramp built in OKLCH steps evenly
+			and the same ramp in HSL has a washed-out middle and a muddy end.
+		</p>
+		<p>
+			<strong>Chroma</strong> is colorfulness, and unlike HSL saturation it is not a percentage of anything.
+			It starts at 0 for grey and has no defined ceiling, because the ceiling belongs to the display rather
+			than the color. Real values top out somewhere around 0.37, but the useful maximum at any given moment
+			depends on the other two axes — which is what the markers on the chroma track are for.
+		</p>
+		<p>
+			<strong>Hue</strong> is an angle in degrees. Roughly: 30 is red, 70 orange, 110 yellow-green, 145
+			green, 195 cyan, 250 blue, 300 purple, 350 pink. The hues are spaced more evenly than in HSL, where
+			a large stretch of the circle is taken up by greens and blues get squeezed.
+		</p>
+
+		<h2>Why chroma runs out at different points</h2>
+		<p>
+			The set of colors a screen can show is a cube in RGB, but that cube becomes a lopsided, lumpy
+			solid when you re-plot it in OKLCH. Its widest point sits around 60–70% lightness, and it is
+			much wider at some hues than others — yellows and greens hold far more chroma than blues and
+			purples do.
+		</p>
+		<p>
+			So there is no single number to cap the chroma slider at. Set lightness to 95% and almost no
+			chroma is available at any hue; set it to 65% and a saturated blue has plenty. This is the one
+			genuinely awkward thing about OKLCH compared with HSL, where saturation is always 0–100% and
+			always means something. The trade is worth making, but it does mean a picker has to show you
+			the boundary rather than pretend it is not there.
+		</p>
+		<p>
+			Going past the boundary is not an error. A color outside sRGB is a real color that some
+			displays can show, and the browser will map it to something displayable on the ones that
+			cannot. What matters is that the mapping is your decision.
+		</p>
+
+		<h2>Writing a fallback</h2>
+		<p>
+			Two separate things can go wrong, and they need different fallbacks. A browser too old to
+			understand <code>oklch()</code> will discard the declaration entirely, so it needs a previous declaration
+			to fall back to. A browser that understands it perfectly but sits in front of an sRGB monitor will
+			gamut-map instead, which needs nothing from you.
+		</p>
+		<p>
+			The first case is handled by declaring the fallback first and the OKLCH value second, since
+			later declarations win and unparseable ones are dropped:
+		</p>
+		<pre
+			><code>{`.button {
+  background: #4f7cf0;                    /* every browser */
+  background: oklch(60% 0.18 262);        /* dropped by old ones */
+}`}</code></pre
+		>
+		<p>
+			That is enough for most work. Where you want a genuinely different value on wide-gamut screens
+			rather than a mapped approximation of one, wrap the upgrade in a feature query:
+		</p>
+		<pre
+			><code>{`.button { background: #4f7cf0; }
+
+@supports (color: oklch(0% 0 0)) {
+  .button { background: oklch(60% 0.22 262); }
+}`}</code></pre
+		>
+		<p>
+			Copy the HEX row above for the first line and the OKLCH row for the second — the tool already
+			reduces chroma for the HEX value, so the fallback is the closest sRGB match rather than a
+			clipped one.
+		</p>
+
+		<h2>Where this is worth the effort</h2>
+		<p>
+			Three jobs where OKLCH pays for itself immediately. <strong>Color scales</strong>: hold chroma
+			and hue, walk lightness, and you get a ramp whose steps look even — try the{' '}
+			<a href='/tools/picker/'>color picker</a> to see one generated from any starting color.
+			<strong>Gradients</strong>: interpolating in OKLCH keeps the midpoint saturated instead of
+			passing through grey, which is what the <a href='/tools/gradient-maker/'>gradient maker</a>{
+				' '
+			}
+			does. <strong>Theming</strong>: because lightness is perceptual, you can derive a whole
+			dark-mode palette by flipping lightness values and trust that the contrast relationships
+			roughly hold — then confirm them in the <a href='/tools/contrast/'>contrast checker</a>.
+		</p>
+		<p>
+			Where it is not worth it: a one-off brand color that a designer handed you as a hex code.
+			Converting it to OKLCH gains nothing on its own. The value appears when you need a second
+			color that relates to the first.
+		</p>
+
+		<h2>Common questions</h2>
+		<dl class='faq'>
+			{
+				FAQ.map(({ q, a }) => (
+					<>
+						<dt>{q}</dt>
+						<dd>{a}</dd>
+					</>
+				))
+			}
+		</dl>
+	</article>
+</ToolLayout>
+
+<script>
+	import { initOklch } from '../../lib/tools/oklch.js';
+	initOklch();
+</script>
+
+<style>
+	.okl-warning {
+		margin: 0 0 1.25rem;
+		padding: 0.75rem 1rem;
+		border-radius: 10px;
+		background: var(--bg-soft);
+		border: 1px solid var(--border);
+		font-size: 0.9rem;
+	}
+
+	.okl-top {
+		display: grid;
+		grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+		gap: 1.75rem;
+		align-items: start;
+	}
+
+	@media (max-width: 760px) {
+		.okl-top {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* The checkerboard shows through wherever alpha is below 1. */
+	.okl-preview {
+		position: relative;
+		min-height: 240px;
+		border-radius: 14px;
+		border: 1px solid var(--border);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 1rem;
+		background-image:
+			linear-gradient(
+				45deg,
+				var(--bg-soft) 25%,
+				transparent 25%,
+				transparent 75%,
+				var(--bg-soft) 75%
+			),
+			linear-gradient(
+				45deg,
+				var(--bg-soft) 25%,
+				transparent 25%,
+				transparent 75%,
+				var(--bg-soft) 75%
+			);
+		background-size: 16px 16px;
+		background-position:
+			0 0,
+			8px 8px;
+	}
+
+	.okl-preview::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: var(--swatch, #4f7cf0);
+	}
+
+	.okl-preview__value,
+	.okl-preview .okl-badge {
+		position: relative;
+	}
+
+	.okl-preview__value {
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		color: #14161c;
+		align-self: flex-start;
+	}
+
+	.okl-badge {
+		align-self: flex-start;
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.2rem 0.6rem;
+		border-radius: 999px;
+		background: rgb(255 255 255 / 0.85);
+		color: #14161c;
+	}
+
+	.okl-preview[data-dark='true'] .okl-preview__value {
+		color: #fff;
+	}
+	.okl-preview[data-dark='true'] .okl-badge {
+		background: rgb(0 0 0 / 0.55);
+		color: #fff;
+	}
+
+	.okl-badge[data-level='none'] {
+		background: var(--accent-strong);
+		color: #fff;
+	}
+
+	.okl-controls {
+		display: grid;
+		gap: 1.1rem;
+	}
+	.okl-input {
+		min-width: 0;
+	}
+	.okl-input[data-invalid] {
+		border-color: var(--accent-strong);
+	}
+
+	.okl-slider__head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.okl-slider__head label {
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	.okl-slider__num {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.15rem;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+
+	.okl-slider__num input {
+		width: 5.5rem;
+		padding: 0.2rem 0.4rem;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		text-align: right;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: var(--bg);
+		color: var(--text);
+	}
+
+	.okl-slider__hint {
+		margin: 0.4rem 0 0;
+		font-size: 0.8rem;
+		color: var(--text-muted);
+	}
+
+	/* The track is a painted div; the range input sits on top, invisible. */
+	.okl-track {
+		position: relative;
+		height: 28px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+	}
+
+	.okl-track--alpha {
+		background-image: none;
+		background-color: transparent;
+	}
+
+	.okl-track input[type='range'] {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		-webkit-appearance: none;
+		appearance: none;
+		background: transparent;
+		cursor: ew-resize;
+	}
+
+	.okl-track input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 14px;
+		height: 34px;
+		border-radius: 5px;
+		border: 2px solid #fff;
+		background: transparent;
+		box-shadow:
+			0 0 0 1px rgb(0 0 0 / 0.5),
+			inset 0 0 0 1px rgb(0 0 0 / 0.5);
+		cursor: ew-resize;
+	}
+
+	.okl-track input[type='range']::-moz-range-thumb {
+		width: 14px;
+		height: 34px;
+		border-radius: 5px;
+		border: 2px solid #fff;
+		background: transparent;
+		box-shadow:
+			0 0 0 1px rgb(0 0 0 / 0.5),
+			inset 0 0 0 1px rgb(0 0 0 / 0.5);
+		cursor: ew-resize;
+	}
+
+	.okl-track input[type='range']:focus-visible {
+		outline: 2px solid var(--accent-strong);
+		outline-offset: 3px;
+	}
+
+	/* Gamut boundary markers on the chroma track. */
+	.okl-mark {
+		position: absolute;
+		top: -4px;
+		bottom: -4px;
+		width: 0;
+		border-left: 2px dashed rgb(0 0 0 / 0.75);
+		pointer-events: none;
+	}
+
+	.okl-mark span {
+		position: absolute;
+		top: -1.05rem;
+		left: 2px;
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+		color: var(--text-muted);
+		white-space: nowrap;
+	}
+
+	.okl-mark--p3 {
+		border-left-style: dotted;
+	}
+	.okl-track--marked {
+		margin-top: 1.1rem;
+	}
+
+	.okl-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	/* Formats */
+	.okl-formats {
+		list-style: none;
+		margin: 0 0 0.5rem;
+		padding: 0;
+		display: grid;
+		gap: 0.5rem;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	}
+
+	.okl-format__button {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.6rem 0.85rem;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--bg-soft);
+		color: var(--text);
+		text-align: left;
+		cursor: pointer;
+		font: inherit;
+	}
+
+	.okl-format__button:hover {
+		border-color: var(--text-muted);
+	}
+
+	.okl-format[data-primary='true'] .okl-format__button {
+		border-color: var(--text-muted);
+		background: var(--bg);
+	}
+
+	.okl-format__label {
+		flex: 0 0 5.5rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+
+	.okl-format__value {
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		overflow-wrap: anywhere;
+	}
+
+	.okl-format__note {
+		display: block;
+		padding: 0.25rem 0.85rem 0;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+
+	/* Gamut panel */
+	.okl-gamut__list {
+		list-style: none;
+		margin: 0 0 1rem;
+		padding: 0;
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.okl-gamut__list li {
+		display: grid;
+		grid-template-columns: 8rem 3.5rem 1fr;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.55rem 0.85rem;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		font-size: 0.85rem;
+	}
+
+	@media (max-width: 560px) {
+		.okl-gamut__list li {
+			grid-template-columns: 1fr auto;
+		}
+		.okl-gamut__note {
+			grid-column: 1 / -1;
+		}
+	}
+
+	.okl-gamut__name {
+		font-weight: 600;
+	}
+
+	.okl-gamut__mark {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.okl-gamut__list li[data-fits='true'] .okl-gamut__mark {
+		color: var(--success-strong);
+	}
+	.okl-gamut__list li[data-fits='false'] .okl-gamut__mark {
+		color: var(--accent-strong);
+	}
+	.okl-gamut__list li[data-fits='false'] {
+		opacity: 0.75;
+	}
+
+	.okl-gamut__note {
+		color: var(--text-muted);
+	}
+
+	.okl-gamut__advice {
+		margin: 0 0 0.5rem;
+		font-size: 0.9rem;
+		max-width: 62ch;
+	}
+
+	.tool-prose pre {
+		padding: 0.9rem 1rem;
+		border-radius: 10px;
+		background: var(--bg-soft);
+		border: 1px solid var(--border);
+		overflow-x: auto;
+		font-size: 0.82rem;
+	}
+</style>

@@ -17,11 +17,11 @@
  */
 import Layout from '../../layouts/Layout.astro';
 import PaletteDetail from '../../components/PaletteDetail.astro';
-import { getPrerenderRows } from '../../lib/data.server.js';
+import { getStaticLinkedRows } from '../../lib/data.server.js';
 import { paletteName, paletteSlug } from '../../lib/palette.js';
 
 export function getStaticPaths() {
-  return getPrerenderRows().map((row) => {
+  return getStaticLinkedRows().map((row) => {
     const colors = row.slice(1);
     return { params: { slug: paletteSlug(colors) }, props: { colors } };
   });
@@ -48,8 +48,8 @@ const schema = [
   },
   {
     '@type': 'ImageObject',
-    name: `${name} colour palette`,
-    description: `Colour palette ${hexList}`,
+    name: `${name} color palette`,
+    description: `Color palette ${hexList}`,
     contentUrl: new URL(imagePath, site).href,
     width: 1200,
     height: 630,
@@ -60,7 +60,7 @@ const schema = [
 
 <Layout
   title={`${name} — ${hexList}`}
-  description={`${name}: colour palette ${hexList}. Copy the HEX codes or download it as a PNG.`}
+  description={`${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`}
   image={imagePath}
   schema={schema}
 >

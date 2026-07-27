@@ -4,7 +4,7 @@
  *
  * The only page whose data comes from Firebase rather than the static chunks:
  * orderByValue().limitToLast(N) over /palettes. Because the key of each node
- * is the palette slug, the colours arrive with the ranking and no chunk lookup
+ * is the palette slug, the colors arrive with the ranking and no chunk lookup
  * is needed — see lib/firebase.js.
  *
  * Deliberately not pre-rendered: the ranking changes continuously, so freezing
@@ -16,7 +16,7 @@ import Feed from '../components/Feed.astro';
 
 <Layout
   title="Popular palettes — Palette Vault"
-  description="The most liked colour palettes, ranked live."
+  description="The most liked color palettes, ranked live."
   active="popular"
 >
   <Feed

@@ -12,9 +12,11 @@
     "icons": "node scripts/build-icons.mjs",
     "images": "node scripts/build-palette-images.mjs",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/build-llms.mjs && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "node scripts/check-html.mjs dist",
+    "llms": "node scripts/build-llms.mjs"
   },
   "dependencies": {
     "astro": "^7.1.3",

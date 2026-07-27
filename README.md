@@ -1,6 +1,6 @@
 # Palette Vault
 
-A static catalogue of four-colour palettes built with Astro. The palettes are
+A static catalogue of four-color palettes built with Astro. The palettes are
 pre-generated JSON chunks in `public/`; the only backend is Firebase, used
 solely for like counters.
 
@@ -40,7 +40,7 @@ node scripts/generate-palettes.mjs --count=500000 --chunk=1000 --seed=42
 ```
 
 > The seed is fixed, so the same seed always produces the same dataset. Likes
-> are keyed by colour rather than by id, so changing the seed no longer breaks
+> are keyed by color rather than by id, so changing the seed no longer breaks
 > them — but ids will shift, which changes the dates shown on cards.
 
 ## How the data is organised
@@ -72,9 +72,9 @@ than round trips.
 
 `scripts/generate-palettes.mjs`, no external dependencies.
 
-1. Colours are built in **OKLCH**, a perceptually uniform space. That is why
+1. Colors are built in **OKLCH**, a perceptually uniform space. That is why
    the combinations look considered rather than like random values in RGB.
-2. Colours outside sRGB are fixed by **gamut mapping**: chroma is reduced by
+2. Colors outside sRGB are fixed by **gamut mapping**: chroma is reduced by
    binary search while lightness and hue are preserved, instead of clipping.
 3. Around 30 mood presets (`pastel`, `vintage`, `neon`, `sunset`, `coffee`,
    `night`…) define corridors of lightness, chroma and permitted hues.
@@ -84,7 +84,7 @@ than round trips.
    has a readable spread.
 6. A proximity filter rejects palettes that read as four shades of one blob.
 7. Tags are applied from the actual output: properties (`light`, `dark`,
-   `pastel`, `neon`, `warm`, `cold`) and colour families (`blue`, `red`, …).
+   `pastel`, `neon`, `warm`, `cold`) and color families (`blue`, `red`, …).
 
 ## Firebase
 
@@ -97,11 +97,11 @@ The data model is one node holding one number:
 where `slug` is the same 24 hex characters used in the palette page URL. The
 key *is* the data, which gives three things:
 
-- colours are never stored separately — **Popular** rebuilds each palette from
+- colors are never stored separately — **Popular** rebuilds each palette from
   the key with a single `orderByValue().limitToLast(N)` query;
 - likes are not tied to generator ids, so the dataset can be regenerated with a
-  different seed and the counters stay with their colours;
-- **Collection** needs no colour storage either: the list of slugs in
+  different seed and the counters stay with their colors;
+- **Collection** needs no color storage either: the list of slugs in
   `localStorage` is already the render data.
 
 The rules in `database.rules.json` allow writing only a number, only by ±1 per
@@ -127,7 +127,7 @@ failure modes are covered in [`docs/firebase-setup.md`](docs/firebase-setup.md).
 | `/collection/` | the visitor's saved palettes | `localStorage` |
 | `/tag/<slug>/` | a category | `tag/<slug>/` chunks |
 | `/palette/<slug>/` | a single palette | the address itself |
-| `/tools/` | eight colour tools | client-side |
+| `/tools/` | eight color tools | client-side |
 
 The first 24 cards of every feed are rendered into the HTML at build time, so
 the first screen is visible without JavaScript and indexable. Everything after
@@ -137,7 +137,7 @@ that arrives through infinite scroll.
 
 An address like `/palette/4e1f6e3e3e7545a9a998e8de/` is four HEX codes in a
 row, so the page needs no data request and no id: it rebuilds itself from the
-URL. It can copy a single colour or the whole palette in four formats (HEX,
+URL. It can copy a single color or the whole palette in four formats (HEX,
 RGB, CSS variables, array), download a 1200×630 PNG, and register a like.
 
 The preview is a real `<img>`, not a `<canvas>`. That distinction matters more
@@ -178,9 +178,9 @@ return 404.
 
 ### Palette names
 
-A name like "Shadowed Bay" is a pure function of the four colours, exactly like
+A name like "Shadowed Bay" is a pure function of the four colors, exactly like
 the slug. The adjective comes from lightness and saturation, the noun from the
-dominant hue — where only visibly coloured swatches vote and each vote is
+dominant hue — where only visibly colored swatches vote and each vote is
 weighted by saturation. Variation within a group comes from an FNV-1a hash.
 
 Names are never stored: that saves ~2 MB across 100,000 palettes and, more
@@ -197,19 +197,19 @@ Eight client-side tools under `/tools/`, all running entirely in the browser:
 | Palette generator | OKLCH harmony schemes, per-swatch locking, space to reroll |
 | Extract from image | k-means clustering in OKLab; nothing is uploaded |
 | Contrast checker | WCAG 2.1 AA/AAA, plus the nearest passing foreground |
-| Colour picker | HEX, RGB, HSL, OKLCH and a tint/shade ramp |
-| Tailwind colours | the default Tailwind palette as a lookup table |
-| List of colours | every named CSS colour, ordered by hue |
+| Color picker | HEX, RGB, HSL, OKLCH and a tint/shade ramp |
+| Tailwind colors | the default Tailwind palette as a lookup table |
+| List of colors | every named CSS color, ordered by hue |
 | Browse gradients | two-stop gradients generated in OKLCH |
 | Gradient maker | custom stops, sRGB and OKLCH previews side by side |
 
 Two of these are worth a note on method. The image extractor clusters in
 **OKLab** rather than RGB, because distance in OKLab tracks how different two
-colours actually look — cluster boundaries land where a person would draw them,
+colors actually look — cluster boundaries land where a person would draw them,
 instead of returning five near-identical browns from a landscape photo. The
 gradient tools interpolate in **OKLCH** for the same underlying reason: a
 two-stop gradient interpolated in sRGB passes through a desaturated middle,
-which is where the familiar grey band between complementary colours comes from.
+which is where the familiar grey band between complementary colors comes from.
 
 ## Icons
 
@@ -233,7 +233,7 @@ Requires Pillow (`pip install Pillow`).
 ```
 src/
   lib/
-    palette.js        slug, colour conversions, palette naming
+    palette.js        slug, color conversions, palette naming
     card.js           card markup — shared by the build and the runtime
     gallery.js        chunks, infinite scroll, copy, likes
     detail.js         the palette page

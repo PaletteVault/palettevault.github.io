@@ -31,7 +31,7 @@ const clean = (value) => String(value).replace(/[^0-9a-fA-F]/g, '').padEnd(6, '0
 /**
  * Nearest foreground that clears `target`, found by walking lightness in
  * OKLCH while holding hue and chroma. That keeps the suggestion recognisably
- * the same colour instead of collapsing to plain black or white.
+ * the same color instead of collapsing to plain black or white.
  */
 function suggest(fg, bg, target) {
   if (contrastRatio(fg, bg) >= target) return null;

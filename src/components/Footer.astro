@@ -1,0 +1,184 @@
+---
+/**
+ * Site footer.
+ *
+ * Four columns of real navigation rather than a row of links. Beyond
+ * usefulness this is the only place most of the color and tool pages get an
+ * internal link from every page on the site — without it they would be
+ * reachable from the sitemap and little else.
+ *
+ * Everything is generated from the same catalogs the pages themselves use, so
+ * a new color or tool appears here automatically.
+ */
+import { TOOLS } from '../lib/routes.server.js';
+import { COLORS } from '../lib/colors.js';
+import { getMeta } from '../lib/data.server.js';
+
+const YEAR = new Date().getFullYear();
+const meta = getMeta();
+
+/*
+ * Categories must not repeat the Colors column.
+ *
+ * The tag list mixes two kinds of thing: moods (vintage, night, sunset) and
+ * colour families (red, blue, gold, cream). The second kind duplicates the
+ * column next to it, and `pastel`, `gold`, `cream` and `coffee` were all
+ * appearing twice.
+ *
+ * So the exclusion is derived rather than hand-listed: any tag whose slug is
+ * also a color slug belongs to Colors, not to Categories. That stays correct on
+ * its own — `coffee` only became a duplicate when it was added to the color
+ * catalog, and a hand-maintained list would have missed it.
+ */
+const COLOR_SLUGS = new Set(COLORS.map((color) => color.slug));
+
+const CATEGORY_ORDER = [
+	'vintage',
+	'retro',
+	'neon',
+	'vibrant',
+	'dark',
+	'light',
+	'warm',
+	'cold',
+	'sunset',
+	'night',
+];
+
+const TAG_LINKS = CATEGORY_ORDER.filter((slug) => !COLOR_SLUGS.has(slug))
+	.map((slug) => meta.tags.find((tag) => tag.slug === slug))
+	.filter(Boolean);
+
+/*
+ * Colors, chosen rather than sliced off the featured list, so the column is
+ * predictable and holds the two the footer previously sent to Browse.
+ */
+const COLOR_ORDER = [
+	'pastel',
+	'red',
+	'coral',
+	'orange',
+	'yellow',
+	'gold',
+	'green',
+	'teal',
+	'blue',
+	'purple',
+];
+
+const COLOR_LINKS = COLOR_ORDER.map((slug) => COLORS.find((color) => color.slug === slug)).filter(
+	Boolean,
+);
+/*
+ * Every tool, not a subset. The footer is the only place most tool pages get
+ * an internal link from every page on the site, so truncating the list left
+ * four of them reachable from the tools index alone.
+ */
+const TOOL_LINKS = TOOLS;
+---
+
+<footer class='footer'>
+	<div class='footer__inner'>
+		<div class='footer__brand'>
+			<a
+				class='footer__logo'
+				href='/'>
+				<img
+					src='/favicon-48.png'
+					width='24'
+					height='24'
+					alt='Palette Vault'
+					decoding='async'
+				/>
+				<span aria-hidden='true'>Palette Vault</span>
+			</a>
+			<p>
+				Four-color palettes built in OKLCH, with free color tools and a Chrome extension. Everything
+				is free for commercial use, with no attribution required.
+			</p>
+		</div>
+
+		<nav
+			class='footer__col'
+			aria-labelledby='footer-browse'>
+			<h2 id='footer-browse'>Browse</h2>
+			<ul>
+				<li><a href='/palettes/'>All palettes</a></li>
+				<li><a href='/popular/'>Popular</a></li>
+				<li><a href='/random/'>Random</a></li>
+				<li><a href='/collection/'>My collection</a></li>
+				<li><a href='/colors/'>All colors</a></li>
+				<li><a href='/blog/'>Blog</a></li>
+			</ul>
+		</nav>
+
+		<nav
+			class='footer__col'
+			aria-labelledby='footer-colors'>
+			<h2 id='footer-colors'>Colors</h2>
+			<ul>
+				{
+					COLOR_LINKS.map((color) => (
+						<li>
+							<a href={`/colors/${color.slug}/`}>
+								<span
+									class='footer__dot'
+									style={`background:#${color.hex}`}
+									aria-hidden='true'
+								/>
+								{color.name}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<nav
+			class='footer__col'
+			aria-labelledby='footer-tools'>
+			<h2 id='footer-tools'>Tools</h2>
+			<ul>
+				{
+					TOOL_LINKS.map((tool) => (
+						<li>
+							<a href={`/tools/${tool.slug}/`}>{tool.short}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<nav
+			class='footer__col'
+			aria-labelledby='footer-categories'>
+			<h2 id='footer-categories'>Categories</h2>
+			<ul>
+				{
+					TAG_LINKS.map((tag) => (
+						<li>
+							<a href={`/tag/${tag.slug}/`}>{tag.label}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+
+	<div class='footer__bar'>
+		<p>Palette Vault · {YEAR}</p>
+		<nav
+			class='footer__meta'
+			aria-label='Site information'>
+			<a href='/about/'>About</a>
+			<a href='/privacy/'>Privacy</a>
+			<a href='/sitemap.xml'>Sitemap</a>
+			<a href='/llms.txt'>llms.txt</a>
+			<a
+				href='https://github.com/PaletteVault'
+				rel='noopener'
+				>GitHub</a
+			>
+		</nav>
+	</div>
+</footer>

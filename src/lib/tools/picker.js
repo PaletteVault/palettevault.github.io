@@ -1,10 +1,10 @@
 /**
  * ============================================================================
- *  COLOUR PICKER
+ *  COLOR PICKER
  * ============================================================================
  *
- *  One colour in, every representation out: HEX, RGB, HSL, OKLCH, plus a tint
- *  and shade ramp and the two nearest text colours that meet contrast.
+ *  One color in, every representation out: HEX, RGB, HSL, OKLCH, plus a tint
+ *  and shade ramp and the two nearest text colors that meet contrast.
  *
  *  The ramp walks lightness in OKLCH rather than mixing towards white/black in
  *  sRGB, which is why the mid-tones stay saturated instead of going chalky.
@@ -67,7 +67,7 @@ function render(root, hex) {
   root.querySelector('[data-picker-contrast]').innerHTML =
     `<span>Contrast: <strong>${onWhite.toFixed(2)}:1</strong> on white, ` +
     `<strong>${onBlack.toFixed(2)}:1</strong> on black. ` +
-    `Readable text on this colour: <strong>${onWhite > onBlack ? 'white' : 'black'}</strong>.</span>`;
+    `Readable text on this color: <strong>${onWhite > onBlack ? 'white' : 'black'}</strong>.</span>`;
 }
 
 export function initPicker() {
@@ -77,7 +77,7 @@ export function initPicker() {
   const colorInput = root.querySelector('[data-picker-input]');
   const textInput = root.querySelector('[data-picker-text]');
 
-  // Seed from ?color= so a picked colour can be shared as a link.
+  // Seed from ?color= so a picked color can be shared as a link.
   const fromUrl = new URLSearchParams(location.search).get('color');
   let hex = clean(fromUrl ?? '3b82f6');
 

@@ -7,7 +7,7 @@
  *  lightness ramps, but driven by the visitor instead of a seeded RNG.
  *
  *  Locking is the feature that makes it usable — you keep the one shade that
- *  works and reroll the rest, rather than hunting for four good colours at once.
+ *  works and reroll the rest, rather than hunting for four good colors at once.
  * ============================================================================
  */
 
@@ -34,7 +34,7 @@ const state = {
 const rand = (min, max) => min + Math.random() * (max - min);
 
 /**
- * Build four colours around a base hue.
+ * Build four colors around a base hue.
  * Lightness walks a ramp rather than being random per swatch, so the result
  * always has a readable light-to-dark structure.
  */

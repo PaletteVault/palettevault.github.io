@@ -1,0 +1,18 @@
+---
+/**
+ * One page per color from lib/colors.js.
+ *
+ * Static route directory, so /colors/ keeps its own index file and only the
+ * catalog slugs produce pages here.
+ */
+import ColorLanding from '../../components/ColorLanding.astro';
+import { COLORS } from '../../lib/colors.js';
+
+export function getStaticPaths() {
+  return COLORS.map((color) => ({ params: { color: color.slug }, props: { color } }));
+}
+
+const { color } = Astro.props;
+---
+
+<ColorLanding color={color} />

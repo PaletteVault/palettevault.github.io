@@ -87,7 +87,7 @@ function render(root) {
       return (
         `<li class="stop">` +
           `<span class="stop__chip ${tone}" style="--swatch-bg:#${stop.hex}"></span>` +
-          `<input type="color" data-stop-color="${index}" value="#${stop.hex}" aria-label="Stop ${index + 1} colour" />` +
+          `<input type="color" data-stop-color="${index}" value="#${stop.hex}" aria-label="Stop ${index + 1} color" />` +
           `<input type="text" class="input-hex" data-stop-hex="${index}" value="${upper}" spellcheck="false" aria-label="Stop ${index + 1} HEX" />` +
           `<input type="range" min="0" max="100" value="${stop.pos}" data-stop-pos="${index}" aria-label="Stop ${index + 1} position" />` +
           `<span class="stop__pos">${stop.pos}%</span>` +

@@ -1,0 +1,291 @@
+---
+/**
+ * Renderer for /colors/<slug>/.
+ *
+ * Handles both tiers from lib/colors.js. A plain entry — name, hex, tag —
+ * produces a complete page from measured values alone: shade scale,
+ * conversions, contrast, palettes. A rich entry adds hand-written prose, a set
+ * of related named shades and an FAQ on top.
+ *
+ * Everything numeric is computed here rather than stored in the catalog, so
+ * the copy can never contradict the swatches beside it.
+ */
+import Layout from '../layouts/Layout.astro';
+import Feed from './Feed.astro';
+import { getFirstRows, getMeta, SSG_BATCH } from '../lib/data.server.js';
+import { contrastRatio, describeColor, hexToHsl, hexToRgb, isDark } from '../lib/palette.js';
+import { formatOklch, oklchToHex, ramp } from '../lib/oklch.js';
+import { COLORS } from '../lib/colors.js';
+
+interface Props {
+  color: Record<string, any>;
+}
+
+const { color } = Astro.props;
+
+const meta = getMeta();
+const tag = meta.tags.find((t) => t.slug === color.tag);
+const preRows = getFirstRows(`tag/${color.tag}`, SSG_BATCH);
+
+const describe = (hex: string) => {
+  const { h, s, l } = hexToHsl(hex);
+  const { r, g, b } = hexToRgb(hex);
+  return {
+    hex,
+    rgb: `rgb(${r}, ${g}, ${b})`,
+    hsl: `hsl(${h}, ${s}%, ${l}%)`,
+    oklch: formatOklch(hex),
+    onWhite: contrastRatio(hex, 'ffffff').toFixed(2),
+    onBlack: contrastRatio(hex, '000000').toFixed(2),
+  };
+};
+
+const base = describe(color.hex);
+
+/*
+ * Tint-and-shade scale walked through OKLCH, holding hue and chroma while
+ * lightness moves. The same ramp mixed towards white and black in sRGB goes
+ * chalky through the middle and drifts off the hue at both ends.
+ */
+const SCALE = ramp(color.hex, 11).map((hex, index) => ({
+  step: index === 0 ? 50 : index * 100,
+  ...describe(hex),
+}));
+
+const firstAA = SCALE.find((shade) => Number(shade.onWhite) >= 4.5);
+
+/*
+ * A family entry — pastel, say — is a group rather than one color, so a single
+ * hex value card and a tint scale off one base would both be misleading.
+ */
+// Families and styles both lack a single value, so both skip the value card
+// and the shade scale.
+const isFamily = color.kind === 'family' || color.kind === 'style';
+
+const NAMED = (color.named ?? []).map((shade: any) => ({
+  name: shade.name,
+  note: shade.note ?? null,
+  ...describe(shade.hex ?? oklchToHex(shade.L, shade.C, shade.hue)),
+}));
+
+/** Neighbours in the catalog, for internal linking. */
+const RELATED = COLORS.filter((c) => c.tag === color.tag && c.slug !== color.slug).slice(0, 6);
+
+const lower = color.name.toLowerCase();
+const site = Astro.site ?? new URL('https://palette-vault.example');
+
+const schema: Record<string, unknown>[] = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Colors', item: `${site.origin}/colors/` },
+      { '@type': 'ListItem', position: 3, name: color.name },
+    ],
+  },
+];
+
+if (color.faq?.length) {
+  schema.push({
+    '@type': 'FAQPage',
+    mainEntity: color.faq.map((item: any) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  });
+}
+
+const description =
+  `${color.name} color: hex code #${color.hex.toUpperCase()}, RGB, HSL and OKLCH values, `
+  + `a full shade scale, contrast notes and ${lower} color palettes to copy.`;
+---
+
+<Layout
+  title={color.title ?? `${color.name} Color — Hex #${color.hex.toUpperCase()}, Shades & Palettes`}
+  description={description}
+  schema={schema}
+  canonical={color.canonicalTo}
+>
+  <Feed
+    title={color.h1 ?? `${color.name} color: hex codes, shades and palettes`}
+    subtitle={`Palettes built around ${color.name.toLowerCase()}. Click any swatch to copy its hex code.`}
+    type="chunks"
+    base={`/data/tag/${color.tag}`}
+    chunks={tag?.chunks ?? 0}
+    preRows={preRows}
+    emptyTitle={`No ${lower} palettes yet`}
+    emptyText="Run npm run generate to build the dataset."
+  >
+    <div slot="intro" class="page-intro">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/colors/">Colors</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{color.name}</span>
+      </nav>
+
+      {
+        color.lead
+          ? color.lead.map((text: string) => <p set:html={text} />)
+          : (
+              <p>
+                <strong>{color.name}</strong> is <code>#{base.hex.toUpperCase()}</code> —
+                {' '}{describeColor(color.hex).toLowerCase()}. Below are its shades with hex
+                codes, the values in every common format, and {lower} color palettes to copy.
+              </p>
+            )
+      }
+
+      <div class="ramp-strip" data-copy-grid style={isFamily ? 'display:none' : undefined}>
+        {
+          SCALE.map((shade) => (
+            <button
+              type="button"
+              class="ramp-strip__step"
+              style={`background:#${shade.hex}`}
+              data-copy={`#${shade.hex.toUpperCase()}`}
+              title={`${shade.step} · #${shade.hex.toUpperCase()} · ${shade.onWhite}:1 on white`}
+            >
+              <span class="ramp-strip__label">{shade.step}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <section class="page-note">
+      {!isFamily && (<>
+      <h2>{color.name} hex, RGB, HSL and OKLCH</h2>
+
+      <div class="value-card">
+        <div class={`value-card__chip ${isDark(color.hex) ? 'on-dark' : 'on-light'}`} style={`background:#${color.hex}`}>
+          <span>#{base.hex.toUpperCase()}</span>
+        </div>
+        <dl class="value-card__list">
+          <div><dt>HEX</dt><dd><code>#{base.hex.toUpperCase()}</code></dd></div>
+          <div><dt>RGB</dt><dd><code>{base.rgb}</code></dd></div>
+          <div><dt>HSL</dt><dd><code>{base.hsl}</code></dd></div>
+          <div><dt>OKLCH</dt><dd><code>{base.oklch}</code></dd></div>
+          <div><dt>On white</dt><dd>{base.onWhite}:1</dd></div>
+          <div><dt>On black</dt><dd>{base.onBlack}:1</dd></div>
+        </dl>
+      </div>
+
+      <h2>Shades of {lower}</h2>
+
+      <p>
+        Eleven steps from one base color, generated in <strong>OKLCH</strong> so
+        each step is an equal <em>perceived</em> step rather than an equal
+        numeric one. Click a swatch to copy it.
+      </p>
+
+      <div class="shade-grid" data-copy-grid>
+        {
+          SCALE.filter((s) => s.step >= 100 && s.step <= 900).map((shade) => (
+            <button type="button" class="shade" data-copy={`#${shade.hex.toUpperCase()}`}
+              title={`Copy #${shade.hex.toUpperCase()}`}>
+              <span class="shade__chip" style={`background:#${shade.hex}`} />
+              <span class="shade__body">
+                <span class="shade__name">{color.name} {shade.step}</span>
+                <code class="shade__hex">#{shade.hex.toUpperCase()}</code>
+                <span class="shade__meta">{shade.hsl} · {shade.onWhite}:1 on white</span>
+              </span>
+            </button>
+          ))
+        }
+      </div>
+      </>)}
+
+      {
+        NAMED.length > 0 && (
+          <>
+            <h2>Named shades and close relatives</h2>
+            <div class="shade-grid" data-copy-grid>
+              {NAMED.map((shade: any) => (
+                <button type="button" class="shade" data-copy={`#${shade.hex.toUpperCase()}`}
+                  title={`Copy #${shade.hex.toUpperCase()}`}>
+                  <span class="shade__chip" style={`background:#${shade.hex}`} />
+                  <span class="shade__body">
+                    <span class="shade__name">
+                      {shade.name}
+                      {shade.note && <em class="shade__note"> · {shade.note}</em>}
+                    </span>
+                    <code class="shade__hex">#{shade.hex.toUpperCase()}</code>
+                    <span class="shade__meta">{shade.rgb} · {shade.hsl}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        )
+      }
+
+      {
+        (color.sections ?? []).map((section: any) => (
+          <>
+            <h2>{section.h2}</h2>
+            {section.paragraphs.map((text: string) => <p set:html={text} />)}
+          </>
+        ))
+      }
+
+      <h2>Contrast and readability</h2>
+
+      {!isFamily && (
+        <p>
+          {color.name} on white measures <strong>{base.onWhite}:1</strong> and on
+          black <strong>{base.onBlack}:1</strong>. WCAG AA asks for 4.5:1 on
+          normal text and 3:1 on large text and UI components, so the higher of
+          those two decides which background it belongs on. In the scale above,
+          <strong> {firstAA?.step ?? 'no step'}</strong> is the first to clear
+          4.5:1 on white{firstAA ? `, at ${firstAA.onWhite}:1` : ''}.
+        </p>
+      )}
+
+      <p>
+        The <a href="/tools/contrast/" title="WCAG contrast checker">contrast
+        checker</a> reports every level for a given pair and suggests the
+        nearest passing shade on the same hue. The{' '}
+        <a href="/tools/picker/" title="Color picker with tints and shades"
+          >color picker</a
+        > builds this same scale from any color you paste in.
+      </p>
+
+      {
+        color.faq?.length > 0 && (
+          <>
+            <h2>{color.name} color questions</h2>
+            <dl class="faq">
+              {color.faq.map((item: any) => (<><dt>{item.q}</dt><dd>{item.a}</dd></>))}
+            </dl>
+          </>
+        )
+      }
+
+      {
+        RELATED.length > 0 && (
+          <p class="page-note__more">
+            Related colors:
+            {RELATED.map((c, index) => (
+              <>
+                {index > 0 && ', '}
+                <a href={`/colors/${c.slug}/`} title={`${c.name} color`}>{c.name.toLowerCase()}</a>
+              </>
+            ))}. See every shade on the <a href="/colors/">colors index</a>.
+          </p>
+        )
+      }
+    </section>
+  </Feed>
+</Layout>
+
+<script>
+  import { copyWithToast } from '../lib/clipboard.js';
+
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-copy-grid] [data-copy]');
+    if (button) copyWithToast(button.dataset.copy);
+  });
+</script>

@@ -9,6 +9,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Feed from '../../components/Feed.astro';
 import { getFirstRows, getMeta, SSG_BATCH } from '../../lib/data.server.js';
+import { TAG_LANDING_PAGES } from '../../lib/routes.server.js';
 
 export function getStaticPaths() {
   return getMeta().tags.map((tag) => ({
@@ -18,8 +19,14 @@ export function getStaticPaths() {
 }
 
 const { tag } = Astro.props;
+
+/*
+ * Some tags have a dedicated landing page covering the same ground in more
+ * depth. The map lives in routes.server.js so the canonical here and the
+ * sitemap there can never disagree about which URL is the real one.
+ */
+const canonical = TAG_LANDING_PAGES[tag.slug];
 const preRows = getFirstRows(`tag/${tag.slug}`, SSG_BATCH);
-const count = tag.count.toLocaleString('en-US');
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
 const schema = [
@@ -34,14 +41,16 @@ const schema = [
 ---
 
 <Layout
-  title={`${tag.label} colour palettes — Palette Vault`}
-  description={`${count} ${tag.label.toLowerCase()} palettes. Click any swatch to copy its HEX.`}
+  title={`${tag.label} color palettes — Palette Vault`}
+  description={`${tag.label} color palettes, four colors each. Click any swatch to copy its HEX, `
+    + `or open a palette to take all four and download it as a PNG.`}
   activeTag={tag.slug}
   schema={schema}
+  canonical={canonical}
 >
   <Feed
     title={`${tag.label} palettes`}
-    subtitle={`${count} palettes tagged ${tag.label.toLowerCase()}.`}
+    subtitle={`Palettes tagged ${tag.label.toLowerCase()}, newest first.`}
     type="chunks"
     base={`/data/tag/${tag.slug}`}
     chunks={tag.chunks}

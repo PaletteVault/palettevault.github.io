@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  PALETTE UTILITIES: SLUG AND COLOUR CONVERSIONS
+ *  PALETTE UTILITIES: SLUG AND COLOR CONVERSIONS
  * ============================================================================
  *
  *  The addressing scheme rests on one idea: a slug is four HEX codes in a row.
@@ -93,12 +93,12 @@ export function luminance(hex) {
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
-/** Whether the colour is dark, i.e. whether it needs light text on top. */
+/** Whether the color is dark, i.e. whether it needs light text on top. */
 export function isDark(hex) {
   return luminance(hex) < 0.45;
 }
 
-/** WCAG contrast ratio between two colours (1..21). */
+/** WCAG contrast ratio between two colors (1..21). */
 export function contrastRatio(hexA, hexB) {
   const a = luminance(hexA);
   const b = luminance(hexB);
@@ -107,7 +107,7 @@ export function contrastRatio(hexA, hexB) {
 }
 
 /* ==========================================================================
- * HUMAN-READABLE COLOUR DESCRIPTION
+ * HUMAN-READABLE COLOR DESCRIPTION
  *
  * No attempt at inventing evocative names — that always reads as nonsense.
  * Instead a plain description from three parts: lightness, saturation, hue.
@@ -132,7 +132,7 @@ const HUE_NAMES = [
 /* ==========================================================================
  * PALETTE NAME
  *
- * The name is a pure function of the four colours, exactly like the slug.
+ * The name is a pure function of the four colors, exactly like the slug.
  * So it never has to be stored in the chunks (saving ~2 MB across 100k
  * palettes) and the palette page can name itself without fetching anything.
  *
@@ -197,7 +197,7 @@ export function paletteName(colors) {
   const avgS = hsls.reduce((sum, c) => sum + c.s, 0) / 4;
 
   /* --- Dominant hue ------------------------------------------------------
-   * Only visibly coloured swatches vote, and a vote weighs more the more
+   * Only visibly colored swatches vote, and a vote weighs more the more
    * saturated it is. Otherwise a palette of three greyish tones and one vivid
    * accent would be named after the grey.
    */

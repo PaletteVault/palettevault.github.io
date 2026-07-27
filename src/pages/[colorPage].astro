@@ -1,0 +1,16 @@
+---
+/**
+ * Retired route.
+ *
+ * The color landing pages moved under /colors/<slug>/ when the colors section
+ * was introduced, so /ivory-color/, /lime-green/ and /coral-color/ no longer
+ * build. The file stays because Astro needs a route to exist for the pattern;
+ * returning no paths is what actually disables it.
+ *
+ * Nothing was ever indexed at the old addresses, so no redirect is needed —
+ * and GitHub Pages could not serve one anyway.
+ */
+export function getStaticPaths() {
+  return [];
+}
+---

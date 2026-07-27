@@ -13,9 +13,11 @@ interface Props {
   description: string;
   /** Optional longer intro rendered under the heading. */
   intro?: string;
+  /** Extra schema.org objects merged into the page graph (FAQ, HowTo, …). */
+  schema?: Record<string, unknown>[];
 }
 
-const { slug, title, description, intro } = Astro.props;
+const { slug, title, description, intro, schema: extraSchema = [] } = Astro.props;
 const others = TOOLS.filter((tool) => tool.slug !== slug);
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
@@ -37,6 +39,7 @@ const schema = [
     operatingSystem: 'Any',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   },
+  ...extraSchema,
 ];
 ---
 
@@ -45,6 +48,8 @@ const schema = [
     <a href="/">Home</a>
     <span aria-hidden="true">/</span>
     <a href="/tools/">Tools</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{title}</span>
   </nav>
 
   <header class="page-head">

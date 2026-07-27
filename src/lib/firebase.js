@@ -10,14 +10,14 @@
  *
  *      /palettes/{slug} = 42
  *
- *  where the slug is 24 hex characters — the palette's four colours in a row
+ *  where the slug is 24 hex characters — the palette's four colors in a row
  *  (see lib/palette.js). Three useful properties follow:
  *
- *    1. The key is the data. Colours never need to be stored separately; the
+ *    1. The key is the data. Colors never need to be stored separately; the
  *       Popular page rebuilds each palette straight from the key.
  *    2. Likes are not tied to generator ids. The dataset can be regenerated
  *       with a different seed, or palettes added and removed, and the counters
- *       stay with their colours.
+ *       stay with their colors.
  *    3. The top list is a single orderByValue().limitToLast(N) query.
  *
  *  The SDK is loaded lazily via dynamic import and stays out of the critical
@@ -258,7 +258,7 @@ export async function reconcileLike(slug, liked, remoteCount) {
  * Top N palettes by like count.
  * Requires an index in the database rules: "palettes": { ".indexOn": ".value" }
  *
- * Colours come straight from the key, so the static chunks are never touched.
+ * Colors come straight from the key, so the static chunks are never touched.
  *
  * @param {number} count
  * @returns {Promise<Array<[null, string, string, string, string]>>}
@@ -323,7 +323,7 @@ export async function fetchTopPalettes(count = 150) {
       const colors = parseSlug(slug);
 
       // Keys that are not a 24-character slug come from an older data model
-      // and carry no colours, so there is nothing to render. Count them: a
+      // and carry no colors, so there is nothing to render. Count them: a
       // Popular page that looks empty while the database clearly has records
       // is otherwise very confusing to debug.
       if (!colors) {

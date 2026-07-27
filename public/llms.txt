@@ -1,0 +1,81 @@
+# Palette Vault
+
+> A catalogue of four-color palettes with free browser-based color tools. Every
+> palette is built in OKLCH, a perceptually uniform color space, and is free to
+> use for any purpose without attribution.
+
+Every palette is built in OKLCH, so equal steps in lightness look equal to the
+eye. The four hues follow a classical relationship (monochrome, analogous,
+complementary, split complementary, triad or tetrad), lightness runs as a
+deliberate ladder from light to dark, and chroma tapers at both extremes where a
+screen can hold less of it. Tags are derived from the measured result rather
+than from any stated intent.
+
+A palette's URL contains its colors: `/palette/<24 hex characters>/` is the four
+HEX codes in a row, so the address is a complete description of the palette and
+needs no lookup.
+
+## Browse
+
+- [Home — newest palettes](https://palettevault.github.io/)
+- [All palettes — infinite browse](https://palettevault.github.io/palettes/)
+- [Popular — ranked by likes](https://palettevault.github.io/popular/)
+- [Random](https://palettevault.github.io/random/)
+- [All colors — names, hex codes, shades](https://palettevault.github.io/colors/)
+
+## Colors in depth
+
+Each of these has hex, RGB, HSL and OKLCH values, an eleven-step shade scale
+built in OKLCH, contrast figures against white and black, and matching palettes.
+
+- [Pastel colors](https://palettevault.github.io/colors/pastel/): the soft, low-chroma family
+- [Shades of purple](https://palettevault.github.io/colors/purple/)
+- [Coral color](https://palettevault.github.io/colors/coral/)
+- [Ivory color](https://palettevault.github.io/colors/ivory/)
+- [Lime green](https://palettevault.github.io/colors/lime-green/)
+- [Gold color](https://palettevault.github.io/colors/gold/): why a flat fill never reads as metal
+- [Espresso brown](https://palettevault.github.io/colors/espresso/)
+- [Gunmetal gray](https://palettevault.github.io/colors/gunmetal/): #36393E, the dark-mode background
+- [Rose pink](https://palettevault.github.io/colors/rose-pink/)
+- [Transparent blue](https://palettevault.github.io/colors/transparent-blue/): alpha and opacity in CSS, and why transparency has no hex code
+- [Y2K colors](https://palettevault.github.io/colors/y2k/): the 1999-2003 aesthetic, and why it fails contrast checks
+
+## Tools
+
+All run entirely in the browser. No image or color is ever uploaded.
+
+- [All tools](https://palettevault.github.io/tools/)
+- [Palette generator](https://palettevault.github.io/tools/generate/): OKLCH harmony schemes with per-swatch locking
+- [Extract palette from image](https://palettevault.github.io/tools/extract/): k-means clustering in OKLab
+- [Color collage generator](https://palettevault.github.io/tools/collage/): an image plus its extracted colors as one shareable PNG
+- [Contrast checker](https://palettevault.github.io/tools/contrast/): WCAG 2.1 AA and AAA, with the nearest passing color
+- [Color picker](https://palettevault.github.io/tools/picker/): HEX, RGB, HSL, OKLCH and a tint/shade ramp
+- [OKLCH color picker and converter](https://palettevault.github.io/tools/oklch/): lightness, chroma and hue sliders that mark where a color leaves the sRGB and Display P3 gamuts
+- [Tailwind colors](https://palettevault.github.io/tools/tailwind/): the default Tailwind palette
+- [List of colors](https://palettevault.github.io/tools/colors/): every named CSS color, ordered by hue
+- [Browse gradients](https://palettevault.github.io/tools/gradients/): two-stop gradients interpolated in OKLCH
+- [Gradient maker](https://palettevault.github.io/tools/gradient-maker/): custom stops, sRGB and OKLCH previews
+
+## Writing
+
+- [Blog](https://palettevault.github.io/blog/)
+- [RSS feed](https://palettevault.github.io/blog/rss.xml)
+- [OKLCH vs HSL: why your color scale looks uneven](https://palettevault.github.io/blog/oklch-vs-hsl/)
+
+## About
+
+- [About — method and licence](https://palettevault.github.io/about/)
+- [Privacy policy](https://palettevault.github.io/privacy/)
+- [Sitemap](https://palettevault.github.io/sitemap.xml)
+
+## Licence
+
+Colors cannot be owned. Every palette here is free for commercial and
+non-commercial use, with no attribution required.
+
+## Privacy
+
+Like counts are the only server-side data, stored as a single number per palette
+with nothing attached to identify who sent it. Saved collections live in the
+visitor's browser and are never transmitted. There is no analytics, no cookies
+and no accounts. Full detail at https://palettevault.github.io/privacy/.

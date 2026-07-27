@@ -1,0 +1,96 @@
+---
+/**
+ * Colors index.
+ *
+ * Every color in the catalog, grouped by family. This is the hub the home page
+ * links to and the page that gives each individual color an internal link —
+ * without it the color pages would be reachable only from the sitemap.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { COLOR_GROUPS, COLORS, getColor } from '../../lib/colors.js';
+import { contrastRatio, describeColor, hexToHsl, isDark } from '../../lib/palette.js';
+
+const site = Astro.site ?? new URL('https://palette-vault.example');
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Colors' },
+    ],
+  },
+  {
+    '@type': 'ItemList',
+    name: 'Color index',
+    numberOfItems: COLORS.length,
+    itemListElement: COLORS.map((color, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: color.name,
+      url: `${site.origin}/colors/${color.slug}/`,
+    })),
+  },
+];
+---
+
+<Layout
+  title={`All Colors — ${COLORS.length} Color Names with Hex Codes`}
+  description={`Every color name with its hex code, RGB and HSL values, shade scale and matching palettes. ${COLORS.length} colors from coral and ivory to navy and charcoal.`}
+  wide
+  schema={schema}
+>
+  <header class="page-head">
+    <h1>Color names and hex codes</h1>
+    <p>
+      {COLORS.length} colors, each with a full shade scale, conversions and
+      palettes. Click a name to open it, or a swatch to copy its hex code.
+    </p>
+  </header>
+
+  {
+    COLOR_GROUPS.map((group) => (
+      <section class="color-group">
+        <h2>{group.title}</h2>
+        <ul class="color-index">
+          {group.slugs.map((slug) => {
+            const color = getColor(slug);
+            if (!color) return null;
+            const { l } = hexToHsl(color.hex);
+            return (
+              <li>
+                <a class="color-tile" href={`/colors/${color.slug}/`}>
+                  <span
+                    class:list={['color-tile__swatch', isDark(color.hex) ? 'on-dark' : 'on-light']}
+                    style={`background:#${color.hex}`}
+                  >
+                    <span class="color-tile__hex">#{color.hex.toUpperCase()}</span>
+                  </span>
+                  <span class="color-tile__name">{color.name}</span>
+                  <span class="color-tile__meta">{describeColor(color.hex)}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section class="page-note">
+    <h2>How to use this index</h2>
+    <p>
+      Each color page carries the same set of things: the hex, RGB, HSL and
+      OKLCH values, an eleven-step shade scale generated in OKLCH, contrast
+      figures against white and black, and the palettes from that color family.
+      The scale is the part worth bookmarking — it gives you a usable light and
+      dark version of any color rather than one isolated value.
+    </p>
+    <p>
+      To work from a color you already have rather than one on this list, paste
+      it into the <a href="/tools/picker/" title="Color picker">color picker</a>,
+      which builds the same scale from any input, or the{' '}
+      <a href="/tools/generate/" title="Palette generator">palette generator</a>,
+      which builds a four-color scheme around it.
+    </p>
+  </section>
+</Layout>

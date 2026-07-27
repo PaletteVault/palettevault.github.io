@@ -1,0 +1,530 @@
+---
+import ToolLayout from '../../components/ToolLayout.astro';
+import { getTool } from '../../lib/routes.server.js';
+
+const tool = getTool('collage');
+
+/** The four placements, with a tiny inline diagram for each. */
+const LAYOUTS = [
+	{ id: 'right', label: 'Colors right', hint: 'Swatches beside the image, on the right' },
+	{ id: 'left', label: 'Colors left', hint: 'Swatches beside the image, on the left' },
+	{ id: 'bottom', label: 'Colors below', hint: 'Swatches in a row under the image' },
+	{ id: 'top', label: 'Colors above', hint: 'Swatches in a row over the image' },
+];
+
+const FAQ = [
+	{
+		q: 'Is my image uploaded anywhere?',
+		a:
+			'No. The file is read by JavaScript in your own browser, the colors are clustered there, ' +
+			'and the collage is drawn on a canvas on your machine. Nothing is sent to a server, so ' +
+			'the tool works offline once the page has loaded.',
+	},
+	{
+		q: 'What size is the exported image?',
+		a:
+			'Your original resolution plus the color band, within limits: capped at 4000 pixels on the ' +
+			'long edge so the browser can render it, and raised to at least 1200 if the source is ' +
+			'smaller, because below that the band is too narrow to hold a readable hex label. The exact ' +
+			'dimensions are shown under the preview, and any scaling is stated there too.',
+	},
+	{
+		q: 'Why do the colors split into two columns?',
+		a:
+			'Past nine colors a single column leaves each swatch too short for a readable hex label, so ' +
+			'the band splits in two and widens to match. That keeps each swatch its full width instead ' +
+			'of slicing one column into thin strips. You can turn it off.',
+	},
+	{
+		q: 'How are the colors chosen?',
+		a:
+			'By k-means clustering in the OKLab color space, not by picking the most frequent RGB ' +
+			'values. Clustering perceptually means a landscape returns the one red jacket that defines ' +
+			'the shot rather than five near-identical browns.',
+	},
+	{
+		q: 'Can I use the result commercially?',
+		a:
+			'The collage is yours — it is made from your image on your computer, and this site never ' +
+			'sees it. Whatever rights you hold in the source image carry over unchanged.',
+	},
+];
+
+const schema = [
+	{
+		'@type': 'FAQPage',
+		mainEntity: FAQ.map(({ q, a }) => ({
+			'@type': 'Question',
+			name: q,
+			acceptedAnswer: { '@type': 'Answer', text: a },
+		})),
+	},
+];
+---
+
+<ToolLayout
+	slug={tool.slug}
+	title={tool.title}
+	description={tool.description}
+	intro='Drop in a photo and get it back with its own colors laid alongside — above, below, left or right — as a single PNG ready to post. The image never leaves your browser.'
+	schema={schema}>
+	<section
+		id='collage'
+		class='tool-panel'>
+		<label
+			class='dropzone'
+			data-collage-drop>
+			<input
+				type='file'
+				accept='image/*'
+				data-collage-input
+				hidden
+			/>
+			<svg
+				viewBox='0 0 24 24'
+				aria-hidden='true'>
+				<path d='M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'></path>
+			</svg>
+			<span><strong>Choose an image</strong> or drop it here</span>
+			<span
+				class='dropzone__hint'
+				data-collage-filename
+				>You can also paste from the clipboard</span
+			>
+		</label>
+
+		<h2 class='tool-subhead'>Layout</h2>
+		<div
+			class='col-layouts'
+			role='group'
+			aria-label='Color placement'>
+			{
+				LAYOUTS.map((layout) => (
+					<button
+						type='button'
+						class='col-layout'
+						data-position={layout.id}
+						aria-pressed={layout.id === 'right' ? 'true' : 'false'}
+						title={layout.hint}>
+						<span
+							class:list={['col-layout__figure', `col-layout__figure--${layout.id}`]}
+							aria-hidden='true'>
+							<span class='col-layout__image' />
+							<span class='col-layout__band'>
+								<>
+									<i />
+									<i />
+									<i />
+									<i />
+								</>
+							</span>
+						</span>
+						<span class='col-layout__label'>{layout.label}</span>
+					</button>
+				))
+			}
+		</div>
+
+		<h2 class='tool-subhead'>Options</h2>
+		<div class='col-options'>
+			<label class='col-option'>
+				<span class='col-option__head'>
+					Colors
+					<output data-collage-count-label>6</output>
+				</span>
+				<input
+					type='range'
+					data-collage-count
+					data-collage-needs-image
+					min='2'
+					max='20'
+					step='1'
+					value='6'
+				/>
+			</label>
+
+			<label class='col-option'>
+				<span class='col-option__head'>
+					Band size
+					<output data-collage-band-label>20%</output>
+				</span>
+				<input
+					type='range'
+					data-collage-band
+					data-collage-needs-image
+					min='8'
+					max='45'
+					step='1'
+					value='20'
+				/>
+			</label>
+
+			<label class='col-check'>
+				<input
+					type='checkbox'
+					data-collage-labels
+					data-collage-needs-image
+					checked
+				/>
+				<span>Show hex labels</span>
+			</label>
+
+			<label class='col-check'>
+				<input
+					type='checkbox'
+					data-collage-wrap
+					data-collage-needs-image
+					checked
+				/>
+				<span>Split into two tracks past nine colors</span>
+			</label>
+		</div>
+
+		<div
+			data-collage-output
+			hidden>
+			<h2 class='tool-subhead'>Result</h2>
+			<div class='col-result'>
+				<img
+					data-collage-preview
+					alt=''
+				/>
+			</div>
+
+			<div class='col-actions'>
+				<a
+					class='btn btn--primary'
+					data-collage-download
+					download
+					>Download PNG</a
+				>
+				<button
+					type='button'
+					class='btn btn--ghost'
+					data-collage-copy-all
+					>Copy all hex</button
+				>
+				<span
+					class='col-size'
+					data-collage-size
+				></span>
+			</div>
+
+			<p
+				class='col-note'
+				data-collage-note
+				hidden
+			></p>
+
+			<ul
+				class='col-chips'
+				data-collage-swatches
+			></ul>
+		</div>
+	</section>
+
+	<article class='tool-prose'>
+		<h2>What this is for</h2>
+		<p>
+			A palette on its own is hard to judge. Five hex codes in a row tell you what the colors are
+			but not where they came from, and the moment they leave your screen — pinned to a board,
+			dropped in a message, saved to a moodboard — the picture that justified them is gone. Putting
+			both in one image keeps the reference attached to the evidence.
+		</p>
+		<p>
+			That is the whole job here. Pick a placement, choose how many colors, and download a single
+			PNG. If you only want the codes and not the composite, the{' '}
+			<a href='/tools/extract/'>palette extractor</a> gives you the same colors as copyable values.
+		</p>
+
+		<h2>Choosing a placement</h2>
+		<p>
+			The four options are not interchangeable, because each one suits a different aspect ratio.
+			<strong>Left and right</strong> add width, so they work best with images that are already landscape
+			or square — the band borrows space the composition can spare. <strong>Above and below</strong> add
+			height and suit portrait shots and phone screenshots for the same reason.
+		</p>
+		<p>
+			Placement also affects reading order. Colors on the left get looked at first, which is the
+			right choice when the palette is the point and the photo is supporting evidence. On the right
+			or below, the image leads and the colors read as a caption. For anything going to Pinterest,
+			taller works better than wider, so colors below usually beats colors right.
+		</p>
+
+		<h2>How many colors</h2>
+		<p>
+			Between four and six is the useful range for most photographs. Push past that and clustering
+			starts splitting one region into neighbouring shades — two greens from the same tree rather
+			than a genuinely new color — which pads the palette without adding information.
+		</p>
+		<p>
+			Large counts are worth it for a different job: sampling a screenshot of an interface, where
+			there really are fifteen distinct values and you want all of them. That is when the two-track
+			split earns its place, because sixteen swatches in one column leaves each too short to label.
+		</p>
+
+		<h2>Small images</h2>
+		<p>
+			The band is sized as a proportion of the image, which keeps it looking right across aspect
+			ratios but breaks down at the bottom end. A 216-pixel icon with a 20% band gives a 43-pixel
+			strip, and a seven-character hex code needs roughly 45 pixels of width to be legible — so the
+			labels disappear and the export is too small to post anywhere.
+		</p>
+		<p>
+			So anything under 1200 pixels on the long edge is scaled up to meet it. That is a trade: the
+			picture will be softer than your original, because upscaling cannot add detail that was never
+			captured. It is stated under the preview whenever it happens, along with the source
+			dimensions, so you always know which you are looking at.
+		</p>
+
+		<h2>A note on the labels</h2>
+		<p>
+			Each label's color is decided by the perceptual lightness of the swatch behind it, not by an
+			sRGB brightness threshold, so mid-tones get the right choice rather than a technically-correct
+			one that looks wrong. Where a swatch is too small to hold seven characters the label is
+			dropped instead of clipped — the band still reads as a palette, and the codes are listed under
+			the preview.
+		</p>
+		<p>
+			The labels are the part worth keeping switched on if you plan to share the image, since they
+			make the collage self-contained. Turn them off when the collage is decorative and the exact
+			values do not matter. Before committing a pair to text, check it in the{' '}
+			<a href='/tools/contrast/'>contrast checker</a> — a color that photographs beautifully is not automatically
+			legible.
+		</p>
+
+		<h2>Common questions</h2>
+		<dl class='faq'>
+			{
+				FAQ.map(({ q, a }) => (
+					<>
+						<dt>{q}</dt>
+						<dd>{a}</dd>
+					</>
+				))
+			}
+		</dl>
+	</article>
+</ToolLayout>
+
+<script>
+	import { initCollage } from '../../lib/tools/collage.js';
+	initCollage();
+</script>
+
+<style>
+	/* ------------------------------------------------------------ layouts -- */
+
+	.col-layouts {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+		gap: 10px;
+		margin-bottom: 6px;
+	}
+
+	.col-layout {
+		display: grid;
+		gap: 10px;
+		justify-items: center;
+		padding: 14px 10px;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--surface);
+		cursor: pointer;
+		transition:
+			border-color 0.15s,
+			background-color 0.15s;
+	}
+
+	.col-layout:hover {
+		border-color: var(--text-muted);
+	}
+
+	.col-layout[aria-pressed='true'] {
+		border-color: var(--text);
+		background: var(--bg-soft);
+	}
+
+	/* A diagram rather than an icon: it shows the arrangement literally. */
+	.col-layout__figure {
+		display: flex;
+		gap: 3px;
+		width: 78px;
+		height: 52px;
+	}
+
+	.col-layout__figure--bottom,
+	.col-layout__figure--top {
+		flex-direction: column;
+	}
+
+	.col-layout__figure--left {
+		flex-direction: row-reverse;
+	}
+
+	.col-layout__figure--top {
+		flex-direction: column-reverse;
+	}
+
+	.col-layout__image {
+		flex: 1;
+		border-radius: 3px;
+		background: var(--bg-soft);
+		border: 1px solid var(--border);
+	}
+
+	.col-layout__band {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		width: 18px;
+	}
+
+	.col-layout__figure--bottom .col-layout__band,
+	.col-layout__figure--top .col-layout__band {
+		flex-direction: row;
+		width: auto;
+		height: 14px;
+	}
+
+	.col-layout__band i {
+		flex: 1;
+		border-radius: 2px;
+	}
+
+	.col-layout__band i:nth-child(1) {
+		background: #ff6b6b;
+	}
+	.col-layout__band i:nth-child(2) {
+		background: #ffd93d;
+	}
+	.col-layout__band i:nth-child(3) {
+		background: #4d96ff;
+	}
+	.col-layout__band i:nth-child(4) {
+		background: #6bcb77;
+	}
+
+	.col-layout__label {
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	/* ------------------------------------------------------------ options -- */
+
+	.col-options {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 16px 26px;
+		align-items: start;
+	}
+
+	.col-option__head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: 6px;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.col-option__head output {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		color: var(--text-muted);
+	}
+
+	.col-option input[type='range'] {
+		width: 100%;
+		accent-color: var(--text);
+	}
+
+	.col-check {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+		font-size: 13.5px;
+	}
+
+	.col-check input {
+		accent-color: var(--text);
+	}
+
+	/* ------------------------------------------------------------- result -- */
+
+	.col-result {
+		padding: 14px;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--bg-soft);
+		text-align: center;
+	}
+
+	.col-result img {
+		max-width: 100%;
+		max-height: 62vh;
+		height: auto;
+		/* Fill the frame rather than sitting as a stamp in the middle of it. */
+		width: auto;
+		min-width: min(320px, 100%);
+		border-radius: 6px;
+		box-shadow: var(--shadow);
+	}
+
+	.col-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		margin-top: 14px;
+	}
+
+	.col-size {
+		font-family: var(--font-mono);
+		font-size: 12.5px;
+		color: var(--text-muted);
+	}
+
+	/*
+   * A note, not a warning: upscaling and dropped labels are both normal
+   * outcomes that the user needs told about, not errors.
+   */
+	.col-note {
+		margin: 10px 0 0;
+		padding: 10px 13px;
+		border-left: 3px solid var(--border);
+		background: var(--bg-soft);
+		border-radius: 0 8px 8px 0;
+		font-size: 13px;
+		color: var(--text-muted);
+		max-width: 78ch;
+	}
+
+	.col-chips {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 16px 0 0;
+		padding: 0;
+	}
+
+	.collage-chip {
+		border-radius: 8px;
+		border: 1px solid rgb(0 0 0 / 10%);
+		overflow: hidden;
+	}
+
+	.collage-chip button {
+		padding: 7px 11px;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+		color: #111318;
+		cursor: pointer;
+	}
+
+	.collage-chip[data-dark='true'] button {
+		color: #fff;
+	}
+</style>
