@@ -45,7 +45,7 @@ const FAQ = [
 	{
 		q: 'Can I use the result commercially?',
 		a:
-			'The collage is yours — it is made from your image on your computer, and this site never ' +
+			'The collage is yours, it is made from your image on your computer, and this site never ' +
 			'sees it. Whatever rights you hold in the source image carry over unchanged.',
 	},
 ];
@@ -66,7 +66,7 @@ const schema = [
 	slug={tool.slug}
 	title={tool.title}
 	description={tool.description}
-	intro='Drop in a photo and get it back with its own colors laid alongside — above, below, left or right — as a single PNG ready to post. The image never leaves your browser.'
+	intro='Drop in a photo and get it back with its own colors laid alongside, above, below, left or right, as a single PNG ready to post. The image never leaves your browser.'
 	schema={schema}>
 	<section
 		id='collage'
@@ -227,8 +227,8 @@ const schema = [
 		<h2>What this is for</h2>
 		<p>
 			A palette on its own is hard to judge. Five hex codes in a row tell you what the colors are
-			but not where they came from, and the moment they leave your screen — pinned to a board,
-			dropped in a message, saved to a moodboard — the picture that justified them is gone. Putting
+			but not where they came from, and the moment they leave your screen, pinned to a board,
+			dropped in a message, saved to a moodboard, the picture that justified them is gone. Putting
 			both in one image keeps the reference attached to the evidence.
 		</p>
 		<p>
@@ -241,7 +241,7 @@ const schema = [
 		<p>
 			The four options are not interchangeable, because each one suits a different aspect ratio.
 			<strong>Left and right</strong> add width, so they work best with images that are already landscape
-			or square — the band borrows space the composition can spare. <strong>Above and below</strong> add
+			or square, the band borrows space the composition can spare. <strong>Above and below</strong> add
 			height and suit portrait shots and phone screenshots for the same reason.
 		</p>
 		<p>
@@ -254,8 +254,8 @@ const schema = [
 		<h2>How many colors</h2>
 		<p>
 			Between four and six is the useful range for most photographs. Push past that and clustering
-			starts splitting one region into neighbouring shades — two greens from the same tree rather
-			than a genuinely new color — which pads the palette without adding information.
+			starts splitting one region into neighbouring shades, two greens from the same tree rather
+			than a genuinely new color, which pads the palette without adding information.
 		</p>
 		<p>
 			Large counts are worth it for a different job: sampling a screenshot of an interface, where
@@ -267,7 +267,7 @@ const schema = [
 		<p>
 			The band is sized as a proportion of the image, which keeps it looking right across aspect
 			ratios but breaks down at the bottom end. A 216-pixel icon with a 20% band gives a 43-pixel
-			strip, and a seven-character hex code needs roughly 45 pixels of width to be legible — so the
+			strip, and a seven-character hex code needs roughly 45 pixels of width to be legible, so the
 			labels disappear and the export is too small to post anywhere.
 		</p>
 		<p>
@@ -282,14 +282,14 @@ const schema = [
 			Each label's color is decided by the perceptual lightness of the swatch behind it, not by an
 			sRGB brightness threshold, so mid-tones get the right choice rather than a technically-correct
 			one that looks wrong. Where a swatch is too small to hold seven characters the label is
-			dropped instead of clipped — the band still reads as a palette, and the codes are listed under
+			dropped instead of clipped, the band still reads as a palette, and the codes are listed under
 			the preview.
 		</p>
 		<p>
 			The labels are the part worth keeping switched on if you plan to share the image, since they
 			make the collage self-contained. Turn them off when the collage is decorative and the exact
 			values do not matter. Before committing a pair to text, check it in the{' '}
-			<a href='/tools/contrast/'>contrast checker</a> — a color that photographs beautifully is not automatically
+			<a href='/tools/contrast/'>contrast checker</a>, a color that photographs beautifully is not automatically
 			legible.
 		</p>
 
@@ -353,8 +353,7 @@ const schema = [
 		height: 52px;
 	}
 
-	.col-layout__figure--bottom,
-	.col-layout__figure--top {
+	.col-layout__figure--bottom.col-layout__figure--top {
 		flex-direction: column;
 	}
 
@@ -380,8 +379,7 @@ const schema = [
 		width: 18px;
 	}
 
-	.col-layout__figure--bottom .col-layout__band,
-	.col-layout__figure--top .col-layout__band {
+	.col-layout__figure--bottom .col-layout__band.col-layout__figure--top .col-layout__band {
 		flex-direction: row;
 		width: auto;
 		height: 14px;

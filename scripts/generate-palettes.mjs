@@ -13,9 +13,9 @@
  *   3. Tags every palette automatically: style tags (Pastel, Dark, Neon,
  *      Vintage...) and colour tags (Blue, Red, Green...).
  *   4. Writes the result as static JSON chunks of 1000 records:
- *        public/data/new/1.json ... N.json        — the "New" feed, id descending
- *        public/data/tag/<slug>/1.json ... N.json — one shard set per tag
- *        public/data/meta.json                    — manifest with chunk counts
+ *        public/data/new/1.json ... N.json, the "New" feed, id descending
+ *        public/data/tag/<slug>/1.json ... N.json, one shard set per tag
+ *        public/data/meta.json, manifest with chunk counts
  *
  *  Why the tag shards duplicate the data:
  *   A palette costs ~45 bytes. Duplicating it across 3-6 tags is cheaper than
@@ -25,7 +25,7 @@
  *  Usage:
  *    node scripts/generate-palettes.mjs --count=100000 --chunk=1000 --seed=42
  *
- *  No external dependencies — Node.js standard library only.
+ *  No external dependencies, Node.js standard library only.
  * ============================================================================
  */
 
@@ -174,8 +174,8 @@ function hexToHsl(hex) {
  *  range (C) and the permitted hue windows. This is where the recognisable
  *  aesthetics come from.
  *
- *  weight — how often the preset appears in the dataset, relatively.
- *  tags   — tags the preset always applies.
+ *  weight, how often the preset appears in the dataset, relatively.
+ *  tags, tags the preset always applies.
  * ========================================================================== */
 
 /** Hue windows in OKLCH degrees (0 is red, ~145 green, ~264 blue). */
@@ -553,7 +553,7 @@ async function main() {
 
   /* --- 9.3 Rebuild the data directory from scratch ----------------------
    * Best effort: on some filesystems (network or mounted volumes) unlink may
-   * be denied. Not critical — meta.json declares the current chunk count, so
+   * be denied. Not critical, meta.json declares the current chunk count, so
    * leftovers from earlier runs are simply never requested.
    */
   try {
@@ -578,7 +578,7 @@ async function main() {
   for (const tag of TAG_CATALOG) {
     const bucket = byTag.get(tag.slug) ?? [];
     if (bucket.length === 0) {
-      console.warn(`⚠️  Tag "${tag.slug}" is empty — skipped.`);
+      console.warn(`⚠️  Tag "${tag.slug}" is empty, skipped.`);
       continue;
     }
     const rows = [...bucket].reverse().map((p) => [p.id, ...p.colors]);

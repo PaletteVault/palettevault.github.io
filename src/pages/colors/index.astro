@@ -3,7 +3,7 @@
  * Colors index.
  *
  * Every color in the catalog, grouped by family. This is the hub the home page
- * links to and the page that gives each individual color an internal link —
+ * links to and the page that gives each individual color an internal link
  * without it the color pages would be reachable only from the sitemap.
  */
 import Layout from '../../layouts/Layout.astro';
@@ -34,7 +34,7 @@ const schema = [
 ---
 
 <Layout
-  title={`All Colors — ${COLORS.length} Color Names with Hex Codes`}
+  title={`All Colors, ${COLORS.length} Color Names with Hex Codes`}
   description={`Every color name with its hex code, RGB and HSL values, shade scale and matching palettes. ${COLORS.length} colors from coral and ivory to navy and charcoal.`}
   wide
   schema={schema}
@@ -82,7 +82,7 @@ const schema = [
       Each color page carries the same set of things: the hex, RGB, HSL and
       OKLCH values, an eleven-step shade scale generated in OKLCH, contrast
       figures against white and black, and the palettes from that color family.
-      The scale is the part worth bookmarking — it gives you a usable light and
+      The scale is the part worth bookmarking, it gives you a usable light and
       dark version of any color rather than one isolated value.
     </p>
     <p>

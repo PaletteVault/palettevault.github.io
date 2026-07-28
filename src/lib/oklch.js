@@ -144,8 +144,7 @@ export function mix(hexA, hexB, t, { hueShort = true } = {}) {
   return oklchToHex(
     a.L + (b.L - a.L) * t,
     a.C + (b.C - a.C) * t,
-    (a.h + dh * t + 360) % 360,
-  );
+    (a.h + dh * t + 360) % 360);
 }
 
 /* ==========================================================================
@@ -158,7 +157,7 @@ export function mix(hexA, hexB, t, { hueShort = true } = {}) {
  *  into linear Display P3 and linear Rec2020.
  *
  *  All three spaces share the D65 white point, so no chromatic adaptation is
- *  needed and each conversion is a single 3x3 matrix. Every row sums to 1 —
+ *  needed and each conversion is a single 3x3 matrix. Every row sums to 1
  *  that is what makes white map to white, and it is a useful check that the
  *  numbers have not been mistyped.
  * ==========================================================================
@@ -182,7 +181,7 @@ const apply = (m, [r, g, b]) => m.map((row) => row[0] * r + row[1] * g + row[2] 
  * The gamuts we can report on, narrowest first.
  *
  * Worth knowing: these are *not* strictly nested. sRGB sits inside both of the
- * others, but Display P3 is not a subset of Rec. 2020 — the P3 red primary
+ * others, but Display P3 is not a subset of Rec. 2020, the P3 red primary
  * falls just outside the Rec. 2020 triangle, so a handful of deep reds are
  * displayable on a P3 monitor and not describable in Rec. 2020. The order
  * below is therefore "narrowest that fits", not a hierarchy.
@@ -221,7 +220,7 @@ export function findGamut(L, C, hDeg) {
 /**
  * The highest chroma that still fits in `gamut` at this lightness and hue.
  *
- * There is no closed form for this — the sRGB solid is a lopsided shape in
+ * There is no closed form for this, the sRGB solid is a lopsided shape in
  * OKLCH, and its edge moves with both L and h. Binary search converges fast
  * enough to run on every slider frame, and 20 iterations lands well inside
  * the precision an 8-bit channel can represent anyway.
@@ -254,8 +253,7 @@ export function formatOklchParts(L, C, h, alpha = 1) {
 /** `color(display-p3 …)`, the way you would actually ship a wide-gamut color. */
 export function formatDisplayP3(L, C, h, alpha = 1) {
   const [r, g, b] = apply(SRGB_TO_P3, oklchToLinear(L, C, h)).map((c) =>
-    Math.min(1, Math.max(0, toGamma(c))),
-  );
+    Math.min(1, Math.max(0, toGamma(c))));
   const base = `${num(r, 4)} ${num(g, 4)} ${num(b, 4)}`;
   return alpha >= 1 ? `color(display-p3 ${base})` : `color(display-p3 ${base} / ${num(alpha, 3)})`;
 }
@@ -297,7 +295,7 @@ export function formatLch(L, C, h, alpha = 1) {
  *
  *  Accepts what someone is likely to paste: a hex code, an rgb()/hsl() from
  *  devtools, an oklch()/lab()/lch() from a stylesheet, or a CSS keyword. The
- *  browser does the hard part — `new Option().style.color` only keeps a value
+ *  browser does the hard part, `new Option().style.color` only keeps a value
  *  it recognises, which is a far better validator than any regex, and
  *  getComputedStyle then hands the value back resolved.
  * ========================================================================== */

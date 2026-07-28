@@ -25,8 +25,7 @@ export async function GET({ site }) {
   const origin = (site ?? new URL('https://palette-vault.example')).origin;
 
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-    (a, b) => b.data.published.getTime() - a.data.published.getTime(),
-  );
+    (a, b) => b.data.published.getTime() - a.data.published.getTime());
 
   const items = posts
     .map((post) => {
@@ -36,7 +35,7 @@ export async function GET({ site }) {
         `      <title>${escapeXml(post.data.title)}</title>\n` +
         `      <link>${url}</link>\n` +
         // guid is what a reader uses to tell posts apart, so it must never
-        // change once published — the permalink is the stable choice.
+        // change once published, the permalink is the stable choice.
         `      <guid isPermaLink="true">${url}</guid>\n` +
         `      <description>${escapeXml(post.data.description)}</description>\n` +
         `      <pubDate>${post.data.published.toUTCString()}</pubDate>\n` +

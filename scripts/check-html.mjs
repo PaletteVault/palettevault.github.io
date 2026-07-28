@@ -8,12 +8,11 @@
  *
  *  The one that prompted this: Astro, like JSX, is free to discard whitespace
  *  that consists only of a newline and indentation. Write prose that wraps
- *  just before a link —
- *
+ *  just before a link, *
  *      or the
  *      <a href="/tools/generate/">palette generator</a>
  *
- *  — and the rendered output is `or the<a href=…>`, with the words run
+ *, and the rendered output is `or the<a href=…>`, with the words run
  *  together. Nothing warns about it, the source looks correct, and a formatter
  *  can reintroduce it at any time by rewrapping a line. Eleven of these had
  *  accumulated across 66 pages before anyone noticed.
@@ -42,7 +41,7 @@ function htmlFiles(dir, out = []) {
  * Each check reports the offending snippet so the message is actionable.
  *
  * Only letters and digits count as a collision. Punctuation either side of a
- * link is normal English — `</a>, which` and `(<a href` are both fine — and
+ * link is normal English, `</a>, which` and `(<a href` are both fine, and
  * treating it as an error would bury the real hits in noise.
  */
 const CHECKS = [
@@ -65,7 +64,7 @@ const CHECKS = [
      * The first version of this file only looked for a letter next to a tag,
      * on the reasoning that punctuation either side of a link is normal
      * English. That reasoning had a hole: when the neighbour is a closing tag
-     * the character before `<a` is `>`, which the letter test skips — and if
+     * the character before `<a` is `>`, which the letter test skips, and if
      * both elements are filled in by script they are empty at build time, so
      * there are no letters to find in the first place. A palette name ran
      * straight into "Open as a palette page" on the generator for exactly
@@ -73,7 +72,7 @@ const CHECKS = [
      *
      * Scoped to the inside of a <p>, because that is where whitespace
      * matters. Navigation rows and the footer legitimately butt links
-     * together — they are flex containers and the gap comes from CSS.
+     * together, they are flex containers and the gap comes from CSS.
      */
     id: 'adjacent-inline-in-paragraph',
     describe: 'two inline elements with no space between them inside a <p>',
@@ -95,7 +94,7 @@ const CHECKS = [
      */
     id: 'palette-count-in-copy',
     describe: 'a palette count appears in the copy',
-    pattern: /\b\d[\d,.]*\s+(?:[a-z-]+\s+){0,3}palettes\b/gi,
+    pattern: /\b\d[\d.]*\s+(?:[a-z-]+\s+){0,3}palettes\b/gi,
     hint: 'describe the catalog without a number',
   },
   {
@@ -180,8 +179,7 @@ function siteChecks(files) {
   if (existsSync(sitemapPath)) {
     const xml = readFileSync(sitemapPath, 'utf8');
     const listed = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
-      (m) => m[1].replace(ORIGIN, '') || '/',
-    );
+      (m) => m[1].replace(ORIGIN, '') || '/');
 
     for (const url of listed) {
       if (!fetchable.has(url)) {
@@ -213,9 +211,7 @@ function siteChecks(files) {
         // A URL ending a sentence picks up the full stop. Trailing punctuation
         // is never part of the path, and treating it as one reported a
         // perfectly good link as broken.
-        (m) => (m[1] || '/').replace(/[.,;:!?]+$/, '') || '/',
-      ),
-    );
+        (m) => (m[1] || '/').replace(/[.,;:!?]+$/, '') || '/'));
 
     for (const url of cited) {
       if (!fetchable.has(url)) {
@@ -231,13 +227,12 @@ function siteChecks(files) {
     /*
      * Tool pages and the standalone informational pages are the ones an agent
      * reading llms.txt would expect to find. Individual palettes and the long
-     * tail of color pages are deliberately not enumerated — that is what the
+     * tail of color pages are deliberately not enumerated, that is what the
      * sitemap is for.
      */
     const required = [
       ...new Set(
-        [...fetchable].filter((p) => /^\/tools\/[a-z-]*\/$/.test(p) || p === '/tools/'),
-      ),
+        [...fetchable].filter((p) => /^\/tools\/[a-z-]*\/$/.test(p) || p === '/tools/')),
       '/',
       '/palettes/',
       '/colors/',
@@ -314,6 +309,5 @@ for (const { id, describe, pages: hit, hint } of structural) {
 
 console.log(
   `\n${problems.size} content problem(s) across ${pages} page hit(s), `
-  + `${structural.length} structural problem(s).`,
-);
+  + `${structural.length} structural problem(s).`);
 process.exit(1);

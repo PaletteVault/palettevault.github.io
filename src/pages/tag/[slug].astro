@@ -3,7 +3,7 @@
  * Category page: /tag/pastel/, /tag/blue/ and so on.
  *
  * Paths come from meta.json at build time, so the category list always matches
- * the dataset that was actually generated — no dead links to tags with zero
+ * the dataset that was actually generated, no dead links to tags with zero
  * palettes behind them.
  */
 import Layout from '../../layouts/Layout.astro';
@@ -41,7 +41,7 @@ const schema = [
 ---
 
 <Layout
-  title={`${tag.label} color palettes — Palette Vault`}
+  title={`${tag.label} color palettes, Palette Vault`}
   description={`${tag.label} color palettes, four colors each. Click any swatch to copy its HEX, `
     + `or open a palette to take all four and download it as a PNG.`}
   activeTag={tag.slug}

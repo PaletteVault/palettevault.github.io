@@ -35,7 +35,7 @@ reaction to how our relationship with technology has evolved.
 
 The past decade pushed digital design toward extreme simplification through flat elements, identical
 sans-serifs, muted palettes, and standardized design systems. While this made building products
-faster, it stripped them of their personality. Overwhelmed by constant digital noise, users are
+faster, it also stripped them of their personality. Overwhelmed by constant digital noise, users are
 tired of sterile, clinical screens. Textures, gradients, depth, and tangible metaphors bring back a
 sense of humanity and warmth, serving as a direct counterweight to endless white space.
 

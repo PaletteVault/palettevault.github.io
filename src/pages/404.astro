@@ -2,7 +2,7 @@
 /**
  * 404 page, doubling as the GitHub Pages fallback.
  *
- * GitHub Pages supports no rewrite rules at all — neither `_redirects` nor
+ * GitHub Pages supports no rewrite rules at all, neither `_redirects` nor
  * `vercel.json` does anything there. The only mechanism available is the
  * `404.html` file, which is served for any address that has no file.
  *
@@ -17,7 +17,7 @@ import Layout from '../layouts/Layout.astro';
 import PaletteDetail from '../components/PaletteDetail.astro';
 ---
 
-<Layout title="Page not found — Palette Vault" description="This page does not exist." noindex>
+<Layout title="Page not found, Palette Vault" description="This page does not exist." noindex>
   <div id="not-found" class="empty" hidden>
     <h2>Page not found</h2>
     <p>The address doesn’t match anything here.</p>

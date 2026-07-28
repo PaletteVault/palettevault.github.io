@@ -50,7 +50,7 @@ function suggest(fg, bg, target) {
     if (contrastRatio(candidate, bg) >= target) return candidate;
   }
 
-  // Nothing on this hue works — fall back to whichever extreme passes.
+  // Nothing on this hue works, fall back to whichever extreme passes.
   const black = contrastRatio('000000', bg);
   const white = contrastRatio('ffffff', bg);
   return black >= target || white >= target ? (black > white ? '000000' : 'ffffff') : null;
@@ -95,7 +95,7 @@ function render(root, fg, bg) {
 
   const upper = `#${fixed.toUpperCase()}`;
   box.innerHTML =
-    `<span>Closest foreground that clears ${failing.min}:1 —</span> ` +
+    `<span>Closest foreground that clears ${failing.min}:1, </span> ` +
     `<button type="button" class="chip" data-copy="${upper}" style="--chip-bg:#${fixed}">` +
       `<span class="chip__dot"></span>${upper}` +
     `</button> ` +

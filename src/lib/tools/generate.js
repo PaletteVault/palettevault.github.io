@@ -6,7 +6,7 @@
  *  A live version of the offline generator: same OKLCH harmony schemes and
  *  lightness ramps, but driven by the visitor instead of a seeded RNG.
  *
- *  Locking is the feature that makes it usable — you keep the one shade that
+ *  Locking is the feature that makes it usable, you keep the one shade that
  *  works and reroll the rest, rather than hunting for four good colors at once.
  * ============================================================================
  */
@@ -140,8 +140,7 @@ export function initGenerator() {
     if (event.target.closest('[data-generator-copy-all]')) {
       await copyWithToast(
         state.colors.map((hex) => `#${hex.toUpperCase()}`).join(', '),
-        'Palette',
-      );
+        'Palette');
     }
   });
 

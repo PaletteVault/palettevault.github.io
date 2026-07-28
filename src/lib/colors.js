@@ -8,8 +8,8 @@
  *  Two tiers share one route:
  *
  *    plain   name, hex and the palette tag it draws from. The page builds
- *            itself from measured values — shade scale, conversions, contrast
- *            — and needs no hand-written copy.
+ *            itself from measured values, shade scale, conversions, contrast
+ *, and needs no hand-written copy.
  *    rich    the same, plus `lead`, `named`, `sections` and `faq`. These are
  *            the colors worth ranking for, where the value is in the prose.
  *
@@ -28,7 +28,7 @@ export const COLORS = [
   /* ------------------------------------------------------------ families -- */
   /*
    * Not a single color, so `kind: 'family'` skips the value card and the shade
-   * scale — neither means anything for a group — and leads with the named
+   * scale, neither means anything for a group, and leads with the named
    * shades instead.
    */
   {
@@ -39,9 +39,9 @@ export const COLORS = [
     tag: 'pastel',
     featured: true,
     h1: 'Pastel color palettes and soft color schemes',
-    title: 'Pastel Colors — Soft Color Palettes with Hex Codes',
+    title: 'Pastel Colors, Soft Color Palettes with Hex Codes',
     lead: [
-      'Pastel colors are soft, light and low in saturation — the pale pinks, '
+      'Pastel colors are soft, light and low in saturation, the pale pinks, '
       + 'mints and lilacs that make an interface feel calm rather than loud. '
       + 'Every pastel palette below is four such shades chosen to sit '
       + 'together, with hex codes ready to copy.',
@@ -62,11 +62,11 @@ export const COLORS = [
         paragraphs: [
           'A pastel is a hue with the volume turned down: high lightness, low '
           + 'chroma, but never so low that the hue disappears. That last part '
-          + 'is what separates a pastel from a plain grey tint — pastel sky '
+          + 'is what separates a pastel from a plain grey tint, pastel sky '
           + 'still reads as blue.',
           'These palettes are generated in <strong>OKLCH</strong> rather than '
           + 'HSL, and the pastel preset holds lightness between 0.84 and 0.94 '
-          + 'with chroma between 0.035 and 0.075 — which lands between 70% and '
+          + 'with chroma between 0.035 and 0.075, which lands between 70% and '
           + '95% lightness in HSL. The OKLCH corridor is the one that matters: '
           + 'HSL lightness is not perceptually even, so a fixed HSL value gives '
           + 'a yellow that looks washed out beside a blue that still looks '
@@ -77,13 +77,13 @@ export const COLORS = [
         h2: 'Pastels and contrast',
         paragraphs: [
           'This is where pastel schemes usually go wrong. The shades above '
-          + 'score between roughly 1.36:1 and 1.43:1 against white — nowhere '
+          + 'score between roughly 1.36:1 and 1.43:1 against white, nowhere '
           + 'near the 4.5:1 WCAG AA requires for normal text, and short of the '
           + '3:1 needed for buttons, borders and icons. Pastel text on a white '
           + 'page is not a stylistic risk; it is unreadable for a large number '
           + 'of people.',
           'Used as backgrounds they are excellent. Dark text on a pastel field '
-          + 'has room to spare — black on pastel pink measures about 14.7:1. '
+          + 'has room to spare, black on pastel pink measures about 14.7:1. '
           + 'The working rule is pastels behind, dark ink in front, and one '
           + 'deep accent from the same hue family for anything that has to be '
           + 'noticed.',
@@ -95,13 +95,13 @@ export const COLORS = [
           'Wedding stationery, baby and nursery branding, wellness and '
           + 'skincare packaging, spring campaigns, children\'s books, and the '
           + 'soft empty states common in modern apps. The common thread is '
-          + 'content that should feel approachable rather than urgent — which '
+          + 'content that should feel approachable rather than urgent, which '
           + 'is also why pastels rarely suit an error state or a warning.',
         ],
       },
     ],
     faq: [
-      { q: 'What is a pastel color?', a: 'A color with high lightness and low saturation — a hue softened by adding white, or more precisely one whose chroma is deliberately held down. The pastels here sit between 70% and 95% HSL lightness. What separates a pastel from a plain tint is that the hue stays identifiable.' },
+      { q: 'What is a pastel color?', a: 'A color with high lightness and low saturation, a hue softened by adding white, or more precisely one whose chroma is deliberately held down. The pastels here sit between 70% and 95% HSL lightness. What separates a pastel from a plain tint is that the hue stays identifiable.' },
       { q: 'What colors go well with pastels?', a: 'Other pastels of a similar lightness, which is why analogous and monochrome schemes dominate here. For contrast, pair a pastel field with one deep accent from the same hue family rather than a second bright color.' },
       { q: 'Are pastel colors accessible?', a: 'Not on their own. Pastels score around 1.4:1 against white, far below the 4.5:1 WCAG AA needs for normal text. They work as backgrounds, not as text or small UI elements. Dark text on a pastel background is fine.' },
       { q: 'Are these pastel palettes free to use?', a: 'Yes, for anything, including commercial and client work, with no attribution required. Colors cannot be owned: a palette is four numbers.' },
@@ -124,7 +124,7 @@ export const COLORS = [
     tag: 'orange',
     featured: true,
     lead: [
-      'Coral is the warm pink-orange of the reef it is named after — orange '
+      'Coral is the warm pink-orange of the reef it is named after, orange '
       + 'with enough pink in it to feel soft rather than loud. The CSS keyword '
       + '<code>coral</code> is <strong>#FF7F50</strong>.',
     ],
@@ -146,7 +146,7 @@ export const COLORS = [
           + 'and the difference is mostly where they sit between orange and '
           + 'pink. Coral is at hue 16 and fully saturated: the most orange of '
           + 'the three and the most vivid. Salmon sits at hue 6, closer to '
-          + 'pink, and is slightly muted — it reads as fleshier and softer. '
+          + 'pink, and is slightly muted, so it reads as fleshier and softer. '
           + 'Peach is paler than both, high in lightness and low in '
           + 'saturation, which puts it in pastel territory rather than accent '
           + 'territory.',
@@ -159,7 +159,7 @@ export const COLORS = [
         h2: 'Using coral in a palette',
         paragraphs: [
           'Coral is unusually easy to build around, which is why it recurs in '
-          + 'branding. Teal is the classic pairing — close to its complement, '
+          + 'branding. Teal is the classic pairing, close to its complement, '
           + 'and the cool-against-warm contrast is strong without either color '
           + 'fighting the other. Navy gives a more restrained version of the '
           + 'same idea. Against cream or sand it goes quiet and becomes almost '
@@ -172,9 +172,9 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What is the hex code for coral?', a: 'Coral is #FF7F50, the CSS named color. In RGB that is rgb(255, 127, 80) and in HSL hsl(16, 100%, 66%) — a fully saturated orange-red at high lightness.' },
+      { q: 'What is the hex code for coral?', a: 'Coral is #FF7F50, the CSS named color. In RGB that is rgb(255, 127, 80) and in HSL hsl(16, 100%, 66%), a fully saturated orange-red at high lightness.' },
       { q: 'What is the difference between coral and salmon?', a: 'Coral sits at hue 16 and is fully saturated, so it leans orange and reads as vivid. Salmon sits nearer hue 6 and is slightly less saturated, so it leans pink and reads as softer.' },
-      { q: 'What color goes best with coral?', a: 'Teal is the standard answer and it earns it — close to coral\'s complement, so the contrast is strong while the two stay balanced. Navy is a calmer alternative, and cream or sand let coral sit as a warm neutral.' },
+      { q: 'What color goes best with coral?', a: 'Teal is the standard answer and it earns it, close to coral\'s complement, so the contrast is strong while the two stay balanced. Navy is a calmer alternative, and cream or sand let coral sit as a warm neutral.' },
       { q: 'Is coral pink or orange?', a: 'Orange, with pink in it. At hue 16 it sits in the orange-red range, but the high lightness and full saturation give it the softness people read as pink.' },
     ],
   },
@@ -192,9 +192,9 @@ export const COLORS = [
     hex: 'ffd700',
     tag: 'gold',
     featured: true,
-    title: 'Gold Color — Hex Code #FFD700, Shades & Gold Palettes',
+    title: 'Gold Color, Hex Code #FFD700, Shades & Gold Palettes',
     lead: [
-      'The CSS keyword <code>gold</code> is <strong>#FFD700</strong> — a bright, '
+      'The CSS keyword <code>gold</code> is <strong>#FFD700</strong>, a bright, '
       + 'fully saturated yellow. It is worth knowing up front that this is not '
       + 'the color most people picture when they say gold: metallic gold is '
       + 'darker and browner, closer to #D4AF37, because real gold is a '
@@ -219,7 +219,7 @@ export const COLORS = [
           + 'body, and a warm reflected bounce, all shifting as the surface '
           + 'moves. A single #FFD700 fill has none of that and reads as plain '
           + 'yellow.',
-          'The usual fix is a gradient rather than a fill — a light champagne '
+          'The usual fix is a gradient rather than a fill, a light champagne '
           + 'through a mid metallic gold to a bronze shadow, banded rather than '
           + 'smooth. The '
           + '<a href="/tools/gradient-maker/">gradient maker</a> is the quickest '
@@ -233,7 +233,7 @@ export const COLORS = [
           'Gold reads as luxury only against depth. On white it is close to '
           + 'invisible and looks like a highlighter; against charcoal, deep '
           + 'navy, forest green or near-black it does the job it is hired for. '
-          + 'That is a contrast fact as much as a taste one — the numbers below '
+          + 'That is a contrast fact as much as a taste one, the numbers below '
           + 'show how little separation gold has from a light background.',
           'It pairs conventionally with black and white for formal work, with '
           + 'deep green or burgundy for warmth, and with cream or ivory when '
@@ -246,7 +246,7 @@ export const COLORS = [
       { q: 'What is the hex code for gold?', a: 'The CSS named color gold is #FFD700, rgb(255, 215, 0). For a metallic-looking gold most designers use something closer to #D4AF37, which is darker and less saturated.' },
       { q: 'Why does my gold look yellow?', a: 'Because a flat color cannot be metallic. Metal reads as metal through a highlight, a darker body and a warm bounce, not through hue. A banded gradient from champagne through gold to bronze is the usual substitute.' },
       { q: 'What colors go with gold?', a: 'Depth. Charcoal, near-black, deep navy, forest green and burgundy all give gold the contrast it needs. On white or pale backgrounds it loses separation and reads as highlighter yellow.' },
-      { q: 'What is rose gold?', a: 'A copper-pink rather than a yellow — around #B76E79. It comes from gold alloyed with copper, and on screen it behaves like a muted pink, which is why it pairs with soft neutrals rather than with strong darks.' },
+      { q: 'What is rose gold?', a: 'A copper-pink rather than a yellow, around #B76E79. It comes from gold alloyed with copper, and on screen it behaves like a muted pink, which is why it pairs with soft neutrals rather than with strong darks.' },
     ],
   },
   { slug: 'mustard', name: 'Mustard', hex: 'ffdb58', tag: 'yellow' },
@@ -257,7 +257,7 @@ export const COLORS = [
     tag: 'cream',
     featured: true,
     lead: [
-      'Ivory is the off-white of old piano keys and wedding stationery — white '
+      'Ivory is the off-white of old piano keys and wedding stationery, white '
       + 'with a trace of yellow in it, warm enough to feel softer than paper '
       + 'but pale enough to still read as white. The CSS keyword '
       + '<code>ivory</code> is <strong>#FFFFF0</strong>.',
@@ -278,7 +278,7 @@ export const COLORS = [
         paragraphs: [
           'These four get used as if they were the same color, and the '
           + 'difference is easy to state once the numbers are in front of you. '
-          + 'Ivory sits at hue 60 with 97% lightness — the palest of the group '
+          + 'Ivory sits at hue 60 with 97% lightness, the palest of the group '
           + 'and barely tinted. Cream keeps a similar hue but drops to 91% '
           + 'lightness, so it reads as noticeably more yellow. Beige carries '
           + 'more of that yellow still and starts to feel like a color rather '
@@ -298,7 +298,7 @@ export const COLORS = [
           + 'than sterile. Pure white backgrounds are unforgiving under bright '
           + 'light; a few percent of warmth takes the glare off without anyone '
           + 'consciously noticing the page is not white.',
-          'It pairs naturally with warm neutrals — taupe, sand, soft brown — '
+          'It pairs naturally with warm neutrals, taupe, sand, soft brown, '
           + 'and with deep colors that have some warmth of their own, such as '
           + 'forest green, burgundy or navy. Against a cool grey it can look '
           + 'accidental, as though the white point drifted.',
@@ -306,10 +306,10 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What is the hex code for ivory?', a: 'Ivory is #FFFFF0 — the CSS named color. In RGB that is rgb(255, 255, 240), and in HSL hsl(60, 100%, 97%): full white with the blue channel pulled down slightly.' },
-      { q: 'Is ivory a shade of white?', a: 'Yes. It is an off-white — white with a small amount of yellow. At 97% lightness most people will call it white until it sits next to a pure white.' },
+      { q: 'What is the hex code for ivory?', a: 'Ivory is #FFFFF0, the CSS named color. In RGB that is rgb(255, 255, 240), and in HSL hsl(60, 100%, 97%): full white with the blue channel pulled down slightly.' },
+      { q: 'Is ivory a shade of white?', a: 'Yes. It is an off-white: white with a small amount of yellow. At 97% lightness most people will call it white until it sits next to a pure white.' },
       { q: 'What is the difference between ivory and cream?', a: 'Both are warm off-whites at roughly the same hue, but cream is darker and more saturated. Ivory reads as white with a hint of warmth; cream reads as a pale yellow.' },
-      { q: 'Can I use ivory text on a white background?', a: 'No. Ivory on white measures about 1.01:1, effectively invisible — normal text needs 4.5:1. Ivory is a background color.' },
+      { q: 'Can I use ivory text on a white background?', a: 'No. Ivory on white measures about 1.01:1, effectively invisible. Normal text needs 4.5:1. Ivory is a background color.' },
     ],
   },
   { slug: 'cream', name: 'Cream', hex: 'fffdd0', tag: 'cream' },
@@ -325,7 +325,7 @@ export const COLORS = [
     featured: true,
     lead: [
       'Lime green is the bright, slightly yellow-leaning green of a fresh lime '
-      + 'skin — loud enough to work as an accent, dark enough to still be a '
+      + 'skin, loud enough to work as an accent, dark enough to still be a '
       + 'green rather than a highlighter. The CSS keyword '
       + '<code>limegreen</code> is <strong>#32CD32</strong>.',
     ],
@@ -344,7 +344,7 @@ export const COLORS = [
         h2: 'Lime green, lime and chartreuse',
         paragraphs: [
           'Three names, three genuinely different colors. CSS <code>lime</code> '
-          + 'is #00FF00 — the green primary at full strength, with nothing '
+          + 'is #00FF00, the green primary at full strength, with nothing '
           + 'mixed in. It is not a color anyone chooses deliberately for '
           + 'design work: at 100% saturation it vibrates against most '
           + 'backgrounds and is almost impossible to use for text. Lime green '
@@ -362,7 +362,7 @@ export const COLORS = [
         paragraphs: [
           'Lime green is a high-energy color and it does not share space well. '
           + 'The reliable approach is to treat it as an accent against '
-          + 'neutrals — charcoal, warm grey, off-white — rather than pairing '
+          + 'neutrals, charcoal, warm grey, off-white, rather than pairing '
           + 'it with another saturated color. Where a second color is needed, '
           + 'deep purple is the direct complement and holds up; anything '
           + 'orange or red next to it tends to read as a warning.',
@@ -374,9 +374,9 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What is the hex code for lime green?', a: 'Lime green is #32CD32, the CSS named color limegreen. In RGB that is rgb(50, 205, 50) and in HSL hsl(120, 61%, 50%) — a pure green hue at just over half saturation.' },
+      { q: 'What is the hex code for lime green?', a: 'Lime green is #32CD32, the CSS named color limegreen. In RGB that is rgb(50, 205, 50) and in HSL hsl(120, 61%, 50%), a pure green hue at just over half saturation.' },
       { q: 'Is lime green the same as lime?', a: 'No. CSS lime is #00FF00, the green primary at full intensity. Lime green is #32CD32, the same hue but noticeably softer and darker.' },
-      { q: 'What colors go with lime green?', a: 'Neutrals first — charcoal, warm grey and off-white let it be the accent without competition. For a second color, deep purple is the direct complement.' },
+      { q: 'What colors go with lime green?', a: 'Neutrals first, charcoal, warm grey and off-white let it be the accent without competition. For a second color, deep purple is the direct complement.' },
       { q: 'Is lime green readable as text?', a: 'Not on white. #32CD32 measures around 2.12:1 against white, well below the 4.5:1 WCAG AA requires for normal text.' },
     ],
   },
@@ -408,13 +408,13 @@ export const COLORS = [
     tag: 'purple',
     featured: true,
     h1: 'Shades of purple: color palettes and hex codes',
-    title: 'Shades of Purple — Hex Codes, Scale & Purple Palettes',
+    title: 'Shades of Purple, Hex Codes, Scale & Purple Palettes',
     lead: [
       'Purple runs from the palest lavender to a near-black eggplant, and the '
       + 'shade decides the message: the light end reads soft and floral, the '
       + 'dark end expensive and serious. CSS defines <code>purple</code> as '
       + '<strong>#800080</strong>, though most interfaces use something '
-      + 'brighter — the scale below starts from #8E4EC6.',
+      + 'brighter, the scale below starts from #8E4EC6.',
     ],
     named: [
       { name: 'Lavender', hue: 320, L: 0.88, C: 0.06 },
@@ -433,8 +433,8 @@ export const COLORS = [
           'These get used interchangeably and are not the same thing. Violet '
           + 'is a single wavelength at the end of the visible spectrum and '
           + 'sits nearer blue, around hue 260 to 275. Purple has no single '
-          + 'wavelength — it is what the eye reports when red and blue arrive '
-          + 'together — and covers roughly 270 to 320. Past 320 the color '
+          + 'wavelength. It is what the eye reports when red and blue arrive '
+          + 'together, and covers roughly 270 to 320. Past 320 the color '
           + 'reads as magenta or fuchsia.',
           'The boundary matters in practice. Anything below hue 255 is tagged '
           + 'blue on this site and anything above 300 pink, so a palette '
@@ -451,8 +451,8 @@ export const COLORS = [
           + 'purples read as luxury, pale ones as calm.',
           'Yellow and gold are the direct complement and give the strongest '
           + 'contrast. For something calmer, an analogous scheme with blue or '
-          + 'magenta stays in the family, and warm neutrals — cream, sand, '
-          + 'taupe — soften purple without competing with it. The one place it '
+          + 'magenta stays in the family, and warm neutrals, cream, sand, '
+          + 'taupe, soften purple without competing with it. The one place it '
           + 'struggles is food, outside berries and aubergine, where it tends '
           + 'to read as artificial.',
         ],
@@ -497,8 +497,8 @@ export const COLORS = [
     slug: 'y2k',
     name: 'Y2K',
     /*
-     * A style, not a color. It behaves like a family page — no value card, no
-     * shade scale — but it must not be listed among the colors: Y2K names an
+     * A style, not a color. It behaves like a family page, no value card, no
+     * shade scale, but it must not be listed among the colors: Y2K names an
      * era, and the catalog is a list of shades. `pastel` stays a family because
      * "pastel" really is a description of colors; "Y2K" is a description of a
      * decade that happened to have colors.
@@ -508,7 +508,7 @@ export const COLORS = [
     tag: 'retro',
     featured: true,
     h1: 'Y2K color palettes: the 1999-2003 aesthetic in hex',
-    title: 'Y2K Colors — Palettes and Hex Codes for the Y2K Aesthetic',
+    title: 'Y2K Colors, Palettes and Hex Codes for the Y2K Aesthetic',
     lead: [
       'The Y2K palette is frosted translucent blue, chrome, bubblegum pink, '
       + 'lime and lavender \u2014 the colors of turn-of-the-millennium '
@@ -606,8 +606,8 @@ export const COLORS = [
       { q: 'What colors are Y2K?', a: 'Frosted translucent blue, chrome silver, bubblegum pink, lime green, lavender and acid yellow. The common thread is high saturation at high lightness, with cool colors carrying the palette and warm ones used as accents.' },
       { q: 'What is the main Y2K color?', a: 'Frosted ice blue, around #9AD9E8, together with the deeper translucent teal of the original iMac. If one shade signals the era, it is that pale see-through blue.' },
       { q: 'Is Y2K the same as vaporwave?', a: 'No. Vaporwave is a later internet aesthetic that borrows Y2K imagery but uses softer pastel pink and cyan with a hazy, nostalgic tone. Y2K is brighter, harder and more plastic, and it was a mainstream commercial look rather than a subculture.' },
-      { q: 'How do I get a chrome effect in CSS?', a: 'Not with a single color. Chrome needs a banded gradient — a light highlight, a mid grey body and a darker shadow — because what reads as metal is a reflection pattern rather than a hue. A flat #C8CCD4 fill just looks grey.' },
-      { q: 'Are Y2K colors accessible?', a: 'Often not, for text. Lime reaches only 1.21:1 against white and acid yellow 1.09:1, where normal text needs 4.5:1 — both are effectively invisible. They work as fills against dark type, or pick a darker variant of the same hue for anything readable. Frosted ice blue and chrome silver have the same problem at around 1.6:1.' },
+      { q: 'How do I get a chrome effect in CSS?', a: 'Not with a single color. Chrome needs a banded gradient, a light highlight, a mid grey body and a darker shadow, because what reads as metal is a reflection pattern rather than a hue. A flat #C8CCD4 fill just looks grey.' },
+      { q: 'Are Y2K colors accessible?', a: 'Often not, for text. Lime reaches only 1.21:1 against white and acid yellow 1.09:1, where normal text needs 4.5:1, both are effectively invisible. They work as fills against dark type, or pick a darker variant of the same hue for anything readable. Frosted ice blue and chrome silver have the same problem at around 1.6:1.' },
     ],
   },
 
@@ -617,9 +617,9 @@ export const COLORS = [
     name: 'Espresso',
     hex: '3c2218',
     tag: 'coffee',
-    title: 'Espresso Color — Hex Code #3C2218, Shades & Brown Palettes',
+    title: 'Espresso Color, Hex Code #3C2218, Shades & Brown Palettes',
     lead: [
-      'Espresso is the deep, almost-black brown of a fresh shot — dark enough '
+      'Espresso is the deep, almost-black brown of a fresh shot, dark enough '
       + 'to work as a background, warm enough to never read as grey. A common '
       + 'value is <strong>#3C2218</strong>, though unlike a CSS keyword there '
       + 'is no single official definition.',
@@ -641,7 +641,7 @@ export const COLORS = [
           'Espresso is often searched for alongside Pantone. Pantone is a '
           + 'proprietary color matching system, and its numbered values are '
           + 'licensed rather than public, so no Pantone codes are reproduced '
-          + 'here — any site listing them freely is republishing licensed data.',
+          + 'here, any site listing them freely is republishing licensed data.',
           'For print work the practical route is Pantone\'s own tools or a '
           + 'physical guide, since the whole point of the system is matching '
           + 'ink on paper, which no screen value can guarantee. What this page '
@@ -664,7 +664,7 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What is the hex code for espresso?', a: 'There is no official value — espresso is a descriptive name rather than a specified color. #3C2218 is a common choice: a very dark warm brown. Anything from roughly #3C2218 to #4A2C2A reads as espresso.' },
+      { q: 'What is the hex code for espresso?', a: 'There is no official value, espresso is a descriptive name rather than a specified color. #3C2218 is a common choice: a very dark warm brown. Anything from roughly #3C2218 to #4A2C2A reads as espresso.' },
       { q: 'Is espresso the same as dark brown?', a: 'It is a dark brown with a specific character: warm, slightly red, and dark enough to substitute for black. A neutral dark brown reads flatter and less appetising.' },
       { q: 'What colors go with espresso?', a: 'Cream and ivory for contrast without harshness, brass or gold for warmth, sage and olive for an earthier scheme. Avoid pairing it with pure black, where it stops reading as brown at all.' },
     ],
@@ -674,10 +674,10 @@ export const COLORS = [
     name: 'Transparent blue',
     hex: '4a90d9',
     tag: 'blue',
-    title: 'Transparent Blue — RGBA, Hex Alpha and Opacity Values',
+    title: 'Transparent Blue, RGBA, Hex Alpha and Opacity Values',
     lead: [
       'Transparency is not a color, it is a fourth channel. There is no hex '
-      + 'code for "transparent blue" — there is a blue plus an alpha value, and '
+      + 'code for "transparent blue", there is a blue plus an alpha value, and '
       + 'the result depends entirely on what sits behind it. The base used here '
       + 'is <strong>#4A90D9</strong>.',
     ],
@@ -696,7 +696,7 @@ export const COLORS = [
         paragraphs: [
           'The modern form is <code>rgb(74 144 217 / 50%)</code>, and the older '
           + '<code>rgba(74, 144, 217, 0.5)</code> still works everywhere. Hex '
-          + 'takes an alpha pair too — <code>#4A90D980</code> is the same color '
+          + 'takes an alpha pair too, <code>#4A90D980</code> is the same color '
           + 'at 50%, where the last two digits run from 00 to FF. And '
           + '<code>opacity: 0.5</code> is a fourth option that behaves '
           + 'differently: it fades the entire element including its text and '
@@ -711,7 +711,7 @@ export const COLORS = [
         paragraphs: [
           'A semi-transparent color has no fixed contrast ratio, because the '
           + 'ratio depends on the backdrop. The same blue at 50% clears WCAG AA '
-          + 'over white and fails over a photograph — and accessibility tools '
+          + 'over white and fails over a photograph, and accessibility tools '
           + 'generally cannot check it, since they cannot know what will be '
           + 'behind it at runtime.',
           'The safe approach is to compute the flattened result and test that. '
@@ -724,7 +724,7 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What is the hex code for transparent blue?', a: 'There is not one. Transparency is an alpha channel, not a color. You can write eight-digit hex — #4A90D980 is a blue at 50% alpha — but the visible result depends on the backdrop.' },
+      { q: 'What is the hex code for transparent blue?', a: 'There is not one. Transparency is an alpha channel, not a color. You can write eight-digit hex, #4A90D980 is a blue at 50% alpha, but the visible result depends on the backdrop.' },
       { q: 'How do I make a color transparent in CSS?', a: 'Use rgb(74 144 217 / 50%) or the older rgba(74, 144, 217, 0.5) on the property itself, or append two hex digits: #4A90D980. Avoid the opacity property unless you want the element\'s text and children faded too.' },
       { q: 'What is the difference between opacity and alpha?', a: 'Alpha applies to one color value, so a background can be semi-transparent while the text on it stays solid. The opacity property applies to the whole element and everything inside it.' },
       { q: 'Does a transparent color have a contrast ratio?', a: 'Not on its own. Contrast is only defined once the color is composited over a known backdrop, which is why automated checkers usually skip semi-transparent values. Flatten it against the real background and test that.' },
@@ -735,10 +735,10 @@ export const COLORS = [
     name: 'Gunmetal',
     hex: '36393e',
     tag: 'dark',
-    title: 'Gunmetal Gray — Hex Code #36393E, Shades & Dark Palettes',
+    title: 'Gunmetal Gray, Hex Code #36393E, Shades & Dark Palettes',
     lead: [
       'Gunmetal is the cool dark grey used as the background of most dark '
-      + 'interfaces — <strong>#36393E</strong> is a widely used value, dark '
+      + 'interfaces, <strong>#36393E</strong> is a widely used value, dark '
       + 'enough to rest the eye but far enough from black to keep depth. It '
       + 'carries a slight blue cast, which is what separates it from a neutral '
       + 'charcoal.',
@@ -758,7 +758,7 @@ export const COLORS = [
         h2: 'Why dark interfaces avoid pure black',
         paragraphs: [
           'Pure black backgrounds are harsh: white text on #000000 produces the '
-          + 'maximum possible contrast, 21:1, which causes halation — the text '
+          + 'maximum possible contrast, 21:1, which causes halation, the text '
           + 'appears to bleed into the background, particularly for people with '
           + 'astigmatism. Lifting the background a few percent to something like '
           + '#36393E takes the edge off while keeping the interface dark.',
@@ -776,15 +776,15 @@ export const COLORS = [
           + 'from somewhere else. The scale below gives all of those from one '
           + 'value.',
           'Keep the blue cast consistent. Mixing a cool grey base with warm grey '
-          + 'surfaces is a common and very visible mistake — the surfaces look '
+          + 'surfaces is a common and very visible mistake, the surfaces look '
           + 'dirty rather than lighter.',
         ],
       },
     ],
     faq: [
-      { q: 'What color is #36393E?', a: 'A dark cool grey with a slight blue cast — gunmetal. It is a common background value for dark-mode interfaces, dark enough to rest the eye without the harshness of pure black.' },
+      { q: 'What color is #36393E?', a: 'A dark cool grey with a slight blue cast, gunmetal. It is a common background value for dark-mode interfaces, dark enough to rest the eye without the harshness of pure black.' },
       { q: 'Is gunmetal the same as charcoal?', a: 'Close but not identical. Charcoal (#36454F) is lighter and noticeably bluer. Gunmetal is darker and closer to neutral, which is why it works better as a background than as a surface.' },
-      { q: 'Why not use pure black for dark mode?', a: 'White text on pure black hits 21:1 contrast, which causes halation — text appearing to bleed into the background. It also removes any room for elevation, since a raised surface can only go lighter.' },
+      { q: 'Why not use pure black for dark mode?', a: 'White text on pure black hits 21:1 contrast, which causes halation, text appearing to bleed into the background. It also removes any room for elevation, since a raised surface can only go lighter.' },
     ],
   },
   {
@@ -792,9 +792,9 @@ export const COLORS = [
     name: 'Rose pink',
     hex: 'fc94af',
     tag: 'pink',
-    title: 'Rose Pink — Hex Code #FC94AF, Shades & Pink Palettes',
+    title: 'Rose Pink, Hex Code #FC94AF, Shades & Pink Palettes',
     lead: [
-      'Rose pink is a soft, slightly warm pink — <strong>#FC94AF</strong> is a '
+      'Rose pink is a soft, slightly warm pink, <strong>#FC94AF</strong> is a '
       + 'widely used value, light enough to feel gentle without tipping into '
       + 'pastel. It sits between the paleness of blush and the intensity of hot '
       + 'pink.',
@@ -837,7 +837,7 @@ export const COLORS = [
       },
     ],
     faq: [
-      { q: 'What color is #FC94AF?', a: 'A soft, warm rose pink — light and gentle without being a pastel. It sits between baby pink and hot pink in intensity, with a red rather than purple lean.' },
+      { q: 'What color is #FC94AF?', a: 'A soft, warm rose pink, light and gentle without being a pastel. It sits between baby pink and hot pink in intensity, with a red rather than purple lean.' },
       { q: 'What is the difference between rose pink and blush?', a: 'Rose pink is lighter and brighter; blush is deeper and duller, closer to a muted red. Both are warm, which is what separates them from mauve and lilac.' },
       { q: 'What colors go with rose pink?', a: 'Deep green and navy give it contrast without competing, and warm neutrals such as cream and sand keep the scheme soft. Cool greys wash it out.' },
     ],
@@ -952,7 +952,7 @@ export const COLORS = [
    * to. The gaps were measured, not guessed: the azure sector had no entry at
    * all, blue had one, and the catalog held only three dark and nine deep
    * shades against eighteen light ones. These 32 names close it to under 2%,
-   * and every one of them is the nearest match for real swatches — none was
+   * and every one of them is the nearest match for real swatches, none was
    * added just to pad the list.
    *
    * Each carries its own `lead` rather than relying on the generated sentence.
@@ -1046,7 +1046,7 @@ export const COLORS = [
     hex: '5b6f8c',
     tag: 'blue',
     lead: [
-      'A muted blue-grey named after the stone. Note that CSS also has a keyword `slateblue`, which is a much more saturated violet — they are not the same colour.',
+      'A muted blue-grey named after the stone. Note that CSS also has a keyword `slateblue`, which is a much more saturated violet. They are not the same colour.',
     ],
   },
   {
@@ -1154,7 +1154,7 @@ export const COLORS = [
     hex: '8b7b4f',
     tag: 'earth',
     lead: [
-      'A dull yellow-brown. Worth knowing that the CSS keyword `khaki` is a much lighter, more yellow colour than the fabric the word comes from — this is the fabric.',
+      'A dull yellow-brown. Worth knowing that the CSS keyword `khaki` is a much lighter, more yellow colour than the fabric the word comes from. This is the fabric.',
     ],
   },
   {
@@ -1269,7 +1269,7 @@ export const COLOR_GROUPS = [
 export const STYLE_PAGES = COLORS.filter((color) => color.kind === 'style');
 
 /**
- * Slug, name and hex only — nothing else.
+ * Slug, name and hex only, nothing else.
  *
  * Used to match an arbitrary palette swatch to the closest page we publish. It
  * exists as a separate export because the full catalog carries several thousand

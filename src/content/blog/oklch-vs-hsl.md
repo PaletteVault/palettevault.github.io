@@ -19,7 +19,7 @@ Here are two colors that HSL claims are equally light:
 .b { background: hsl(240 100% 50%); }  /* blue */
 ```
 
-Both are at 50% lightness. Look at them and the yellow is glaring while the blue is nearly black. Measure them and the gap is not subtle — the yellow has nearly thirteen times the relative luminance of the blue.
+Both are at 50% lightness. Look at them and the yellow is glaring while the blue is nearly black. Measure them and the gap is not subtle, the yellow has nearly thirteen times the relative luminance of the blue.
 
 The reason is that HSL was never built to model perception. It is a straightforward geometric rearrangement of the RGB cube into a cylinder, which made it easy to compute on 1970s hardware. "Lightness" in HSL is just the midpoint between the largest and smallest RGB channel. For yellow, `rgb(255 255 0)`, that midpoint is 127.5. For blue, `rgb(0 0 255)`, it is also 127.5. The arithmetic agrees. Your eye does not, because the eye is far more sensitive to green light than to blue, and yellow is mostly green.
 
@@ -29,7 +29,7 @@ So every HSL scale inherits a distortion that changes with hue. That is why a ye
 
 OKLCH is the cylindrical form of Oklab, a color space published by Björn Ottosson in 2020 and designed around one goal: equal numeric steps should look like equal steps. It has the same three axes as HSL, in a different order and with different meanings.
 
-**Lightness** runs 0% to 100% and is perceptual. Move from 40% to 50% and it looks exactly as much lighter as moving from 70% to 80%. Set two colors to the same lightness and they will read as equally light regardless of hue — the yellow-versus-blue problem simply does not occur.
+**Lightness** runs 0% to 100% and is perceptual. Move from 40% to 50% and it looks exactly as much lighter as moving from 70% to 80%. Set two colors to the same lightness and they will read as equally light regardless of hue, the yellow-versus-blue problem simply does not occur.
 
 **Chroma** is colorfulness. It starts at 0 for grey and, unlike HSL saturation, is not a percentage of anything.
 
@@ -49,7 +49,7 @@ The practical payoff shows up the moment you build anything with more than one c
 
 Hue is held constant, lightness walks down in even steps, and chroma tapers at both ends because very light and very dark colors physically hold less of it. Swap 262 for any other hue and the scale keeps its shape. That is the thing HSL cannot do.
 
-Note the taper is not decoration. Push `--blue-100` to a chroma of 0.03 and it stops being displayable at all — at 96% lightness there is only about 0.019 of chroma available at this hue. Which brings us to the awkward part.
+Note the taper is not decoration. Push `--blue-100` to a chroma of 0.03 and it stops being displayable at all, at 96% lightness there is only about 0.019 of chroma available at this hue. Which brings us to the awkward part.
 
 ## Gradients stop going grey
 
@@ -63,7 +63,7 @@ background: linear-gradient(90deg, #0066ff, #ff0066);
 background: linear-gradient(in oklch 90deg, #0066ff, #ff0066);
 ```
 
-The `in oklch` keyword tells the browser which space to interpolate in. Blue to pink is the case where the difference is most obvious — in sRGB the middle turns a dull mauve.
+The `in oklch` keyword tells the browser which space to interpolate in. Blue to pink is the case where the difference is most obvious, in sRGB the middle turns a dull mauve.
 
 There is one trap. In a cylindrical space the browser has to decide which way around the hue circle to travel, and for colors that are nearly opposite it can take the long way, sweeping through hues that belong to neither end. If a gradient suddenly detours through green, add `shorter hue`:
 
@@ -75,15 +75,15 @@ background: linear-gradient(in oklch shorter hue 90deg, #0066ff, #ff0066);
 
 OKLCH is not a free upgrade, and the honest version of this comparison has to include the cost.
 
-HSL saturation is always 0–100%, and 100% always means something. Chroma has no such ceiling. Real values run from 0 to roughly 0.37, but the usable maximum at any moment depends on the other two axes, because the set of colors a screen can display is a lopsided solid in OKLCH whose edge moves with both lightness and hue.
+HSL saturation is always 0-100%, and 100% always means something. Chroma has no such ceiling. Real values run from 0 to roughly 0.37, but the usable maximum at any moment depends on the other two axes, because the set of colors a screen can display is a lopsided solid in OKLCH whose edge moves with both lightness and hue.
 
-Concretely: `oklch(65% 0.2 262)` is an ordinary blue. `oklch(95% 0.2 100)` is a pale yellow that no monitor can show — at 95% lightness there is almost no chroma available at any hue, and the browser will quietly map it to something displayable. Nothing warns you. The value is valid CSS and renders fine; it just is not the color you asked for.
+Concretely: `oklch(65% 0.2 262)` is an ordinary blue. `oklch(95% 0.2 100)` is a pale yellow that no monitor can show, at 95% lightness there is almost no chroma available at any hue, and the browser will quietly map it to something displayable. Nothing warns you. The value is valid CSS and renders fine; it just is not the color you asked for.
 
 This is the one place where a picker earns its keep. Our [OKLCH picker](/tools/oklch/) marks the exact point on the chroma track where the current lightness and hue leave the sRGB gamut, and a second marker for Display P3, so you can see how much headroom you have instead of discovering the limit by accident.
 
 ## Wide gamut, and when to care
 
-Because OKLCH describes colors independently of any particular screen, it can express colors outside sRGB — which is the point, if you are targeting the P3 displays now standard on Apple hardware and most OLED phones.
+Because OKLCH describes colors independently of any particular screen, so it can express colors outside sRGB, which is the point, if you are targeting the P3 displays now standard on Apple hardware and most OLED phones.
 
 Two different things can go wrong, and they need different responses. A browser too old to parse `oklch()` discards the declaration, so it needs an earlier one to fall back to. A current browser in front of an sRGB monitor parses it fine and gamut-maps the result, which needs nothing from you.
 
@@ -106,7 +106,7 @@ That is enough for most work, since later declarations win and unparseable ones 
 }
 ```
 
-Support is good now — current Chrome, Edge, Safari and Firefox all handle `oklch()`. The fallback is about older versions still in the wild, not about a feature nobody has shipped.
+Support is good now, current Chrome, Edge, Safari and Firefox all handle `oklch()`. The fallback is about older versions still in the wild, not about a feature nobody has shipped.
 
 ## What OKLCH does not do
 
@@ -114,7 +114,7 @@ One clarification worth making, because it causes real bugs. Perceptual lightnes
 
 WCAG contrast is computed from relative luminance with its own weighting, and it is a ratio, not a difference. Take the scale above: `--blue-900` reaches 16.3:1 against white, `--blue-500` only 3.6:1, and `--blue-100` a useless 1.1:1. The lightness steps between them are even; the ratios are nothing of the kind, because a ratio compresses hard at the light end. OKLCH makes a scale look even, which is a design property; it does not certify that any pair of steps is legible together. Check the pairs you actually ship in a [contrast checker](/tools/contrast/).
 
-Similarly, OKLCH will not tell you which colors go together. It makes relationships easier to express and adjust — same hue, different lightness; same lightness, different hue — but choosing the hues is still a design decision.
+Similarly, OKLCH will not tell you which colors go together. It makes relationships easier to express and adjust, same hue, different lightness; same lightness, different hue, but choosing the hues is still a design decision.
 
 ## Where to start
 
@@ -122,4 +122,4 @@ Converting a single brand color to OKLCH gains you nothing on its own. The value
 
 So the useful first step is a scale. Take a color you already use, drop it into the [color picker](/tools/picker/) to see an eleven-step ramp generated in OKLCH, and compare it against whatever your current scale is. If your existing mid-tones look chalkier and your dark end muddier, you have found the HSL distortion in your own design system.
 
-From there, the [palette generator](/tools/generate/) builds four-color schemes in OKLCH, and every palette on this site was generated that way — which is why they hold together at a glance rather than looking like four colors that happen to share a page.
+From there, the [palette generator](/tools/generate/) builds four-color schemes in OKLCH, and every palette on this site was generated that way, which is why they hold together at a glance rather than looking like four colors that happen to share a page.

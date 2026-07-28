@@ -5,9 +5,9 @@
  *
  *  Two published, factual color sets used by the reference tools:
  *
- *    TAILWIND  — the default palette shipped with Tailwind CSS (MIT licensed).
+ *    TAILWIND, the default palette shipped with Tailwind CSS (MIT licensed).
  *                Reproduced here purely as a lookup table.
- *    CSS_NAMED — the named colors defined by the CSS Color specification.
+ *    CSS_NAMED, the named colors defined by the CSS Color specification.
  *
  *  Neither is generated, so both live in source rather than in the data chunks.
  * ============================================================================

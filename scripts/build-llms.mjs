@@ -80,6 +80,7 @@ const browse = [
   link('Random', '/random/'),
   link('All colors - names, hex codes, shades', '/colors/'),
   link('All tools', '/tools/'),
+  link('Plugins - Chrome extension and Obsidian plugin', '/plugins/'),
   link('Blog', '/blog/'),
 ].join('\n');
 

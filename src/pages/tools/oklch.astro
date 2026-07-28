@@ -9,7 +9,7 @@ const FAQ = [
 	{
 		q: 'What does OKLCH stand for?',
 		a:
-			'Ok — from the Oklab color space it is built on — plus Lightness, Chroma and Hue. ' +
+			'Ok, from the Oklab color space it is built on, plus Lightness, Chroma and Hue. ' +
 			'It is the cylindrical form of Oklab, the same relationship HSL has to a cube of RGB.',
 	},
 	{
@@ -40,7 +40,7 @@ const FAQ = [
 		q: 'What happens if a color is outside sRGB?',
 		a:
 			'The browser gamut-maps it to something displayable, and on an sRGB monitor you see the ' +
-			'approximation rather than the value you wrote. The color is still valid — it simply ' +
+			'approximation rather than the value you wrote. The color is still valid, it simply ' +
 			'needs a fallback so the mapping is your choice rather than the browser’s.',
 	},
 ];
@@ -322,7 +322,7 @@ const schema = [
 		<p>
 			OKLCH describes a color the way a person would: how light it is, how colorful it is, and what
 			hue it is. That sounds like HSL, and the syntax looks similar, but the numbers behave very
-			differently — which is the whole reason to use it.
+			differently, which is the whole reason to use it.
 		</p>
 		<p>
 			<strong>Lightness</strong> runs from 0% to 100% and is perceptual. Move it from 40% to 50% and the
@@ -336,7 +336,7 @@ const schema = [
 			<strong>Chroma</strong> is colorfulness, and unlike HSL saturation it is not a percentage of anything.
 			It starts at 0 for grey and has no defined ceiling, because the ceiling belongs to the display rather
 			than the color. Real values top out somewhere around 0.37, but the useful maximum at any given moment
-			depends on the other two axes — which is what the markers on the chroma track are for.
+			depends on the other two axes, which is what the markers on the chroma track are for.
 		</p>
 		<p>
 			<strong>Hue</strong> is an angle in degrees. Roughly: 30 is red, 70 orange, 110 yellow-green, 145
@@ -347,14 +347,14 @@ const schema = [
 		<h2>Why chroma runs out at different points</h2>
 		<p>
 			The set of colors a screen can show is a cube in RGB, but that cube becomes a lopsided, lumpy
-			solid when you re-plot it in OKLCH. Its widest point sits around 60–70% lightness, and it is
-			much wider at some hues than others — yellows and greens hold far more chroma than blues and
+			solid when you re-plot it in OKLCH. Its widest point sits around 60-70% lightness, and it is
+			much wider at some hues than others, yellows and greens hold far more chroma than blues and
 			purples do.
 		</p>
 		<p>
 			So there is no single number to cap the chroma slider at. Set lightness to 95% and almost no
 			chroma is available at any hue; set it to 65% and a saturated blue has plenty. This is the one
-			genuinely awkward thing about OKLCH compared with HSL, where saturation is always 0–100% and
+			genuinely awkward thing about OKLCH compared with HSL, where saturation is always 0-100% and
 			always means something. The trade is worth making, but it does mean a picker has to show you
 			the boundary rather than pretend it is not there.
 		</p>
@@ -393,7 +393,7 @@ const schema = [
 }`}</code></pre
 		>
 		<p>
-			Copy the HEX row above for the first line and the OKLCH row for the second — the tool already
+			Copy the HEX row above for the first line and the OKLCH row for the second, the tool already
 			reduces chroma for the HEX value, so the fallback is the closest sRGB match rather than a
 			clipped one.
 		</p>
@@ -401,7 +401,7 @@ const schema = [
 		<h2>Where this is worth the effort</h2>
 		<p>
 			Three jobs where OKLCH pays for itself immediately. <strong>Color scales</strong>: hold chroma
-			and hue, walk lightness, and you get a ramp whose steps look even — try the{' '}
+			and hue, walk lightness, and you get a ramp whose steps look even, try the{' '}
 			<a href='/tools/picker/'>color picker</a> to see one generated from any starting color.
 			<strong>Gradients</strong>: interpolating in OKLCH keeps the midpoint saturated instead of
 			passing through grey, which is what the <a href='/tools/gradient-maker/'>gradient maker</a>{
@@ -409,7 +409,7 @@ const schema = [
 			}
 			does. <strong>Theming</strong>: because lightness is perceptual, you can derive a whole
 			dark-mode palette by flipping lightness values and trust that the contrast relationships
-			roughly hold — then confirm them in the <a href='/tools/contrast/'>contrast checker</a>.
+			roughly hold, then confirm them in the <a href='/tools/contrast/'>contrast checker</a>.
 		</p>
 		<p>
 			Where it is not worth it: a one-off brand color that a designer handed you as a hex code.
@@ -498,8 +498,7 @@ const schema = [
 		background: var(--swatch, #4f7cf0);
 	}
 
-	.okl-preview__value,
-	.okl-preview .okl-badge {
+	.okl-preview__value.okl-preview .okl-badge {
 		position: relative;
 	}
 

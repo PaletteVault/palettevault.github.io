@@ -8,7 +8,7 @@
  *   • the grid container, infinite-scroll sentinel and empty state;
  *   • handing the data source configuration to gallery.js via data attributes.
  *
- * The script is shared by every feed page — see lib/gallery.js.
+ * The script is shared by every feed page, see lib/gallery.js.
  */
 import PaletteCard from './PaletteCard.astro';
 import { getMeta } from '../lib/data.server.js';
@@ -29,7 +29,7 @@ interface Props {
   emptyText?: string;
   /**
    * Whether the feed keeps loading as the visitor scrolls. False renders a
-   * fixed batch with no sentinel — used on the home page, where the grid is a
+   * fixed batch with no sentinel, used on the home page, where the grid is a
    * preview rather than the whole catalog.
    */
   infinite?: boolean;

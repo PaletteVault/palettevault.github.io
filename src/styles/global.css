@@ -33,7 +33,7 @@
 	 * Three widths, one per kind of content, and the reason each exists.
 	 *
 	 * Collapsing all of them into one number was a mistake: it squeezed the
-	 * palette grid — the actual product — down to a reading column, so the
+	 * palette grid, the actual product, down to a reading column, so the
 	 * gallery showed three cards a row instead of five. A grid wants the screen;
 	 * an article wants about 70 characters. Those are not the same requirement
 	 * and pretending otherwise breaks the more important one.
@@ -243,7 +243,7 @@ button {
 /*
  * The menu icon is drawn with lines, not shapes.
  *
- * `.icon-button svg` fills its paths, which is right for the theme icons —
+ * `.icon-button svg` fills its paths, which is right for the theme icons
  * those are closed outlines. A hamburger is three horizontal strokes with zero
  * enclosed area, so filling it paints nothing at all: the button was present,
  * focusable and completely invisible. It needs stroking instead.
@@ -282,7 +282,7 @@ button {
  * Text-only pages: the shell itself becomes the reading column.
  *
  * Capping the measure on each block instead left the text as a narrow ribbon
- * pinned to the left of a 1180px container, with the rest of the page empty —
+ * pinned to the left of a 1180px container, with the rest of the page empty
  * technically the right line length, and it looked broken. Making the
  * container the measure means the crumbs, the heading and the body all align
  * to the same edges and the whole column sits in the middle of the viewport.
@@ -310,25 +310,21 @@ button {
  *
  * Applying 17px to the copy on a gallery page was the other half of the
  * mistake: 17px in a capped block beside a full-width grid reads as an article
- * that got cut off. At the interface size the same block reads as what it is —
+ * that got cut off. At the interface size the same block reads as what it is
  * supporting copy under the cards.
  */
-.shell--prose .prose,
-.shell--prose .post__body,
-.shell--prose .page-note {
+.shell--prose .prose.shell--prose .post__body.shell--prose .page-note {
 	font-size: 17px;
 	line-height: 1.72;
 }
 
-.shell--prose .prose li,
-.shell--prose .post__body li {
+.shell--prose .prose li.shell--prose .post__body li {
 	margin-bottom: 6px;
 }
 
 /* Code keeps the interface size: monospace at 17px is disproportionately wide
    and would break lines that fit fine elsewhere. */
-.post__body pre,
-.prose pre {
+.post__body pre.prose pre {
 	font-size: 13.5px;
 }
 
@@ -340,6 +336,18 @@ button {
 
 /* ============================================================== sidebar == */
 
+/*
+ * The sidebar is capped to the viewport and scrolls on its own.
+ *
+ * Letting it run full height was tried and reverted. Without the cap a long
+ * category list pushes past the fold, and because the sidebar is sticky the
+ * entries below the fold cannot be reached at all: the element stays pinned
+ * while the page scrolls, so its own overflow is the only thing that can move
+ * them into view.
+ *
+ * The second scrollbar this produces is the cost of that, and it is the
+ * cheaper of the two problems.
+ */
 .sidebar {
 	position: sticky;
 	top: calc(var(--header-h) + 26px);
@@ -488,8 +496,7 @@ button {
 	overflow: hidden;
 }
 
-.card__hit:hover ~ .swatch:hover,
-.swatch:hover {
+.card__hit:hover ~ .swatch:hover.swatch:hover {
 	filter: brightness(1.04);
 }
 
@@ -549,16 +556,13 @@ button {
 	background: rgb(0 0 0 / 10%);
 }
 
-.card:hover .swatch__hex,
-.card:hover .swatch__copy,
-.swatch__copy:focus-visible {
+.card:hover .swatch__hex.card:hover .swatch__copy.swatch__copy:focus-visible {
 	opacity: 1;
 }
 
 /* :hover never fires on touch devices, so keep the controls visible. */
 @media (hover: none) {
-	.swatch__hex,
-	.swatch__copy {
+	.swatch__hex.swatch__copy {
 		opacity: 1;
 	}
 }
@@ -675,8 +679,7 @@ button {
 	transition: opacity 0.15s;
 }
 
-.card:hover .card__open-icon,
-.card__open:focus-visible .card__open-icon {
+.card:hover .card__open-icon.card__open:focus-visible .card__open-icon {
 	opacity: 1;
 }
 
@@ -1045,7 +1048,7 @@ button {
 
 	/* Visually hidden rather than display:none. The logo image is decorative
      (alt=""), so removing this text outright would leave the link with no
-     accessible name — which is exactly what an audit flags, and only at
+     accessible name, which is exactly what an audit flags, and only at
      mobile widths where the rule applies. */
 	.logo span {
 		position: absolute;
@@ -1106,7 +1109,7 @@ button {
 /*
  * These rules used to live in tools.css, which only the tool pages import. So
  * on the blog, the privacy page and all 57 color pages the class matched
- * nothing and the trail rendered as plain body copy at full size — which is
+ * nothing and the trail rendered as plain body copy at full size, which is
  * what it looked like, because it was not styled at all.
  */
 .crumbs {
@@ -1463,7 +1466,15 @@ button {
 	color: var(--text-muted);
 }
 
-/* One row on the home page, a full grid on /colors/. */
+/*
+ * The color lists on the home page and on /colors/.
+ *
+ * This was written as `.color-row.color-index`, a compound selector needing
+ * both classes on one element. The home page ships `color-row` alone and
+ * /colors/ ships `color-index` alone, so the rule matched nothing anywhere and
+ * both lists fell back to plain bullets at full width. A comma is the whole
+ * fix: they are two names for the same grid.
+ */
 .color-row,
 .color-index {
 	display: grid;
@@ -1842,8 +1853,7 @@ button {
  * Headings get scroll-margin so that following a contents link does not park
  * the heading underneath the sticky header.
  */
-.post__body h2,
-.post__body h3 {
+.post__body h2.post__body h3 {
 	scroll-margin-top: calc(var(--header-h) + 20px);
 	margin-top: 2.2em;
 	letter-spacing: -0.015em;
@@ -1889,7 +1899,7 @@ button {
  * One breakpoint set, in one place, rather than tweaks scattered per component.
  *
  * 860px is where the five nav links plus the wordmark stop fitting on one line
- * and start scrolling out of view with no indication they are there — which is
+ * and start scrolling out of view with no indication they are there, which is
  * exactly what a horizontal-scroll nav does on a phone.
  */
 
@@ -1982,8 +1992,7 @@ button {
 		margin-bottom: 20px;
 	}
 
-	.post__body h2,
-	.post__body h3 {
+	.post__body h2.post__body h3 {
 		margin-top: 1.7em;
 	}
 
@@ -2078,4 +2087,79 @@ button {
 
 .detail-swatch__explore:hover span {
 	transform: translateX(2px);
+}
+
+/*
+ * The extension link in the header.
+ *
+ * A filled pill, not an outline. It is the only element in the header asking
+ * for an action rather than reflecting state, and an outline made it read as a
+ * third toggle sitting beside the theme and menu buttons.
+ *
+ * The mark keeps Chrome's own colors. It is the one thing that makes the
+ * button legible at a glance: a monochrome outline of the same shape reads as
+ * a generic settings icon, which is what the first version looked like.
+ */
+.header__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 8px 16px 8px 12px;
+	margin-right: 6px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	background: var(--surface);
+	box-shadow: var(--shadow);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	color: inherit;
+	white-space: nowrap;
+	transition:
+		box-shadow 0.15s,
+		border-color 0.15s,
+		transform 0.15s;
+}
+
+.header__cta:hover {
+	border-color: var(--text-muted);
+	box-shadow: var(--shadow-hover);
+	transform: translateY(-1px);
+}
+
+.header__cta:active {
+	transform: translateY(0);
+}
+
+/*
+ * Sized and filled independently of `.icon-button svg`, which forces
+ * `fill: currentcolor` on everything it contains. Inheriting that here would
+ * flatten the whole mark to one color and undo the only reason it is in
+ * color.
+ */
+.header__cta-mark {
+	width: 20px;
+	height: 20px;
+	flex: 0 0 auto;
+}
+
+/*
+ * Below the nav breakpoint the label is dropped and the mark carries it, so
+ * the header does not wrap onto two lines on a phone. The text stays in the
+ * DOM for screen readers rather than being removed.
+ */
+@media (max-width: 860px) {
+	.header__cta span {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.header__cta {
+		padding: 8px;
+		margin-right: 2px;
+	}
 }

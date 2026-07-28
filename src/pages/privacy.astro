@@ -8,7 +8,7 @@
  * leaves the browser is a like counter keyed by palette with nothing attached
  * to identify who sent it.
  *
- * The parts we do not control — what a host records in its own server logs —
+ * The parts we do not control, what a host records in its own server logs
  * are stated plainly rather than glossed over, because a policy that claims
  * "we collect nothing" while sitting behind a CDN that logs IP addresses is
  * not accurate.
@@ -30,8 +30,8 @@ const schema = [
 ---
 
 <Layout
-	title='Privacy Policy — Palette Vault'
-	description='What Palette Vault stores and what it does not. No analytics, no cookies, no accounts — the only data that leaves your browser is an anonymous like count.'
+	title='Privacy Policy, Palette Vault'
+	description='What Palette Vault stores and what it does not. No analytics, no cookies, no accounts, the only data that leaves your browser is an anonymous like count.'
 	prose
 	schema={schema}>
 	<nav
@@ -69,11 +69,11 @@ const schema = [
 		</p>
 		<ul>
 			<li>
-				<code>palette.theme</code> — whether you chose the light or dark theme, so the site does not flash
+				<code>palette.theme</code>, whether you chose the light or dark theme, so the site does not flash
 				the wrong one on your next visit.
 			</li>
 			<li>
-				<code>palette.likes.v2</code> — the list of palettes you have liked, which is what fills your
+				<code>palette.likes.v2</code>, the list of palettes you have liked, which is what fills your
 				collection page.
 			</li>
 		</ul>
@@ -85,7 +85,7 @@ const schema = [
 		</p>
 		<p>
 			The tools behave the same way. When you extract a palette from an image, the image is read and
-			processed by JavaScript on your own machine — it is never uploaded, and no copy of it exists
+			processed by JavaScript on your own machine, it is never uploaded, and no copy of it exists
 			on any server. The same is true of the eyedropper and page-scanning features in the browser
 			extension.
 		</p>
@@ -94,7 +94,7 @@ const schema = [
 		<p>
 			One thing: the like counter. When you like a palette, the site asks a Firebase Realtime
 			Database to add one to a number stored under that palette's identifier. The record is a
-			palette and a count, and nothing else — no identifier for you, no session, no timestamp, no
+			palette and a count, and nothing else, no identifier for you, no session, no timestamp, no
 			address. There is deliberately no per-user record, which is why the site cannot tell your
 			likes apart from anyone else's, and why your collection has to be kept locally instead.
 		</p>

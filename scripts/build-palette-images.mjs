@@ -11,11 +11,11 @@
  *    • `og:image` can point at that palette rather than the site-wide banner;
  *    • Pinterest's share endpoint has a real `media` URL to fetch. Pinterest
  *      downloads the image server-side, so blob: and data: URLs are useless
- *      to it — only a public http(s) URL works.
+ *      to it, only a public http(s) URL works.
  *
  *  Two variants per palette:
- *    <slug>.png       1200x630  — Open Graph / Twitter, vertical bands
- *    <slug>-pin.png   1000x1500 — Pinterest, 2:3 portrait with labels
+ *    <slug>.png       1200x630, Open Graph / Twitter, vertical bands
+ *    <slug>-pin.png   1000x1500, Pinterest, 2:3 portrait with labels
  *
  *  Pinterest ranks and crops around a 2:3 ratio; a 1200x630 landscape image
  *  gets letterboxed into a thin strip in the feed, which is why the portrait
@@ -23,7 +23,7 @@
  *
  *  Only palettes that are actually pre-rendered as HTML get an image. Pages
  *  served through the rewrite fallback all share one HTML file, so they cannot
- *  carry per-palette metadata anyway — no image would ever be referenced.
+ *  carry per-palette metadata anyway, no image would ever be referenced.
  *
  *  Output is 8-bit palette PNG. Flat colour fields compress roughly 4x better
  *  that way: ~1 KB instead of ~3 KB per file, which matters across thousands.
@@ -102,8 +102,7 @@ def load_font(size, bold=False):
         "/usr/share/fonts/truetype/liberation/LiberationSans-%s.ttf"
         % ("Bold" if bold else "Regular"),
         "C:\\Windows\\Fonts\\segoeui%s.ttf" % ("b" if bold else ""),
-        "C:\\Windows\\Fonts\\arial%s.ttf" % ("bd" if bold else ""),
-    ):
+        "C:\\Windows\\Fonts\\arial%s.ttf" % ("bd" if bold else "")):
         if os.path.exists(path):
             return ImageFont.truetype(path, size)
     return ImageFont.load_default()
@@ -140,7 +139,7 @@ def save(image, path):
 
 
 def render_og(job, width=1200, height=630):
-    """Landscape, vertical bands — the shape Open Graph and Twitter expect."""
+    """Landscape, vertical bands, the shape Open Graph and Twitter expect."""
     image = Image.new("RGB", (width, height))
     draw = ImageDraw.Draw(image)
     band = width / len(job["colors"])
@@ -155,14 +154,13 @@ def render_og(job, width=1200, height=630):
             "#" + hex_value.upper(),
             font=MONO_LG,
             fill=ink(hex_value),
-            anchor="mm",
-        )
+            anchor="mm")
 
     return image
 
 
 def render_pin(job, width=1000, height=1500):
-    """Portrait 2:3 — the ratio Pinterest crops and ranks around."""
+    """Portrait 2:3, the ratio Pinterest crops and ranks around."""
     image = Image.new("RGB", (width, height))
     draw = ImageDraw.Draw(image)
 
@@ -178,8 +176,7 @@ def render_pin(job, width=1000, height=1500):
             "#" + hex_value.upper(),
             font=MONO_PIN,
             fill=ink(hex_value),
-            anchor="lm",
-        )
+            anchor="lm")
 
     # Caption strip: the palette name reads at feed thumbnail size, where the
     # HEX codes are already illegible.

@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  COLOR LANDING PAGES — DATA
+ *  COLOR LANDING PAGES, DATA
  * ============================================================================
  *
  *  Each entry becomes one page at /<slug>/ rendered by ColorLanding.astro.
@@ -8,7 +8,7 @@
  *  The split is deliberate: markup is written once, words are written per
  *  page. Three hand-built landing pages had already produced three copies of
  *  the same 250 lines of structure, and a fourth would have made the drift
- *  permanent — the value of these pages is entirely in the prose, not in the
+ *  permanent, the value of these pages is entirely in the prose, not in the
  *  layout.
  *
  *  Conventions:
@@ -33,13 +33,13 @@ export const COLOR_PAGES = [
     base: 'fffff0',
     keyword: 'Ivory',
     h1: 'Ivory color: hex codes, shades and palettes',
-    titleTemplate: 'Ivory Color — Hex Code #FFFFF0, Shades & {count} Palettes',
+    titleTemplate: 'Ivory Color, Hex Code #FFFFF0, Shades & {count} Palettes',
     description:
       'The ivory color hex code is #FFFFF0. See ivory next to cream, beige and '
       + 'eggshell, get every shade in HEX, RGB and HSL, and browse {count} palettes.',
 
     lead: [
-      'Ivory is the off-white of old piano keys and wedding stationery — white '
+      'Ivory is the off-white of old piano keys and wedding stationery, white '
       + 'with a trace of yellow in it, warm enough to feel softer than paper but '
       + 'pale enough to still read as white. The CSS keyword <code>ivory</code> '
       + 'is <strong>#FFFFF0</strong>.',
@@ -64,7 +64,7 @@ export const COLOR_PAGES = [
         paragraphs: [
           'These four get used as if they were the same color, and the '
           + 'difference is easy to state once the numbers are in front of you. '
-          + 'Ivory sits at hue 60 with 97% lightness — the palest of the group '
+          + 'Ivory sits at hue 60 with 97% lightness, the palest of the group '
           + 'and barely tinted. Cream keeps a similar hue but drops to 91% '
           + 'lightness, so it reads as noticeably more yellow. Beige carries '
           + 'more of that yellow still and starts to feel like a color rather '
@@ -84,7 +84,7 @@ export const COLOR_PAGES = [
           + 'than sterile. Pure white backgrounds are unforgiving under bright '
           + 'light; a few percent of warmth takes the glare off without anyone '
           + 'consciously noticing the page is not white.',
-          'It pairs naturally with warm neutrals — taupe, sand, soft brown — '
+          'It pairs naturally with warm neutrals, taupe, sand, soft brown, '
           + 'and with deep colors that have some warmth of their own, such as '
           + 'forest green, burgundy or navy. Against a cool grey it can look '
           + 'accidental, as though the white point drifted.',
@@ -95,11 +95,11 @@ export const COLOR_PAGES = [
     faq: [
       {
         q: 'What is the hex code for ivory?',
-        a: 'Ivory is #FFFFF0 — the CSS named color. In RGB that is rgb(255, 255, 240), and in HSL hsl(60, 100%, 97%): full white with the blue channel pulled down slightly, which is what produces the faint warmth.',
+        a: 'Ivory is #FFFFF0, the CSS named color. In RGB that is rgb(255, 255, 240), and in HSL hsl(60, 100%, 97%): full white with the blue channel pulled down slightly, which is what produces the faint warmth.',
       },
       {
         q: 'Is ivory a shade of white?',
-        a: 'Yes. It is an off-white — white with a small amount of yellow. At 97% lightness it is close enough to white that most people will call it white until it sits next to a pure white, at which point the warmth becomes obvious.',
+        a: 'Yes. It is an off-white: white with a small amount of yellow. At 97% lightness it is close enough to white that most people will call it white until it sits next to a pure white, at which point the warmth becomes obvious.',
       },
       {
         q: 'What is the difference between ivory and cream?',
@@ -107,7 +107,7 @@ export const COLOR_PAGES = [
       },
       {
         q: 'Can I use ivory text on a white background?',
-        a: 'No. Ivory on white measures about 1.01:1, effectively invisible — normal text needs 4.5:1. Ivory is a background color. For text on an ivory background, dark warm greys and near-blacks work well and clear WCAG AA comfortably.',
+        a: 'No. Ivory on white measures about 1.01:1, effectively invisible. Normal text needs 4.5:1. Ivory is a background color. For text on an ivory background, dark warm greys and near-blacks work well and clear WCAG AA comfortably.',
       },
     ],
 
@@ -127,14 +127,14 @@ export const COLOR_PAGES = [
     base: '32cd32',
     keyword: 'Lime green',
     h1: 'Lime green: hex codes, shades and color palettes',
-    titleTemplate: 'Lime Green — Hex Code #32CD32, Shades & {count} Palettes',
+    titleTemplate: 'Lime Green, Hex Code #32CD32, Shades & {count} Palettes',
     description:
       'The lime green hex code is #32CD32. Every shade from pale to deep in HEX, '
       + 'RGB and HSL, how it differs from lime and chartreuse, plus {count} palettes.',
 
     lead: [
       'Lime green is the bright, slightly yellow-leaning green of a fresh lime '
-      + 'skin — loud enough to work as an accent, dark enough to still be a '
+      + 'skin, loud enough to work as an accent, dark enough to still be a '
       + 'green rather than a highlighter. The CSS keyword '
       + '<code>limegreen</code> is <strong>#32CD32</strong>.',
       'Below are the shades with hex codes, the difference between lime green '
@@ -157,7 +157,7 @@ export const COLOR_PAGES = [
         h2: 'Lime green, lime and chartreuse',
         paragraphs: [
           'Three names, three genuinely different colors. CSS <code>lime</code> '
-          + 'is #00FF00 — the green primary at full strength, with nothing mixed '
+          + 'is #00FF00, the green primary at full strength, with nothing mixed '
           + 'in. It is not a color anyone chooses deliberately for design work: '
           + 'at 100% saturation it vibrates against most backgrounds and is '
           + 'almost impossible to use for text. Lime green (#32CD32) is that '
@@ -175,7 +175,7 @@ export const COLOR_PAGES = [
         paragraphs: [
           'Lime green is a high-energy color and it does not share space well. '
           + 'The reliable approach is to treat it as an accent against '
-          + 'neutrals — charcoal, warm grey, off-white — rather than pairing it '
+          + 'neutrals, charcoal, warm grey, off-white, rather than pairing it '
           + 'with another saturated color. Where a second color is needed, deep '
           + 'purple is the direct complement and holds up; anything orange or '
           + 'red next to it tends to read as a warning.',
@@ -190,7 +190,7 @@ export const COLOR_PAGES = [
     faq: [
       {
         q: 'What is the hex code for lime green?',
-        a: 'Lime green is #32CD32, the CSS named color limegreen. In RGB that is rgb(50, 205, 50) and in HSL hsl(120, 61%, 50%) — a pure green hue at just over half saturation.',
+        a: 'Lime green is #32CD32, the CSS named color limegreen. In RGB that is rgb(50, 205, 50) and in HSL hsl(120, 61%, 50%), a pure green hue at just over half saturation.',
       },
       {
         q: 'Is lime green the same as lime?',
@@ -198,7 +198,7 @@ export const COLOR_PAGES = [
       },
       {
         q: 'What colors go with lime green?',
-        a: 'Neutrals first — charcoal, warm grey and off-white let it be the accent without competition. For a second color, deep purple is the direct complement and gives the strongest contrast, while navy and dark teal produce a calmer pairing. Avoid putting it beside saturated orange or red.',
+        a: 'Neutrals first, charcoal, warm grey and off-white let it be the accent without competition. For a second color, deep purple is the direct complement and gives the strongest contrast, while navy and dark teal produce a calmer pairing. Avoid putting it beside saturated orange or red.',
       },
       {
         q: 'Is lime green readable as text?',
@@ -222,13 +222,13 @@ export const COLOR_PAGES = [
     base: 'ff7f50',
     keyword: 'Coral',
     h1: 'Coral color: hex codes, shades and palettes',
-    titleTemplate: 'Coral Color — Hex Code #FF7F50, Shades & {count} Palettes',
+    titleTemplate: 'Coral Color, Hex Code #FF7F50, Shades & {count} Palettes',
     description:
       'The coral color hex code is #FF7F50. Coral compared with salmon and peach, '
       + 'every shade in HEX, RGB and HSL, and {count} warm color palettes.',
 
     lead: [
-      'Coral is the warm pink-orange of the reef it is named after — orange '
+      'Coral is the warm pink-orange of the reef it is named after, orange '
       + 'with enough pink in it to feel soft rather than loud. The CSS keyword '
       + '<code>coral</code> is <strong>#FF7F50</strong>.',
       'Below are coral and the colors it gets confused with, a full shade '
@@ -254,7 +254,7 @@ export const COLOR_PAGES = [
           + 'and the difference is mostly where they sit between orange and '
           + 'pink. Coral (#FF7F50) is at hue 16 and fully saturated: the most '
           + 'orange of the three and the most vivid. Salmon (#FA8072) sits at '
-          + 'hue 6, closer to pink, and is slightly muted — it reads as fleshier '
+          + 'hue 6, closer to pink and slightly muted, so it reads as fleshier '
           + 'and softer. Peach is paler than both, high in lightness and low in '
           + 'saturation, which puts it in pastel territory rather than accent '
           + 'territory.',
@@ -267,7 +267,7 @@ export const COLOR_PAGES = [
         h2: 'Using coral in a palette',
         paragraphs: [
           'Coral is unusually easy to build around, which is why it recurs in '
-          + 'branding. Teal is the classic pairing — close to its complement, '
+          + 'branding. Teal is the classic pairing, close to its complement, '
           + 'and the cool-against-warm contrast is strong without either color '
           + 'fighting the other. Navy gives a more restrained version of the '
           + 'same idea. Against cream or sand it goes quiet and becomes almost '
@@ -284,7 +284,7 @@ export const COLOR_PAGES = [
     faq: [
       {
         q: 'What is the hex code for coral?',
-        a: 'Coral is #FF7F50, the CSS named color. In RGB that is rgb(255, 127, 80) and in HSL hsl(16, 100%, 66%) — a fully saturated orange-red at high lightness.',
+        a: 'Coral is #FF7F50, the CSS named color. In RGB that is rgb(255, 127, 80) and in HSL hsl(16, 100%, 66%), a fully saturated orange-red at high lightness.',
       },
       {
         q: 'What is the difference between coral and salmon?',
@@ -292,7 +292,7 @@ export const COLOR_PAGES = [
       },
       {
         q: 'What color goes best with coral?',
-        a: 'Teal is the standard answer and it earns it — close to coral\'s complement, so the contrast is strong while the two stay balanced. Navy is a calmer alternative, and cream or sand will let coral sit quietly as a warm neutral rather than an accent.',
+        a: 'Teal is the standard answer and it earns it, close to coral\'s complement, so the contrast is strong while the two stay balanced. Navy is a calmer alternative, and cream or sand will let coral sit quietly as a warm neutral rather than an accent.',
       },
       {
         q: 'Is coral pink or orange?',

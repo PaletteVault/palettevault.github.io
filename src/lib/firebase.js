@@ -1,16 +1,16 @@
 /**
  * ============================================================================
- *  FIREBASE REALTIME DATABASE — LIKE LAYER
+ *  FIREBASE REALTIME DATABASE, LIKE LAYER
  * ============================================================================
  *
  *  Firebase is used ONLY for like counters. The palettes themselves are
  *  static JSON chunks under /public/data and never touch the database.
  *
- *  The data model is as narrow as it gets — one node, one number:
+ *  The data model is as narrow as it gets, one node, one number:
  *
  *      /palettes/{slug} = 42
  *
- *  where the slug is 24 hex characters — the palette's four colors in a row
+ *  where the slug is 24 hex characters, the palette's four colors in a row
  *  (see lib/palette.js). Three useful properties follow:
  *
  *    1. The key is the data. Colors never need to be stored separately; the
@@ -22,7 +22,7 @@
  *
  *  The SDK is loaded lazily via dynamic import and stays out of the critical
  *  bundle: the gallery renders and works without Firebase, and counters arrive
- *  afterwards. With no keys configured the site still works fully — likes just
+ *  afterwards. With no keys configured the site still works fully, likes just
  *  live in localStorage.
  * ============================================================================
  */
@@ -181,8 +181,7 @@ export async function bumpLikes(slug, delta) {
     lastWriteError = 'not-configured';
     console.warn(
       '[firebase] PUBLIC_FIREBASE_* is not set, so likes stay in this browser only. ' +
-        'Fill in .env and restart the dev server — Vite reads it once at startup.',
-    );
+        'Fill in .env and restart the dev server, Vite reads it once at startup.');
     return false;
   }
 
@@ -207,9 +206,8 @@ export async function bumpLikes(slug, delta) {
     if (String(error?.message ?? '').toUpperCase().includes('PERMISSION_DENIED')) {
       console.error(
         `[firebase] PERMISSION_DENIED writing palettes/${slug}. ` +
-          'The deployed rules do not allow this write — publish database.rules.json ' +
-          '(Realtime Database → Rules → Publish, or `firebase deploy --only database`).',
-      );
+          'The deployed rules do not allow this write, publish database.rules.json ' +
+          '(Realtime Database → Rules → Publish, or `firebase deploy --only database`).');
     } else {
       console.error(`[firebase] could not write like for ${slug}:`, error);
     }
@@ -232,7 +230,7 @@ const reconciled = new Set();
  * The check is exact rather than heuristic: if this visitor has the palette
  * liked locally, the shared counter cannot legitimately be 0, because their
  * own like would have made it at least 1. A 0 therefore means that particular
- * write was lost — typically because the rules were misconfigured at the time,
+ * write was lost, typically because the rules were misconfigured at the time,
  * or the browser was offline.
  *
  * @param {string} slug
@@ -272,11 +270,10 @@ export async function fetchTopPalettes(count = 150) {
 
   try {
     snapshot = await sdk.get(
-      sdk.query(sdk.ref(sdk.db, 'palettes'), sdk.orderByValue(), sdk.limitToLast(count)),
-    );
+      sdk.query(sdk.ref(sdk.db, 'palettes'), sdk.orderByValue(), sdk.limitToLast(count)));
   } catch (error) {
     // The server refuses to sort without an index. Rather than showing an
-    // empty page, read the node and sort on the client — correct, just not
+    // empty page, read the node and sort on the client, correct, just not
     // scalable, which is why the warning stays loud. This keeps Popular
     // usable while the rules are still being set up.
     if (!String(error?.message ?? '').includes('Index not defined')) {
@@ -287,8 +284,7 @@ export async function fetchTopPalettes(count = 150) {
     console.warn(
       '[firebase] /palettes has no ".indexOn": ".value" in the deployed rules, ' +
         'so Popular fell back to sorting on the client. Publish database.rules.json ' +
-        'to fix it — the fallback downloads the whole node and will not scale.',
-    );
+        'to fix it, the fallback downloads the whole node and will not scale.');
 
     try {
       const all = await sdk.get(sdk.ref(sdk.db, 'palettes'));
@@ -341,9 +337,8 @@ export async function fetchTopPalettes(count = 150) {
     if (skipped > 0) {
       console.warn(
         `[firebase] Popular skipped ${skipped} record(s) whose key is not a palette slug. ` +
-          'These are leftovers from an earlier data model — delete the /palettes node ' +
-          'in the Firebase console to clear them.',
-      );
+          'These are leftovers from an earlier data model, delete the /palettes node ' +
+          'in the Firebase console to clear them.');
     }
 
     // Firebase returns ascending order; reverse it so the most liked come first.

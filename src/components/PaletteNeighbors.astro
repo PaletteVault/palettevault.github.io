@@ -1,0 +1,153 @@
+---
+/**
+ * Outgoing links from a palette page: six similar palettes and the two
+ * neighbours in feed order.
+ *
+ * This is server-rendered markup on purpose. Every other palette listing on
+ * the site is filled by script after load, which is exactly why 1,407 palette
+ * pages ended up with no incoming links at all: a crawler reads the HTML and
+ * never runs the script. Anything added here to fix that has to survive with
+ * JavaScript switched off, so there is none.
+ *
+ * The block is also genuinely useful, which matters. Links added only to feed
+ * a crawler tend to be the first thing removed in a redesign, and they read as
+ * filler to a person. "Palettes that look like this one" is the question a
+ * reader actually has next.
+ */
+import { paletteName } from '../lib/palette.js';
+import { SWATCH_RATIOS } from '../lib/card.js';
+
+interface Entry {
+  slug: string;
+  colors: string[];
+}
+
+interface Props {
+  similar: Entry[];
+  prev: Entry;
+  next: Entry;
+}
+
+const { similar, prev, next } = Astro.props;
+
+const label = (entry: Entry) =>
+  `${paletteName(entry.colors)}, ${entry.colors.map((hex) => `#${hex.toUpperCase()}`).join(' ')}`;
+---
+
+<section class='neighbors' aria-labelledby='similar-heading'>
+	<h2 id='similar-heading'>Palettes that look like this one</h2>
+	<p class='neighbors__intro'>
+		Closest matches in OKLCH, compared on average lightness, chroma and hue, so
+		these are palettes that read as similar rather than ones that happen to
+		share a color.
+	</p>
+
+	<ul class='neighbors__grid'>
+		{
+			similar.map((entry) => (
+				<li>
+					<a href={`/palette/${entry.slug}/`} class='neighbors__card' title={label(entry)}>
+						<span class='neighbors__strip' aria-hidden='true'>
+							{entry.colors.map((hex, i) => (
+								<span style={`background:#${hex};flex:${SWATCH_RATIOS[i]}`} />
+							))}
+						</span>
+						<span class='neighbors__name'>{paletteName(entry.colors)}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+
+	<nav class='neighbors__seq' aria-label='Nearby palettes'>
+		<a rel='prev' href={`/palette/${prev.slug}/`} title={label(prev)}>
+			<span class='neighbors__dir'>Previous</span>
+			<span class='neighbors__seqname'>{paletteName(prev.colors)}</span>
+		</a>
+		<a rel='next' href={`/palette/${next.slug}/`} title={label(next)}>
+			<span class='neighbors__dir'>Next</span>
+			<span class='neighbors__seqname'>{paletteName(next.colors)}</span>
+		</a>
+	</nav>
+</section>
+
+<style>
+	.neighbors {
+		margin-top: 2.5rem;
+	}
+
+	.neighbors__intro {
+		color: var(--text-soft);
+		max-width: 62ch;
+	}
+
+	.neighbors__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 12px;
+		list-style: none;
+		margin: 1.25rem 0 0;
+		padding: 0;
+	}
+
+	.neighbors__card {
+		display: flex;
+		flex-direction: column;
+		gap: 7px;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.neighbors__strip {
+		display: flex;
+		height: 62px;
+		border-radius: 9px;
+		overflow: hidden;
+	}
+
+	.neighbors__card:hover .neighbors__name {
+		text-decoration: underline;
+	}
+
+	.neighbors__name {
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.neighbors__seq {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 1.75rem;
+	}
+
+	.neighbors__seq a {
+		flex: 1 1 200px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding: 10px 14px;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.neighbors__seq a:hover {
+		border-color: var(--text-soft);
+	}
+
+	.neighbors__seq a[rel='next'] {
+		text-align: right;
+	}
+
+	.neighbors__dir {
+		font-size: 12px;
+		color: var(--text-soft);
+	}
+
+	.neighbors__seqname {
+		font-size: 14px;
+		font-weight: 600;
+	}
+</style>

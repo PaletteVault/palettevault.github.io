@@ -3,7 +3,7 @@
  *  OKLCH PICKER & CONVERTER
  * ============================================================================
  *
- *  Three sliders — lightness, chroma, hue — plus a text field that accepts any
+ *  Three sliders, lightness, chroma, hue, plus a text field that accepts any
  *  CSS color, and a panel of the same color written every other way.
  *
  *  The design problem this tool exists to solve is that chroma has no fixed
@@ -68,7 +68,7 @@ function cssColor(L, C, h, alpha = 1) {
  * Build a gradient across one axis, holding the other two.
  *
  * Out-of-gamut stops are gamut-mapped rather than skipped, which is what the
- * browser would do anyway — the markers are what communicate the boundary.
+ * browser would do anyway, the markers are what communicate the boundary.
  */
 function trackGradient(axis) {
   const stops = [];
@@ -100,8 +100,8 @@ function renderChromaMarkers(root) {
 
   /*
    * At the very top and bottom of the lightness range the maths reports real
-   * chroma headroom — Oklab at L=0 admits tiny positive channel values, so
-   * `maxChroma` returns about 0.1 for black — but every color along that
+   * chroma headroom, Oklab at L=0 admits tiny positive channel values, so
+   * `maxChroma` returns about 0.1 for black, but every color along that
    * track is black or white to look at. Marking a boundary a quarter of the
    * way along a uniformly black track states something untrue.
    *
@@ -114,9 +114,7 @@ function renderChromaMarkers(root) {
   const edge = oklchToHex(state.L, srgbEdge, state.h);
   const spread = Math.max(
     ...[0, 2, 4].map((i) =>
-      Math.abs(parseInt(flat.slice(i, i + 2), 16) - parseInt(edge.slice(i, i + 2), 16)),
-    ),
-  );
+      Math.abs(parseInt(flat.slice(i, i + 2), 16) - parseInt(edge.slice(i, i + 2), 16))));
   const degenerate = spread < 4;
 
   const place = (selector, value, show) => {
@@ -129,13 +127,11 @@ function renderChromaMarkers(root) {
   place(
     '[data-mark="srgb"]',
     srgbEdge,
-    !degenerate && srgbEdge > 0.001 && srgbEdge < CHROMA_MAX,
-  );
+    !degenerate && srgbEdge > 0.001 && srgbEdge < CHROMA_MAX);
   place(
     '[data-mark="p3"]',
     p3Edge,
-    !degenerate && p3Edge > 0.001 && p3Edge < CHROMA_MAX && p3Edge - srgbEdge > 0.004,
-  );
+    !degenerate && p3Edge > 0.001 && p3Edge < CHROMA_MAX && p3Edge - srgbEdge > 0.004);
 }
 
 /** The output rows, in the order someone is most likely to want them. */
@@ -174,7 +170,7 @@ function formats() {
     {
       label: 'HEX',
       value: hexOut,
-      note: inSrgb ? null : 'closest sRGB — chroma reduced',
+      note: inSrgb ? null : 'closest sRGB, chroma reduced',
     },
     {
       label: 'RGB',
@@ -223,7 +219,7 @@ function renderGamut(root) {
 
   if (narrowest === 'srgb') {
     advice.textContent =
-      'Every screen can show this color, so no fallback declaration is needed — '
+      'Every screen can show this color, so no fallback declaration is needed, '
       + 'only a fallback for browsers that predate oklch() itself.';
   } else if (narrowest === 'none') {
     advice.textContent =
@@ -314,8 +310,7 @@ function render(root) {
           li.append(warn);
         }
         return li;
-      }),
-    );
+      }));
   }
 
   renderGamut(root);
@@ -392,7 +387,7 @@ export function initOklch() {
     && CSS.supports?.('color', 'oklch(50% 0.1 200)');
   wideScreen = window.matchMedia?.('(color-gamut: p3)').matches ?? false;
 
-  // Tell the user what their own screen can do — the gamut advice is much less
+  // Tell the user what their own screen can do, the gamut advice is much less
   // useful if they do not know which side of it they are sitting on.
   const screenNote = root.querySelector('[data-screen-note]');
   if (screenNote) {
@@ -465,7 +460,7 @@ export function initOklch() {
     if (native) native.value = `#${oklchToHex(state.L, state.C, state.h)}`;
   };
 
-  // "Pull into gamut" — the one place we do modify the color, on request.
+  // "Pull into gamut", the one place we do modify the color, on request.
   root.querySelectorAll('[data-fit]').forEach((button) => {
     button.addEventListener('click', () => {
       state.C = Math.min(state.C, maxChroma(state.L, state.h, button.dataset.fit));

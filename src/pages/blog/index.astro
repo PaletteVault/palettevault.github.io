@@ -3,15 +3,14 @@
  * Blog index.
  *
  * Cards are accented with each post's own colour value rather than a stock
- * illustration — cheaper, on-brand, and it keeps the page free of images that
+ * illustration, cheaper, on-brand, and it keeps the page free of images that
  * would need alt text describing nothing.
  */
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
-);
+  (a, b) => b.data.published.getTime() - a.data.published.getTime());
 
 const fmt = (date: Date) =>
   date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -44,7 +43,7 @@ const schema = [
 ---
 
 <Layout
-  title="Blog — Practical Writing About Color | Palette Vault"
+  title="Blog, Practical Writing About Color | Palette Vault"
   description="Practical writing about color: what OKLCH fixes that HSL cannot, how contrast ratios actually work, and how to build color scales that stay even from end to end."
   prose
   schema={schema}
@@ -62,7 +61,7 @@ const schema = [
   <header class="page-head">
     <h1>Blog</h1>
     <p>
-      Notes on the parts of color work that are easy to get wrong — color
+      Notes on the parts of color work that are easy to get wrong, color
       spaces, contrast, and building scales that stay even from end to end.{' '}
       <a href="/blog/rss.xml">RSS</a>.
     </p>

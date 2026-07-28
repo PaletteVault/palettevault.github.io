@@ -83,7 +83,7 @@ export function hexToHsl(hex) {
   return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
 }
 
-/** WCAG relative luminance — used to pick readable text over a swatch. */
+/** WCAG relative luminance, used to pick readable text over a swatch. */
 export function luminance(hex) {
   const { r, g, b } = hexToRgb(hex);
   const channel = (value) => {
@@ -109,7 +109,7 @@ export function contrastRatio(hexA, hexB) {
 /* ==========================================================================
  * HUMAN-READABLE COLOR DESCRIPTION
  *
- * No attempt at inventing evocative names — that always reads as nonsense.
+ * No attempt at inventing evocative names, that always reads as nonsense.
  * Instead a plain description from three parts: lightness, saturation, hue.
  * For example "Deep muted violet" or "Light vivid orange".
  * ========================================================================== */

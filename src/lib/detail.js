@@ -138,13 +138,13 @@ export function swatchesHTML(colors, colorIndex = []) {
       const { h, s, l } = hexToHsl(hex);
       const tone = isDark(hex) ? 'on-dark' : 'on-light';
 
-      // Contrast against white and black — a practical hint when laying out.
+      // Contrast against white and black, a practical hint when laying out.
       const onWhite = contrastRatio(hex, 'ffffff').toFixed(1);
       const onBlack = contrastRatio(hex, '000000').toFixed(1);
 
       /*
        * The link sits below the swatch, not inside it. The swatch is a <button>
-       * that copies the hex, and an <a> inside a <button> is invalid HTML — the
+       * that copies the hex, and an <a> inside a <button> is invalid HTML, the
        * browser would hoist it out and the copy target would break.
        *
        * The label names the destination rather than saying "Explore color",
@@ -185,7 +185,7 @@ export function swatchesHTML(colors, colorIndex = []) {
  *
  * Pre-rendered pages get their links at build time. The ones that arrive
  * through the rewrite fallback are rendered here instead, and they need the
- * same lookup — but importing the color catalog would drag fifty kilobytes of
+ * same lookup, but importing the color catalog would drag fifty kilobytes of
  * page prose into the bundle, so the shell carries a slug/name/hex list only.
  */
 function readColorIndex() {
@@ -302,18 +302,17 @@ export function initDetail() {
   root.dataset.slug = slug;
 
   /* --- Headings and metadata ----------------------------------------------
-   * Pages that were not pre-rendered arrive with placeholders — fill them in.
+   * Pages that were not pre-rendered arrive with placeholders, fill them in.
    */
   const hexList = colors.map((hex) => `#${hex.toUpperCase()}`).join(' ');
   const name = paletteName(colors);
 
-  document.title = `${name} — ${hexList}`;
+  document.title = `${name}, ${hexList}`;
   document
     .querySelector('meta[name="description"]')
     ?.setAttribute(
       'content',
-      `${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`,
-    );
+      `${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`);
   document.querySelector('link[rel="canonical"]')
     ?.setAttribute('href', `${location.origin}/palette/${slug}/`);
 
@@ -329,7 +328,7 @@ export function initDetail() {
 
   /* --- Preview image -------------------------------------------------------
    * Pre-rendered pages already carry a real file in src. The rest get a blob
-   * URL built from the canvas — still an <img>, so right-click save, drag-out
+   * URL built from the canvas, still an <img>, so right-click save, drag-out
    * and the download button all behave normally. Pinning is the one thing a
    * blob cannot do: Pinterest fetches the image server-side.
    */
@@ -405,8 +404,7 @@ export function initDetail() {
         showToast(
           getLastWriteError() === 'not-configured'
             ? 'Saved in this browser only'
-            : 'Could not save — see the console',
-        );
+            : 'Could not save, see the console');
       }
     }
   });
@@ -419,7 +417,7 @@ export function initDetail() {
       fetchLikes(slug).then(async (count) => {
         paintLike(likeButton, slug, count);
 
-        // Repair a like that never reached the database — see reconcileLike.
+        // Repair a like that never reached the database, see reconcileLike.
         const repaired = await reconcileLike(slug, isLiked(slug), count);
         if (repaired !== null) paintLike(likeButton, slug, repaired);
       });

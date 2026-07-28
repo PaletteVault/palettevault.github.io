@@ -4,7 +4,7 @@
  *
  * Built to /palette/index.html. The host rewrites any /palette/<slug>/ address
  * without its own file onto this one (see public/_redirects and vercel.json).
- * The colors are unknown at build time — initDetail() fills them in from the
+ * The colors are unknown at build time, initDetail() fills them in from the
  * address bar.
  *
  * Opened directly, with no slug, it shows the "palette not found" state, which
@@ -17,7 +17,7 @@ import PaletteDetail from '../../components/PaletteDetail.astro';
 ---
 
 <Layout
-  title="Palette — Palette Vault"
+  title="Palette, Palette Vault"
   description="Color palette details: copy the HEX codes or download it as a PNG."
   noindex
 >

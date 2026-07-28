@@ -10,7 +10,7 @@
  *  The first version of this used plain OKLab distance with a cut-off, and it
  *  produced confidently wrong links: a muted green matched "Gray", a dark violet
  *  matched "Espresso", a vivid cyan matched "Transparent blue". The reason is
- *  that OKLab distance lets lightness dominate — for two dark colors both `a`
+ *  that OKLab distance lets lightness dominate, for two dark colors both `a`
  *  and `b` are small in absolute terms, so a violet and a brown sit numerically
  *  close together while looking nothing alike.
  *
@@ -48,7 +48,7 @@ const NEUTRAL_C = 0.035;
 /** Hue may differ by this much and still be the same colour family. */
 const HUE_TOLERANCE = 22;
 
-/** Lightness may differ by this much — beyond it "olive" and "black" merge. */
+/** Lightness may differ by this much, beyond it "olive" and "black" merge. */
 const LIGHTNESS_TOLERANCE = 0.2;
 
 /** Chroma may differ by this much, so a pastel does not match a neon. */
@@ -62,7 +62,7 @@ const hueGap = (a, b) => {
 /**
  * Closest publishable entry to `hex`, or null when nothing qualifies.
  *
- * `index` is a list of `{ slug, name, hex }` — deliberately not the full color
+ * `index` is a list of `{ slug, name, hex }`, deliberately not the full color
  * catalog, which carries thousands of words of prose per entry and has no
  * business in a browser bundle.
  *

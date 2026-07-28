@@ -1,0 +1,264 @@
+---
+/**
+ * ============================================================================
+ *  PAGINATED PALETTE ARCHIVE
+ * ============================================================================
+ *
+ *  Why this route exists.
+ *
+ *  Every browse surface on this site fills its grid from JSON on the client:
+ *  the home page, /palettes/, the tag pages. Each of them server-renders the
+ *  first SSG_BATCH rows and lets gallery.js append the rest as you scroll.
+ *  That is good for a reader and invisible to a crawler, which does not run
+ *  the script and therefore sees links to twenty-four palettes and no more.
+ *
+ *  The result was 1,407 pages that existed, sat in the sitemap, and had zero
+ *  incoming internal links anywhere on the site. A sitemap entry is a hint; an
+ *  internal link is what actually distributes authority and gets a page
+ *  crawled on a schedule. Orphaned pages tend to be crawled once and then
+ *  forgotten.
+ *
+ *  So this route is deliberately dumb: flat HTML, one anchor per palette, no
+ *  script, no infinite scroll. It is a crawlable index rather than a browsing
+ *  experience, which is why it is linked from the foot of /palettes/ rather
+ *  than promoted in the navigation.
+ *
+ *  WHICH PALETTES GET LINKED
+ *
+ *  `getStaticLinkedRows()`, not the raw feed. That function returns exactly
+ *  the set of palettes that have a pre-rendered page, so every anchor here
+ *  resolves with a 200. Linking the raw feed would generate thousands of links
+ *  to pages that were never built, which on GitHub Pages resolve through
+ *  404.html and answer 404. Trading orphan pages for broken links would be a
+ *  worse problem than the one being fixed.
+ * ============================================================================
+ */
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../../layouts/Layout.astro';
+import { getStaticLinkedRows, getMeta } from '../../../lib/data.server.js';
+import { paletteSlug } from '../../../lib/palette.js';
+import { SWATCH_RATIOS } from '../../../lib/card.js';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  /*
+   * Palettes per page.
+   *
+   * Sixty keeps each page comfortably inside the rough guidance of a hundred
+   * or so links per page, while keeping the page count low enough that the
+   * numbered list below stays usable rather than becoming its own navigation
+   * problem.
+   *
+   * Declared inside the function on purpose. Astro extracts `getStaticPaths`
+   * into its own prerender chunk, so it does not close over anything in the
+   * component frontmatter: a module-level const here builds cleanly and then
+   * fails at route generation with "PER_PAGE is not defined", which points at
+   * Astro's internals rather than at this file. Anything this function needs
+   * has to be defined inside it or imported.
+   */
+  const PER_PAGE = 60;
+
+  const rows = getStaticLinkedRows();
+  const total = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+
+  return Array.from({ length: total }, (_, index) => {
+    const page = index + 1;
+    return {
+      params: { page: String(page) },
+      props: {
+        rows: rows.slice(index * PER_PAGE, page * PER_PAGE),
+        page,
+        total,
+      },
+    };
+  });
+};
+
+const { rows, page, total } = Astro.props;
+const meta = getMeta();
+
+const entries = rows.map((row: [number, string, string, string, string]) => {
+  const colors = row.slice(1) as string[];
+  return { slug: paletteSlug(colors), colors };
+});
+
+const href = (n: number) => (n === 1 ? '/palettes/' : `/palettes/page/${n}/`);
+
+/*
+ * Every page of this archive is noindex, follow.
+ *
+ * These pages exist to be crawled through, not to be landed on: they carry no
+ * unique copy and would otherwise compete with /palettes/ and with the palette
+ * pages themselves. The Layout's `noindex` flag emits exactly "noindex,
+ * follow", and `follow` is the half that matters here, since it is what lets
+ * the crawler pass through to the palettes and out of the orphan state.
+ */
+
+const numbers: (number | null)[] = [];
+for (let n = 1; n <= total; n += 1) {
+  // First two, last two, and a window around the current page. A null is a gap.
+  if (n <= 2 || n > total - 2 || Math.abs(n - page) <= 2) numbers.push(n);
+  else if (numbers[numbers.length - 1] !== null) numbers.push(null);
+}
+---
+
+<Layout
+	title={`All Color Palettes, Page ${page} of ${total} | Palette Vault`}
+	description={`Every color palette in the catalog, page ${page} of ${total}. `
+		+ `Open any palette for its hex, RGB and CSS values.`}
+	active="palettes"
+	noindex
+	wide>
+	<nav class='crumbs' aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<a href='/palettes/'>All palettes</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>Page {page}</span>
+	</nav>
+
+	<header class='archive__head'>
+		<h1>All color palettes</h1>
+		<p>
+			Page {page} of {total}. A plain index of every palette in the catalog, for
+			finding one directly rather than scrolling.{' '}
+			<a href='/palettes/'>The main feed</a> is the nicer way to browse.
+		</p>
+	</header>
+
+	<ul class='archive'>
+		{
+			entries.map(({ slug, colors }) => (
+				<li>
+					<a
+						href={`/palette/${slug}/`}
+						class='archive__item'
+						title={colors.map((hex) => `#${hex.toUpperCase()}`).join(', ')}>
+						<span
+							class='archive__strip'
+							aria-hidden='true'>
+							{colors.map((hex, i) => (
+								<span style={`background:#${hex};flex:${SWATCH_RATIOS[i]}`} />
+							))}
+						</span>
+						<span class='archive__hex'>
+							{colors.map((hex) => `#${hex.toUpperCase()}`).join(' ')}
+						</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+
+	<nav
+		class='pager'
+		aria-label='Palette pages'>
+		{page > 1 && <a rel='prev' href={href(page - 1)}>Previous</a>}
+		<ol>
+			{
+				numbers.map((n) =>
+					n === null ? (
+						<li class='pager__gap' aria-hidden='true'>...</li>
+					) : (
+						<li>
+							{n === page ? (
+								<span aria-current='page'>{n}</span>
+							) : (
+								<a href={href(n)}>{n}</a>
+							)}
+						</li>
+					),
+				)
+			}
+		</ol>
+		{page < total && <a rel='next' href={href(page + 1)}>Next</a>}
+	</nav>
+</Layout>
+
+<style>
+	.archive__head {
+		margin-bottom: 1.5rem;
+	}
+
+	.archive {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+		gap: 10px;
+		list-style: none;
+		margin: 0 0 2rem;
+		padding: 0;
+	}
+
+	.archive__item {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 8px;
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.archive__item:hover {
+		border-color: var(--text-soft);
+	}
+
+	.archive__strip {
+		display: flex;
+		height: 34px;
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.archive__hex {
+		font: 500 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+		color: var(--text-soft);
+		letter-spacing: 0.02em;
+	}
+
+	.pager {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 2rem 0 1rem;
+	}
+
+	.pager ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pager a,
+	.pager span {
+		display: block;
+		padding: 5px 10px;
+		border-radius: 7px;
+		font-size: 14px;
+		text-decoration: none;
+	}
+
+	.pager a {
+		border: 1px solid var(--line);
+		color: inherit;
+	}
+
+	.pager a:hover {
+		border-color: var(--text-soft);
+	}
+
+	.pager [aria-current='page'] {
+		background: var(--text);
+		color: var(--bg);
+		font-weight: 600;
+	}
+
+	.pager__gap {
+		padding: 5px 2px;
+		color: var(--text-soft);
+	}
+</style>

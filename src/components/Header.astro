@@ -1,5 +1,7 @@
 ---
-/** Site header: logo, primary navigation, theme toggle. */
+/** Site header: logo, primary navigation, extension link, theme toggle. */
+
+import { CHROME_EXTENSION_URL } from '../lib/plugins.js';
 
 interface Props {
 	/** Highlighted section. */
@@ -95,6 +97,48 @@ const links = [
 
 	<div class='header__spacer'></div>
 
+	{/*
+	 * The store link, not /plugins/.
+	 *
+	 * A person who notices this button wants the extension, not a page about
+	 * it. Sending them to an interstitial first would add a click to the one
+	 * action the button exists for. /plugins/ is still linked from the nav and
+	 * the footer for anyone who wants to read before installing.
+	 */}
+	<a
+		class='header__cta'
+		href={CHROME_EXTENSION_URL}
+		target='_blank'
+		rel='noopener'
+		title='Palette Vault for Chrome, free on the Chrome Web Store'>
+		{/*
+		 * "Add to Chrome", not "Chrome extension".
+		 *
+		 * The first says what happens when you click it, the second names a
+		 * category and leaves the reader to work out that it is installable.
+		 * A verb costs the same space and asks less of them.
+		 */}
+		<svg
+			class='header__cta-mark'
+			viewBox='0 0 48 48'
+			aria-hidden='true'
+			focusable='false'>
+			<circle cx='24' cy='24' r='20' fill='#4285F4'></circle>
+			<path
+				d='M24 4a20 20 0 0 1 17.32 10H24a10 10 0 0 0-8.66 15L6.68 14A20 20 0 0 1 24 4Z'
+				fill='#EA4335'></path>
+			<path
+				d='M41.32 14A20 20 0 0 1 24 44l8.66-15a10 10 0 0 0 0-10Z'
+				fill='#FBBC05'></path>
+			<path
+				d='M24 44A20 20 0 0 1 6.68 14l8.66 15A10 10 0 0 0 24 34Z'
+				fill='#34A853'></path>
+			<circle cx='24' cy='24' r='9' fill='#fff'></circle>
+			<circle cx='24' cy='24' r='7.2' fill='#4285F4'></circle>
+		</svg>
+		<span>Add to Chrome</span>
+	</a>
+
 	<button
 		type='button'
 		class='icon-button'
@@ -136,7 +180,7 @@ const links = [
 		try {
 			localStorage.setItem('palette.theme', next);
 		} catch {
-			/* private mode — just don't persist */
+			/* private mode, just don't persist */
 		}
 		paint();
 	});
@@ -149,7 +193,7 @@ const links = [
 	 * Mobile navigation.
 	 *
 	 * The panel is shown by a data attribute rather than a class so the CSS and
-	 * the JS agree on one source of truth, and `aria-expanded` is kept in step —
+	 * the JS agree on one source of truth, and `aria-expanded` is kept in step
 	 * without it the button announces nothing useful to a screen reader.
 	 */
 	const header = document.querySelector('.header');

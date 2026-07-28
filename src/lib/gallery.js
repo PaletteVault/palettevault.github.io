@@ -6,10 +6,10 @@
  *  One module serves every feed on the site. The pages differ only in their
  *  data source:
  *
- *    chunks     — static JSON chunks (/data/new/*, /data/tag/<slug>/*)
- *    random     — the same chunks, visited in random order and shuffled within
- *    popular    — top likes from Firebase Realtime Database
- *    collection — local likes from localStorage
+ *    chunks, static JSON chunks (/data/new/*, /data/tag/<slug>/*)
+ *    random, the same chunks, visited in random order and shuffled within
+ *    popular, top likes from Firebase Realtime Database
+ *    collection, local likes from localStorage
  *
  *  All of it works without a framework: event delegation plus string rendering
  *  from lib/card.js. For static content that is noticeably faster than
@@ -62,8 +62,7 @@ function loadChunk(base, index) {
       url,
       fetch(url)
         .then((response) => (response.ok ? response.json() : []))
-        .catch(() => []),
-    );
+        .catch(() => []));
   }
   return chunkCache.get(url);
 }
@@ -76,7 +75,7 @@ function loadChunk(base, index) {
 
 /**
  * Sequential walk through the chunks: 1.json, 2.json, …
- * `skip` is how many leading rows to drop — that many cards were already
+ * `skip` is how many leading rows to drop, that many cards were already
  * rendered into the HTML at build time and must not be repeated.
  */
 function chunksFeed({ base, chunks, skip = 0 }) {
@@ -89,7 +88,7 @@ function chunksFeed({ base, chunks, skip = 0 }) {
     async next(limit) {
       const out = [];
       while (out.length < limit) {
-        // Buffer exhausted — pull the next chunk.
+        // Buffer exhausted, pull the next chunk.
         if (cursor >= buffer.length) {
           if (chunkIndex > chunks) break; // out of chunks
           buffer = await loadChunk(base, chunkIndex);
@@ -251,14 +250,13 @@ function createLikeLoader() {
         fetchLikes(slug).then(async (count) => {
           paintLike(card, { count });
 
-          // Repair a like that never reached the database — see reconcileLike.
+          // Repair a like that never reached the database, see reconcileLike.
           const repaired = await reconcileLike(slug, isLiked(slug), count);
           if (repaired !== null) paintLike(card, { count: repaired });
         });
       }
     },
-    { rootMargin: '300px 0px' },
-  );
+    { rootMargin: '300px 0px' });
 }
 
 /* ==========================================================================
@@ -291,8 +289,7 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
     case 'popular':
       finite = true;
       feed = staticFeed(
-        isFirebaseConfigured ? fetchTopPalettes(source.limit ?? 150) : Promise.resolve([]),
-      );
+        isFirebaseConfigured ? fetchTopPalettes(source.limit ?? 150) : Promise.resolve([]));
       break;
 
     case 'collection':
@@ -377,8 +374,7 @@ export async function initGallery({ mount, source, sentinel, empty, status }) {
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) loadMore();
       },
-      { rootMargin: '800px 0px' },
-    );
+      { rootMargin: '800px 0px' });
     observer.observe(sentinel);
   }
 
@@ -454,9 +450,8 @@ async function onGridClick(event) {
     showToast(
       getLastWriteError() === 'not-configured'
         ? 'Saved in this browser only'
-        : 'Could not save — see the console',
-      2400,
-    );
+        : 'Could not save, see the console',
+      2400);
   }
 }
 

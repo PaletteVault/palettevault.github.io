@@ -126,11 +126,11 @@ export const TAG_LANDING_PAGES = {
  * Every URL that should appear in the sitemap.
  *
  * Deliberately excluded:
- *   /collection/  — content lives in the visitor's localStorage, so a crawler
+ *   /collection/, content lives in the visitor's localStorage, so a crawler
  *                   only ever sees an empty page;
- *   /palette/     — the rewrite fallback shell, which has no content of its
+ *   /palette/, the rewrite fallback shell, which has no content of its
  *                   own until a slug is attached;
- *   /404.html     — never a destination.
+ *   /404.html, never a destination.
  */
 /**
  * Blog post slugs, read straight off disk.
@@ -139,7 +139,7 @@ export const TAG_LANDING_PAGES = {
  * plain Node so the sitemap and the tools index can share it. Resolving from
  * `process.cwd()` rather than `import.meta.url` matters: Vite relocates modules
  * during the build, and a path derived from the module URL silently resolves to
- * nothing — which previously caused the build to emit four pages instead of
+ * nothing, which previously caused the build to emit four pages instead of
  * forty-seven.
  */
 function getBlogSlugs() {
@@ -181,10 +181,11 @@ export function getSitemapEntries() {
   }
 
   entries.push({ path: '/palettes/', changefreq: 'hourly', priority: '0.9' });
+  entries.push({ path: '/plugins/', changefreq: 'monthly', priority: '0.7' });
   entries.push({ path: '/colors/', changefreq: 'weekly', priority: '0.9' });
 
   /*
-   * One page per color. Most are not canonicalised from their source tag —
+   * One page per color. Most are not canonicalised from their source tag
    * "coral" and the general orange category answer different questions. Only
    * pastel and purple cover the same ground as their tag, and those are listed
    * in TAG_LANDING_PAGES so the tag drops out instead.

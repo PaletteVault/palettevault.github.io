@@ -8,7 +8,7 @@
  *    • serve the first chunk of a feed so the first screen is static HTML,
  *      which is visible without JavaScript and indexable.
  *
- *  Everything else — hundreds of thousands of palettes — is NOT imported into
+ *  Everything else, hundreds of thousands of palettes, is NOT imported into
  *  the build. It sits in /public and loads at runtime as the visitor scrolls.
  * ============================================================================
  */
@@ -83,8 +83,8 @@ export function getFirstRows(base, count = SSG_BATCH) {
  * 100 000 HTML files, a build measured in hours, and an output directory of
  * several hundred megabytes that many hosts will simply refuse.
  *
- * So the top of the New feed is pre-rendered — freshest palettes get opened
- * most — for search engines and for hosts with no rewrite configured. Every
+ * So the top of the New feed is pre-rendered, freshest palettes get opened
+ * most, for search engines and for hosts with no rewrite configured. Every
  * other address lands on the same file through a rewrite rule. The page draws
  * itself from the slug either way, so visitors see no difference.
  *
@@ -113,14 +113,14 @@ export function getPrerenderRows(count = PRERENDER_PALETTES) {
  * The prerender window is the top of the New feed, but tag pages ship their own
  * server-rendered preview drawn from the tag's feed, and for a rare tag the
  * newest palette in it can easily sit outside that window. The link is then
- * correct and the page does not exist — on a host with rewrites the visitor
+ * correct and the page does not exist, on a host with rewrites the visitor
  * never notices, but GitHub Pages has no rewrites, so it resolves through
  * 404.html and answers with a 404 status. Fine for a human, wrong for a
  * crawler, and wrong in the sitemap.
  *
  * So the set to pre-render is the union of the New-feed window and every
  * statically linked palette. In practice the tag previews overlap the window
- * almost entirely — one palette out of 5 128 static links was missing — so this
+ * almost entirely, one palette out of 5 128 static links was missing, so this
  * costs a handful of pages, not a thousand.
  */
 export function getStaticLinkedRows() {

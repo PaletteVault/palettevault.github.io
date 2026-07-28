@@ -4,7 +4,7 @@
  * ============================================================================
  *
  *  The blog is the only collection. Posts are plain Markdown so that writing
- *  one requires no build knowledge — drop a file in src/content/blog, fill the
+ *  one requires no build knowledge, drop a file in src/content/blog, fill the
  *  frontmatter, and the index page, RSS feed and sitemap pick it up.
  *
  *  Posts carry no personal byline: the site is the author, so schema.org gets
@@ -20,7 +20,7 @@ const blog = defineCollection({
   /*
    * The leading-underscore exclusion matters more than it looks. An empty or
    * half-written .md file fails the schema, and a content-collection failure
-   * stops the entire build — every page, not just the blog. Naming a work in
+   * stops the entire build, every page, not just the blog. Naming a work in
    * progress `_draft.md` keeps it out of the collection entirely, so an
    * unfinished file cannot take the site down.
    */

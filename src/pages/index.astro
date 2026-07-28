@@ -8,7 +8,7 @@
  *
  * The palette grid is worth a note. Popular is ranked live from Firebase, but
  * the page ships with 20 statically rendered palettes so it is never blank
- * before that resolves — and so the HTML contains real content for crawlers,
+ * before that resolves, and so the HTML contains real content for crawlers,
  * which never see the Firebase result. gallery.js swaps them for the live
  * ranking once it arrives.
  */
@@ -35,7 +35,7 @@ const schema = [
 ---
 
 <Layout
-	title='Color Palettes — Free Palettes and Hex Codes'
+	title='Color Palettes, Free Palettes and Hex Codes'
 	description={'Browse color palettes built in OKLCH, plus hex codes and shades for ' +
 		'every color. Click a swatch to copy it. Free for commercial use, no sign-up.'}
 	active='new'
@@ -103,7 +103,7 @@ const schema = [
 			<p>
 				Every palette here is built in <strong>OKLCH</strong>, a perceptually uniform color space,
 				and that choice does most of the work. In OKLCH an equal step in lightness looks like an
-				equal step to the eye, which is not true of RGB or HSL — in HSL a yellow and a blue at the
+				equal step to the eye, which is not true of RGB or HSL, in HSL a yellow and a blue at the
 				same stated lightness look nothing alike. Working in a space that matches perception is why
 				these four-color sets hold together instead of reading as four colors that happen to share
 				a card.
@@ -111,8 +111,8 @@ const schema = [
 
 			<p>
 				Beyond the color space, three things separate a palette that works from one that merely
-				varies. The four hues follow a classical relationship — monochrome, analogous,
-				complementary, split complementary, triad or tetrad — rather than sitting at arbitrary
+				varies. The four hues follow a classical relationship, monochrome, analogous,
+				complementary, split complementary, triad or tetrad, rather than sitting at arbitrary
 				angles. Lightness runs as a deliberate ladder from light to dark, because a palette with
 				four mid-tones has nowhere to put text. And chroma tapers at the extremes, since very light
 				and very dark colors physically hold less of it, which is what keeps the pale end from
@@ -122,8 +122,8 @@ const schema = [
 			<h2>Finding the color palette you need</h2>
 
 			<p>
-				The sidebar holds {tagCount} categories. Style tags — pastel, vintage, retro, neon, warm, cold,
-				sunset, night — describe the mood, while color tags narrow things to a family such as blue, green
+				The sidebar holds {tagCount} categories. Style tags, pastel, vintage, retro, neon, warm, cold,
+				sunset, night, describe the mood, while color tags narrow things to a family such as blue, green
 				or pink. Tags come from the measured result rather than the intent behind it: a palette appears
 				under <a href="/tag/blue/" title="Blue color palettes">Blue</a>{' '}
 				because its colors measure as blue, not because the preset that produced it was aiming that way.

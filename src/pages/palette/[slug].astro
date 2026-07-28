@@ -3,7 +3,7 @@
  * Single palette page: /palette/4e1f6e3e3e7545a9a998e8de/
  *
  * The slug is four HEX codes in a row, so the address carries the whole
- * palette. The page needs no chunk request and no id — it rebuilds itself
+ * palette. The page needs no chunk request and no id, it rebuilds itself
  * entirely from the URL.
  *
  * Only the top of the feed is pre-rendered (see PRERENDER_PALETTES). Every
@@ -17,7 +17,9 @@
  */
 import Layout from '../../layouts/Layout.astro';
 import PaletteDetail from '../../components/PaletteDetail.astro';
+import PaletteNeighbors from '../../components/PaletteNeighbors.astro';
 import { getStaticLinkedRows } from '../../lib/data.server.js';
+import { getPaletteGraph } from '../../lib/neighbors.server.js';
 import { paletteName, paletteSlug } from '../../lib/palette.js';
 
 export function getStaticPaths() {
@@ -29,6 +31,15 @@ export function getStaticPaths() {
 
 const { colors } = Astro.props;
 const { slug } = Astro.params;
+
+/*
+ * The graph is memoised across the whole build, so this lookup costs nothing
+ * per page. It can miss only if a slug reached this route without being in the
+ * pre-rendered set, which cannot happen while both read getStaticLinkedRows,
+ * but the block is skipped rather than assumed so a future change to either
+ * one degrades instead of throwing.
+ */
+const neighbors = getPaletteGraph().get(slug);
 
 const hexList = colors.map((hex) => `#${hex.toUpperCase()}`).join(' ');
 const name = paletteName(colors);
@@ -59,7 +70,7 @@ const schema = [
 ---
 
 <Layout
-  title={`${name} — ${hexList}`}
+  title={`${name}, ${hexList}`}
   description={`${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`}
   image={imagePath}
   schema={schema}
@@ -71,4 +82,14 @@ const schema = [
     pageUrl={pageUrl}
     pinImage={pinImage}
   />
+
+  {
+    neighbors && (
+      <PaletteNeighbors
+        similar={neighbors.similar}
+        prev={neighbors.prev}
+        next={neighbors.next}
+      />
+    )
+  }
 </Layout>

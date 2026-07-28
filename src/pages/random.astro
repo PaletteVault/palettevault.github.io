@@ -1,12 +1,12 @@
 ---
 /**
- * Random — shuffled order.
+ * Random, shuffled order.
  *
  * Implementation: the New feed's chunks are visited in random order without
  * repeats, and the rows inside each chunk are shuffled again. That gives real
  * randomness without ever loading the whole dataset into memory.
  *
- * Not pre-rendered on purpose — a fixed HTML batch would be identical on every
+ * Not pre-rendered on purpose, a fixed HTML batch would be identical on every
  * visit, which defeats the point of the page.
  */
 import Layout from '../layouts/Layout.astro';
@@ -18,7 +18,7 @@ const chunks = meta.feeds?.new?.chunks ?? 0;
 ---
 
 <Layout
-  title="Random palettes — Palette Vault"
+  title="Random palettes, Palette Vault"
   description="A shuffled stream of color palettes. Refresh for a new set."
   active="random"
 >

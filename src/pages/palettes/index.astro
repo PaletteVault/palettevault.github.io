@@ -34,7 +34,7 @@ const schema = [
 ---
 
 <Layout
-  title="Browse All Color Palettes — Free to Copy | Palette Vault"
+  title="Browse All Color Palettes, Free to Copy | Palette Vault"
   description={`Explore every color palette in the catalog, built in OKLCH. Click a swatch `
     + `to copy its HEX, save the ones you like, or filter by ${tagCount} categories.`}
   active="new"
@@ -62,6 +62,18 @@ const schema = [
         or jump to a specific{' '}
         <a href="/colors/" title="All color names with hex codes">color</a>.
       </p>
+      <p>
+        {/*
+         * This link is what keeps the palette pages out of the orphan state.
+         * The feed above is filled by script, so a crawler sees only the first
+         * batch of cards and never reaches the rest. The archive is plain HTML
+         * with one anchor per palette, and this is its only entry point.
+         */}
+        Prefer a plain list? The{' '}
+        <a href="/palettes/page/2/" title="Every palette as a plain index"
+          >full palette index</a
+        > has every palette on numbered pages, without the scrolling.
+      </p>
     </div>
 
     <section class="page-note">
@@ -73,8 +85,8 @@ const schema = [
         set feeling related rather than merely varied.
       </p>
       <p>
-        The four hues follow a classical relationship — monochrome, analogous,
-        complementary, split complementary, triad or tetrad — instead of sitting
+        The four hues follow a classical relationship, monochrome, analogous,
+        complementary, split complementary, triad or tetrad, instead of sitting
         at arbitrary angles. Lightness runs as a ladder from light to dark, so
         there is always somewhere to put text. And chroma tapers at both
         extremes, because very light and very dark colors hold less of it, which

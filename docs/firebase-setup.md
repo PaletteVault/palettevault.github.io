@@ -1,7 +1,7 @@
 # Connecting Firebase Realtime Database
 
 Step by step, roughly ten minutes. No user accounts, no authentication and no
-paid plan — the free Spark tier has plenty of headroom for this.
+paid plan, the free Spark tier has plenty of headroom for this.
 
 > **Note:** the site works fine without Firebase. Likes live in `localStorage`
 > and only the `/popular/` page stays empty, so this can be done at any point.
@@ -15,7 +15,7 @@ paid plan — the free Spark tier has plenty of headroom for this.
 2. **Create a project** (or **Add project**).
 3. Name it, for example `palette-vault`. Firebase appends a suffix if the name
    is taken, so the final Project ID looks like `palette-vault-a1b2c`.
-4. Turn Google Analytics **off** — the project has no use for it, and leaving it
+4. Turn Google Analytics **off**, the project has no use for it, and leaving it
    on adds an extra step for creating an Analytics account.
 5. **Create project** → wait → **Continue**.
 
@@ -38,7 +38,7 @@ the `increment` sentinel this project uses belongs to Realtime Database.
 
    Picking **test mode** instead leaves the database readable and writable by
    the entire internet, and after 30 days the rules flip automatically to deny
-   everything — at which point likes stop working with no obvious cause. Locked
+   everything, at which point likes stop working with no obvious cause. Locked
    mode plus your own rules avoids both.
 
 5. Copy the **database URL** shown above the data view:
@@ -54,7 +54,7 @@ the `increment` sentinel this project uses belongs to Realtime Database.
    https://palette-vault-a1b2c-default-rtdb.firebaseio.com
    ```
 
-   This is the single most common setup mistake — copy the URL rather than
+   This is the single most common setup mistake, copy the URL rather than
    guessing it.
 
 ---
@@ -63,7 +63,7 @@ the `increment` sentinel this project uses belongs to Realtime Database.
 
 1. Gear icon next to **Project Overview** → **Project settings**.
 2. **General** tab, **Your apps** section → the **`</>`** (Web) icon.
-3. App nickname — anything, for example `palette-vault-web`.
+3. App nickname, anything, for example `palette-vault-web`.
 4. **Do not enable Firebase Hosting.** The site deploys as static files
    anywhere; enabling hosting only adds steps to the wizard.
 5. **Register app**.
@@ -118,7 +118,7 @@ Three things to watch:
 
 These keys are not secrets. A Firebase web config is public by design and
 visible in the bundle of every site that uses one. Security comes from the
-database rules, not from hiding the key — `.env` being gitignored is hygiene,
+database rules, not from hiding the key, `.env` being gitignored is hygiene,
 not protection.
 
 ---
@@ -143,9 +143,9 @@ The rules allow:
 - nothing else.
 
 That last point blocks crude inflation through direct REST calls that bypass the
-client — setting a counter to 100000 is rejected by the rules.
+client, setting a counter to 100000 is rejected by the rules.
 
-### Option A — through the console
+### Option A, through the console
 
 1. **Realtime Database → Rules** tab.
 2. Replace the contents with `database.rules.json`.
@@ -154,7 +154,7 @@ client — setting a counter to 100000 is rejected by the rules.
 ⚠️ The console rejects `//` comments in JSON. Strip them when pasting, or use
 option B, where the CLI parses the file itself.
 
-### Option B — through the CLI (rules stay in version control)
+### Option B, through the CLI (rules stay in version control)
 
 ```bash
 npm install -g firebase-tools
@@ -188,7 +188,7 @@ From then on any rule change is one command: `firebase deploy --only database`.
 npm run dev
 ```
 
-1. Open the site and click the heart on any palette — the counter should go
+1. Open the site and click the heart on any palette, the counter should go
    to `1`.
 2. The **Data** tab in the console should now show:
 
@@ -199,7 +199,7 @@ npm run dev
 
    The key is the palette slug, which is its four HEX codes in a row.
 
-3. Visit `/popular/` — the palette should be listed there.
+3. Visit `/popular/`, the palette should be listed there.
 4. Open the site in a private window, where `localStorage` is empty. The counter
    still reads `1` but the heart is not filled. That is correct: the counter is
    shared, the "I liked this" state is local.
@@ -211,10 +211,10 @@ npm run dev
 | Symptom | Cause and fix |
 | --- | --- |
 | Counter goes up but the console shows nothing | `.env` was not picked up. Restart the dev server. Check in DevTools that `import.meta.env.PUBLIC_FIREBASE_DATABASE_URL` is not `undefined`. |
-| `PERMISSION_DENIED` in the browser console | Rules were not deployed, or the wrong ones were. Check the **Rules** tab — it should show this project's JSON, not `".read": false` from locked mode. |
+| `PERMISSION_DENIED` in the browser console | Rules were not deployed, or the wrong ones were. Check the **Rules** tab, it should show this project's JSON, not `".read": false` from locked mode. |
 | `FIREBASE FATAL ERROR: Can't determine Firebase Database URL` | `PUBLIC_FIREBASE_DATABASE_URL` is empty or wrong. Copy the URL from the Data page rather than assembling it. |
 | Popular is empty while likes work | Missing index. The `palettes` node needs `".indexOn": ".value"`. Without it Firebase logs a warning in the browser console and the query fails. |
-| `Index not defined, add ".indexOn": ".value"` | Same thing — redeploy the rules. |
+| `Index not defined, add ".indexOn": ".value"` | Same thing, redeploy the rules. |
 
 ---
 
@@ -234,7 +234,7 @@ npm run dev
 ---
 
 Sources:
-- [Installation & Setup in JavaScript — Firebase Realtime Database](https://firebase.google.com/docs/database/web/start)
+- [Installation & Setup in JavaScript, Firebase Realtime Database](https://firebase.google.com/docs/database/web/start)
 - [Get started with Firebase Security Rules](https://firebase.google.com/docs/database/security/get-started)
 - [Understand Firebase Realtime Database Security Rules](https://firebase.google.com/docs/database/security)
-- [firebase — npm](https://www.npmjs.com/package/firebase)
+- [firebase, npm](https://www.npmjs.com/package/firebase)

@@ -8,58 +8,57 @@ import Sidebar from '../components/Sidebar.astro';
 import Footer from '../components/Footer.astro';
 
 interface Props {
-  title: string;
-  description?: string;
-  active?: 'new' | 'popular' | 'random' | 'collection' | 'tools' | null;
-  activeTag?: string | null;
-  /** Absolute or root-relative image for social previews. */
-  image?: string;
-  /**
-   * Real pixel size of that image.
-   *
-   * Hardcoding 1200x630 is right for the site-wide OG image and wrong for
-   * anything else. Scrapers use the declared size to reserve space before the
-   * file loads, so a wrong value shows up as a crop or a jump in the card.
-   */
-  imageWidth?: number;
-  imageHeight?: number;
-  /** Set for pages that should stay out of the index (fallback shells). */
-  noindex?: boolean;
-  /** Rendered without the category sidebar (tools, standalone pages). */
-  wide?: boolean;
-  /**
-   * Text-only page: the shell narrows to a centred reading column.
-   *
-   * `wide` is right for tools, where a panel needs the room. For an article it
-   * leaves the text as a ribbon down the left of an otherwise empty container.
-   */
-  prose?: boolean;
-  /** Extra schema.org objects to emit alongside the site-level graph. */
-  schema?: Record<string, unknown>[];
-  /**
-   * Override the canonical URL. Used where two routes cover the same topic and
-   * the ranking signals should land on one of them rather than being split.
-   */
-  canonical?: string;
+	title: string;
+	description?: string;
+	active?: 'new' | 'popular' | 'random' | 'collection' | 'tools' | null;
+	activeTag?: string | null;
+	/** Absolute or root-relative image for social previews. */
+	image?: string;
+	/**
+	 * Real pixel size of that image.
+	 *
+	 * Hardcoding 1200x630 is right for the site-wide OG image and wrong for
+	 * anything else. Scrapers use the declared size to reserve space before the
+	 * file loads, so a wrong value shows up as a crop or a jump in the card.
+	 */
+	imageWidth?: number;
+	imageHeight?: number;
+	/** Set for pages that should stay out of the index (fallback shells). */
+	noindex?: boolean;
+	/** Rendered without the category sidebar (tools, standalone pages). */
+	wide?: boolean;
+	/**
+	 * Text-only page: the shell narrows to a centred reading column.
+	 *
+	 * `wide` is right for tools, where a panel needs the room. For an article it
+	 * leaves the text as a ribbon down the left of an otherwise empty container.
+	 */
+	prose?: boolean;
+	/** Extra schema.org objects to emit alongside the site-level graph. */
+	schema?: Record<string, unknown>[];
+	/**
+	 * Override the canonical URL. Used where two routes cover the same topic and
+	 * the ranking signals should land on one of them rather than being split.
+	 */
+	canonical?: string;
 }
 
 const {
-  title,
-  // Search results truncate around 155 characters, and a description far
-  // short of that wastes the slot.
-  description =
-    'Four-color palettes built in OKLCH, with hex codes for every shade. Copy any HEX in one ' +
-    'click, save favourites, and extract palettes from any image or website.',
-  active = null,
-  activeTag = null,
-  image = '/og-image.png',
-  imageWidth = 1200,
-  imageHeight = 630,
-  noindex = false,
-  wide = false,
-  prose = false,
-  schema = [],
-  canonical: canonicalOverride,
+	title,
+	// Search results truncate around 155 characters, and a description far
+	// short of that wastes the slot.
+	description = 'Four-color palettes built in OKLCH, with hex codes for every shade. Copy any HEX in one ' +
+		'click, save favourites, and extract palettes from any image or website.',
+	active = null,
+	activeTag = null,
+	image = '/og-image.png',
+	imageWidth = 1200,
+	imageHeight = 630,
+	noindex = false,
+	wide = false,
+	prose = false,
+	schema = [],
+	canonical: canonicalOverride,
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
@@ -78,113 +77,214 @@ const ogImage = new URL(usableImage, site).href;
 // Site-level graph. Page-specific objects (breadcrumbs, tool descriptions)
 // arrive through the `schema` prop and are emitted in the same block.
 const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': `${site.origin}/#website`,
-      url: `${site.origin}/`,
-      name: 'Palette Vault',
-      description:
-        'Four-color palettes built in OKLCH with a set of free color tools.',
-      inLanguage: 'en',
-    },
-    ...schema,
-  ],
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebSite',
+			'@id': `${site.origin}/#website`,
+			url: `${site.origin}/`,
+			name: 'Palette Vault',
+			description: 'Four-color palettes built in OKLCH with a set of free color tools.',
+			inLanguage: 'en',
+		},
+		...schema,
+	],
 };
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html
+	lang='en'
+	data-theme='light'>
+	<head>
+		<meta charset='utf-8' />
+		<meta
+			name='viewport'
+			content='width=device-width, initial-scale=1'
+		/>
 
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta
+			name='description'
+			content={description}
+		/>
+		<link
+			rel='canonical'
+			href={canonical}
+		/>
+		{
+			noindex && (
+				<meta
+					name='robots'
+					content='noindex, follow'
+				/>
+			)
+		}
+		<meta
+			name='generator'
+			content={Astro.generator}
+		/>
 
-    <!-- Icons -->
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
-    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="alternate" type="application/rss+xml" title="Palette Vault Blog" href="/blog/rss.xml" />
-    <!--
+		<!-- Icons -->
+		<link
+			rel='icon'
+			href='/favicon.ico'
+			sizes='48x48'
+		/>
+		<link
+			rel='icon'
+			href='/favicon-32.png'
+			type='image/png'
+			sizes='32x32'
+		/>
+		<link
+			rel='icon'
+			href='/favicon-16.png'
+			type='image/png'
+			sizes='16x16'
+		/>
+		<link
+			rel='apple-touch-icon'
+			href='/apple-touch-icon.png'
+			sizes='180x180'
+		/>
+		<link
+			rel='manifest'
+			href='/site.webmanifest'
+		/>
+		<link
+			rel='alternate'
+			type='application/rss+xml'
+			title='Palette Vault Blog'
+			href='/blog/rss.xml'
+		/>
+		<!--
       One value, matching the default theme. Keying these to
       prefers-color-scheme would tint the browser chrome dark for a visitor on a
       dark OS while the page itself is light.
     -->
-    <meta name="theme-color" content="#ffffff" />
+		<meta
+			name='theme-color'
+			content='#ffffff'
+		/>
 
-    <!-- Open Graph / Twitter -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Palette Vault" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content={String(usableImage === image ? imageWidth : 1200)} />
-    <meta property="og:image:height" content={String(usableImage === image ? imageHeight : 630)} />
-    <meta property="og:locale" content="en" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+		<!-- Open Graph / Twitter -->
+		<meta
+			property='og:type'
+			content='website'
+		/>
+		<meta
+			property='og:site_name'
+			content='Palette Vault'
+		/>
+		<meta
+			property='og:title'
+			content={title}
+		/>
+		<meta
+			property='og:description'
+			content={description}
+		/>
+		<meta
+			property='og:url'
+			content={canonical}
+		/>
+		<meta
+			property='og:image'
+			content={ogImage}
+		/>
+		<meta
+			property='og:image:width'
+			content={String(usableImage === image ? imageWidth : 1200)}
+		/>
+		<meta
+			property='og:image:height'
+			content={String(usableImage === image ? imageHeight : 630)}
+		/>
+		<meta
+			property='og:locale'
+			content='en'
+		/>
+		<meta
+			name='twitter:card'
+			content='summary_large_image'
+		/>
+		<meta
+			name='twitter:title'
+			content={title}
+		/>
+		<meta
+			name='twitter:description'
+			content={description}
+		/>
+		<meta
+			name='twitter:image'
+			content={ogImage}
+		/>
 
-    <!-- The gallery requests the manifest immediately after parsing. -->
-    <link rel="preload" href="/data/meta.json" as="fetch" crossorigin="anonymous" />
+		<!-- The gallery requests the manifest immediately after parsing. -->
+		<link
+			rel='preload'
+			href='/data/meta.json'
+			as='fetch'
+			crossorigin='anonymous'
+		/>
 
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+		<script
+			type='application/ld+json'
+			is:inline
+			set:html={JSON.stringify(jsonLd)}
+		/>
 
-    <slot name="head" />
+		<slot name='head' />
 
-    <!--
+		<!--
       Theme is applied before first paint, otherwise dark-mode users get a
       white flash while the stylesheet and scripts load.
     -->
-    <script is:inline>
-      (() => {
-        try {
-          /*
-           * Light by default, whatever the operating system says.
-           *
-           * The site was following prefers-color-scheme, which meant a visitor
-           * on a dark desktop met a dark page on first load. For a colour
-           * reference that is the wrong opening: swatches are judged against
-           * their surroundings, and the light theme is the one the palettes,
-           * the contrast figures and the shade scales were designed against.
-           *
-           * The OS preference is not ignored so much as demoted — it stops
-           * being a default and the toggle becomes the only thing that sets
-           * the theme. A saved choice still wins on every later visit.
-           */
-          const saved = localStorage.getItem('palette.theme');
-          document.documentElement.dataset.theme = saved ?? 'light';
-        } catch {
-          /* localStorage unavailable — the light theme on <html> already applies */
-        }
-      })();
-    </script>
-  </head>
+		<script is:inline>
+			(() => {
+				try {
+					/*
+					 * Light by default, whatever the operating system says.
+					 *
+					 * The site was following prefers-color-scheme, which meant a visitor
+					 * on a dark desktop met a dark page on first load. For a colour
+					 * reference that is the wrong opening: swatches are judged against
+					 * their surroundings, and the light theme is the one the palettes,
+					 * the contrast figures and the shade scales were designed against.
+					 *
+					 * The OS preference is not ignored so much as demoted: it stops
+					 * being a default and the toggle becomes the only thing that sets
+					 * the theme. A saved choice still wins on every later visit.
+					 */
+					const saved = localStorage.getItem('palette.theme');
+					document.documentElement.dataset.theme = saved ?? 'light';
+				} catch {
+					/* localStorage unavailable, the light theme on <html> already applies */
+				}
+			})();
+		</script>
+	</head>
 
-  <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+	<body>
+		<a
+			class='skip-link'
+			href='#main'
+			>Skip to content</a
+		>
 
-    <Header active={active} />
+		<Header active={active} />
 
-    <div class:list={['shell', prose && 'shell--prose', !prose && wide && 'shell--wide']}>
-      {!wide && !prose && <Sidebar activeTag={activeTag} />}
-      <main id="main">
-        <slot />
-      </main>
-    </div>
+		<div class:list={['shell', prose && 'shell--prose', !prose && wide && 'shell--wide']}>
+			{!wide && !prose && <Sidebar activeTag={activeTag} />}
+			<main id='main'>
+				<slot />
+			</main>
+		</div>
 
-    <Footer />
+		<Footer />
 
-    <slot name="after" />
-  </body>
+		<slot name='after' />
+	</body>
 </html>

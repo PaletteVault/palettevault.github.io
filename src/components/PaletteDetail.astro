@@ -3,13 +3,13 @@
  * Body of the single palette page.
  *
  * Used by two routes:
- *   • pages/palette/[slug].astro — pre-rendered pages, where the colors are
+ *   • pages/palette/[slug].astro, pre-rendered pages, where the colors are
  *     known at build time and land in the HTML for search engines;
- *   • pages/palette/index.astro — the catch-all template the host rewrites
+ *   • pages/palette/index.astro, the catch-all template the host rewrites
  *     every other address onto. No colors at build time; initDetail() fills
  *     them in from the slug in the address bar.
  *
- * One copy of the markup for both cases — anything else drifts out of sync.
+ * One copy of the markup for both cases, anything else drifts out of sync.
  */
 import { swatchesHTML } from '../lib/detail.js';
 import { paletteName } from '../lib/palette.js';
@@ -22,7 +22,7 @@ interface Props {
 	slug?: string;
 	/**
 	 * Root-relative path to the pre-rendered PNG, when one exists.
-	 * Only pre-rendered pages have one — see scripts/build-palette-images.mjs.
+	 * Only pre-rendered pages have one, see scripts/build-palette-images.mjs.
 	 */
 	image?: string | null;
 	/** Absolute page URL, needed for the Pinterest share link. */

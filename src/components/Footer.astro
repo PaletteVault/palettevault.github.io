@@ -4,7 +4,7 @@
  *
  * Four columns of real navigation rather than a row of links. Beyond
  * usefulness this is the only place most of the color and tool pages get an
- * internal link from every page on the site — without it they would be
+ * internal link from every page on the site, without it they would be
  * reachable from the sitemap and little else.
  *
  * Everything is generated from the same catalogs the pages themselves use, so
@@ -27,7 +27,7 @@ const meta = getMeta();
  *
  * So the exclusion is derived rather than hand-listed: any tag whose slug is
  * also a color slug belongs to Colors, not to Categories. That stays correct on
- * its own — `coffee` only became a duplicate when it was added to the color
+ * its own, `coffee` only became a duplicate when it was added to the color
  * catalog, and a hand-maintained list would have missed it.
  */
 const COLOR_SLUGS = new Set(COLORS.map((color) => color.slug));
@@ -67,8 +67,7 @@ const COLOR_ORDER = [
 ];
 
 const COLOR_LINKS = COLOR_ORDER.map((slug) => COLORS.find((color) => color.slug === slug)).filter(
-	Boolean,
-);
+	Boolean);
 /*
  * Every tool, not a subset. The footer is the only place most tool pages get
  * an internal link from every page on the site, so truncating the list left
@@ -109,6 +108,7 @@ const TOOL_LINKS = TOOLS;
 				<li><a href='/collection/'>My collection</a></li>
 				<li><a href='/colors/'>All colors</a></li>
 				<li><a href='/blog/'>Blog</a></li>
+				<li><a href='/plugins/'>Plugins</a></li>
 			</ul>
 		</nav>
 

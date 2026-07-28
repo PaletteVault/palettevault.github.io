@@ -1,0 +1,147 @@
+---
+/**
+ * /plugins/
+ *
+ * The extension and the editor plugin in one place.
+ *
+ * Both are listed even though only one can be installed today, and the one
+ * that cannot says so in plain words. Listing an unreleased thing beside a
+ * released one without marking it is how a page quietly becomes a lie: the
+ * reader assumes both are available, goes looking for the second, and finds
+ * nothing.
+ */
+import Layout from '../layouts/Layout.astro';
+import { PLUGINS } from '../lib/plugins.js';
+
+const site = Astro.site ?? new URL('https://palettevault.github.io');
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Plugins' },
+    ],
+  },
+  ...PLUGINS.filter((plugin) => plugin.status === 'live').map((plugin) => ({
+    '@type': 'SoftwareApplication',
+    name: plugin.name,
+    applicationCategory: 'BrowserApplication',
+    operatingSystem: plugin.platform,
+    url: plugin.url,
+    description: plugin.summary,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  })),
+];
+---
+
+<Layout
+	title='Color Palette Plugins for Chrome and Obsidian | Palette Vault'
+	description='Free color palette tools where you already work. Generate palettes, extract them from any page or image, and pick colors from the screen.'
+	active='tools'
+	schema={schema}
+	prose>
+	<nav class='crumbs' aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>Plugins</span>
+	</nav>
+
+	<h1>Plugins and extensions</h1>
+
+	<p class='lede'>
+		The same color tools, in the places you already work. Everything runs on
+		your own machine: no account, no upload, and nothing recorded about what
+		you do.
+	</p>
+
+	{
+		PLUGINS.map((plugin) => (
+			<section class='plugin'>
+				<header class='plugin__head'>
+					<h2>{plugin.name}</h2>
+					<p class='plugin__platform'>
+						{plugin.platform}
+						{plugin.status === 'soon' && <span class='plugin__badge'>In review</span>}
+					</p>
+				</header>
+
+				<p>{plugin.summary}</p>
+
+				<ul class='plugin__features'>
+					{plugin.features.map((feature) => (
+						<li>{feature}</li>
+					))}
+				</ul>
+
+				{plugin.url && plugin.cta && (
+					<p>
+						<a class='plugin__cta' href={plugin.url} target='_blank' rel='noopener'>
+							{plugin.cta}
+						</a>
+					</p>
+				)}
+
+				<p class='plugin__note'>{plugin.note}</p>
+			</section>
+		))
+	}
+</Layout>
+
+<style>
+	.lede {
+		font-size: 1.08em;
+		color: var(--text-muted);
+	}
+
+	.plugin {
+		margin: 2.5rem 0;
+		padding-top: 1.75rem;
+		border-top: 1px solid var(--border);
+	}
+
+	.plugin__head h2 {
+		margin-bottom: 4px;
+	}
+
+	.plugin__platform {
+		margin-top: 0;
+		color: var(--text-muted);
+		font-size: 0.94em;
+	}
+
+	.plugin__badge {
+		display: inline-block;
+		margin-left: 8px;
+		padding: 2px 9px;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-muted);
+	}
+
+	.plugin__features {
+		margin: 1rem 0;
+	}
+
+	.plugin__cta {
+		display: inline-block;
+		padding: 11px 22px;
+		border-radius: 999px;
+		background: var(--text);
+		color: var(--bg);
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.plugin__cta:hover {
+		background: var(--accent-strong);
+		color: #fff;
+	}
+
+	.plugin__note {
+		color: var(--text-muted);
+		font-size: 0.95em;
+	}
+</style>

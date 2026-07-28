@@ -4,7 +4,7 @@
  * ============================================================================
  *
  *  Drop in an image, get back the image with its own colors laid alongside it
- *  as a band of swatches — the format people post to Pinterest and Instagram
+ *  as a band of swatches, the format people post to Pinterest and Instagram
  *  when sharing a palette, because the picture and the colors have to travel
  *  together to mean anything.
  *
@@ -29,7 +29,7 @@ const MAX_OUTPUT_SIDE = 4000;
  *
  * Rendering at the source resolution seemed like the respectful default until a
  * 216px icon went through: the band came out 43px wide, a seven-character hex
- * label needed 8.1px of type against a 9px floor, and the labels vanished — so
+ * label needed 8.1px of type against a 9px floor, and the labels vanished, so
  * the "show hex labels" checkbox appeared to do nothing at all. The export was
  * also too small to post anywhere.
  *
@@ -134,8 +134,7 @@ export function planCollage({
       cells.push(
         vertical
           ? { x: trackStart, y: start, w: trackSize, h: end - start, hex: colors[index] }
-          : { x: start, y: trackStart, w: end - start, h: trackSize, hex: colors[index] },
-      );
+          : { x: start, y: trackStart, w: end - start, h: trackSize, hex: colors[index] });
       index += 1;
     }
   }
@@ -151,7 +150,7 @@ export function planCollage({
  * Largest font that fits a seven-character hex label inside a cell.
  *
  * The 0.62 is the advance width of a character in a monospace face as a
- * fraction of its size — near enough across the stack to size text without
+ * fraction of its size, near enough across the stack to size text without
  * measuring, and measureText is used afterwards to confirm.
  */
 function labelSize(ctx, text, cell) {
@@ -304,23 +303,19 @@ function render(root) {
       notes.push(
         `Source is ${state.image.width} × ${state.image.height}, upscaled ${scale.toFixed(1)}× so `
         + 'the band is large enough to be readable. Upscaling cannot add detail, so the image '
-        + 'will be softer than the original.',
-      );
+        + 'will be softer than the original.');
     } else if (scale < 1) {
       notes.push(
         `Source is ${state.image.width} × ${state.image.height}, scaled down to keep the export `
-        + 'within a size the browser can render.',
-      );
+        + 'within a size the browser can render.');
     }
     if (wanted > 0 && labelled === 0) {
       notes.push(
-        'Hex labels do not fit at this band size — raise it, or use fewer colors. The codes are '
-        + 'listed below either way.',
-      );
+        'Hex labels do not fit at this band size, raise it, or use fewer colors. The codes are '
+        + 'listed below either way.');
     } else if (wanted > 0 && labelled < wanted) {
       notes.push(
-        `${wanted - labelled} of ${wanted} labels were left off because their swatch is too small.`,
-      );
+        `${wanted - labelled} of ${wanted} labels were left off because their swatch is too small.`);
     }
 
     const note = root.querySelector('[data-collage-note]');
@@ -346,8 +341,7 @@ function render(root) {
 
       li.append(button);
       return li;
-    }),
-  );
+    }));
 }
 
 async function loadFile(root, file) {
@@ -404,11 +398,9 @@ export function initCollage() {
     dropzone?.addEventListener(type, (event) => {
       event.preventDefault();
       dropzone.dataset.over = 'true';
-    }),
-  );
+    }));
   ['dragleave', 'drop'].forEach((type) =>
-    dropzone?.addEventListener(type, () => delete dropzone.dataset.over),
-  );
+    dropzone?.addEventListener(type, () => delete dropzone.dataset.over));
   dropzone?.addEventListener('drop', (event) => {
     event.preventDefault();
     const file = event.dataTransfer?.files?.[0];
@@ -418,8 +410,7 @@ export function initCollage() {
   // Pasting a screenshot is the fastest path in, so it is worth supporting.
   document.addEventListener('paste', (event) => {
     const item = [...(event.clipboardData?.items ?? [])].find((entry) =>
-      entry.type.startsWith('image/'),
-    );
+      entry.type.startsWith('image/'));
     if (item) loadFile(root, item.getAsFile());
   });
 

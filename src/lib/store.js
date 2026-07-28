@@ -4,9 +4,9 @@
  * ============================================================================
  *
  *  Answers two questions:
- *    1. "Has this visitor already liked this palette?" — which keeps the
+ *    1. "Has this visitor already liked this palette?", which keeps the
  *       counter honest and the heart correctly filled.
- *    2. "What belongs on the Collection page?" — which is the like list itself.
+ *    2. "What belongs on the Collection page?", which is the like list itself.
  *
  *  A palette is keyed by its slug (24 hex characters, four colors in a row).
  *  Because the slug already contains the colors, nothing else has to be
@@ -64,7 +64,7 @@ function persist() {
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify(cache.list));
   } catch (error) {
-    // QuotaExceeded and friends — never break the UI over storage.
+    // QuotaExceeded and friends, never break the UI over storage.
     console.warn('[store] could not save likes:', error);
   }
 }
@@ -78,7 +78,7 @@ export function isLiked(slug) {
   return read().set.has(slug);
 }
 
-/** Every liked slug, newest first — the order used by Collection. */
+/** Every liked slug, newest first, the order used by Collection. */
 export function likedSlugs() {
   return [...read().list].reverse();
 }

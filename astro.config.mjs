@@ -8,7 +8,7 @@ import { defineConfig } from 'astro/config';
  * A repository named <account>.github.io is served from the root of that
  * domain, which is why there is no `base` here. A project repository
  * (github.io/<repo>/) would need `base: '/<repo>'` and every absolute path in
- * the code adjusted to match — a good reason to prefer the root repo.
+ * the code adjusted to match, a good reason to prefer the root repo.
  */
 const SITE = process.env.SITE_URL ?? 'https://palettevault.github.io';
 

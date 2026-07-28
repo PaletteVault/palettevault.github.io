@@ -1,12 +1,12 @@
 /**
  * ============================================================================
- *  PALETTE CARD TEMPLATE — SINGLE SOURCE OF TRUTH
+ *  PALETTE CARD TEMPLATE, SINGLE SOURCE OF TRUTH
  * ============================================================================
  *
  *  The same module is used twice:
- *    • PaletteCard.astro    — renders the first batch at build time, so the
+ *    • PaletteCard.astro, renders the first batch at build time, so the
  *                             first screen needs no JavaScript at all;
- *    • lib/gallery.js       — renders every later batch at runtime during
+ *    • lib/gallery.js, renders every later batch at runtime during
  *                             infinite scroll.
  *
  *  Keeping the markup in two places is a reliable way to end up with two
@@ -37,7 +37,7 @@ export function normalizeHex(value) {
 }
 
 /**
- * A palette's date is derived deterministically from its id — dates are not
+ * A palette's date is derived deterministically from its id, dates are not
  * stored in the chunks, which would cost bytes across hundreds of thousands
  * of records.
  *   ts = latestTs - (total - id) * stepMs

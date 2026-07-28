@@ -11,7 +11,7 @@ import { cardHTML } from '../lib/card.js';
 interface Props {
   /** Tuple [id, hex1, hex2, hex3, hex4] from a chunk. */
   row: [number, string, string, string, string];
-  /** Contents of data/meta.json — needed to derive the date from the id. */
+  /** Contents of data/meta.json, needed to derive the date from the id. */
   meta: Record<string, unknown>;
 }
 

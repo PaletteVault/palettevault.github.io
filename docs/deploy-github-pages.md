@@ -25,7 +25,7 @@ palettevault.github.io/
 ```
 
 The workflow therefore lives at `site/.github/workflows/deploy.yml` and runs
-from the repository root — no `working-directory`.
+from the repository root, no `working-directory`.
 
 ```bash
 cd site
@@ -46,8 +46,7 @@ The Chrome extension lives outside this repository and is not deployed.
 **Settings → Pages → Build and deployment → Source: GitHub Actions.**
 
 Not "Deploy from a branch". The branch mode serves committed files, and this
-site's dataset and images are generated at build time rather than committed —
-there would be nothing to serve.
+site's dataset and images are generated at build time rather than committed, there would be nothing to serve.
 
 ### 3. Add the Firebase secrets
 
@@ -66,7 +65,7 @@ of them:
 
 Copy them from your local `.env`.
 
-These are not really secrets — a Firebase web config ships in the bundle of
+These are not really secrets, a Firebase web config ships in the bundle of
 every site that uses one, and the database rules are what actually control
 access. They live in Actions secrets so the values are not duplicated across
 the repo and can be rotated in one place.
@@ -80,7 +79,7 @@ The workflow runs on every push to `main`, or manually from the **Actions**
 tab, where **Run workflow** also lets you override the palette count for a
 one-off build.
 
-First run takes roughly 8–12 minutes, most of it generating palettes and
+First run takes roughly 8-12 minutes, most of it generating palettes and
 rendering the 4000 PNGs.
 
 ---
@@ -97,7 +96,7 @@ missing.
 **`site` in `astro.config.mjs`.** It drives canonical URLs, the sitemap,
 `og:image` and the Pinterest share link. A repository named
 `<account>.github.io` is served from the root of its domain, which is why there
-is no `base`. A project repository — `palettevault.github.io/somerepo/` — would
+is no `base`. A project repository, `palettevault.github.io/somerepo/`, would
 need `base: '/somerepo'` and every absolute path in the code adjusted to match.
 Worth avoiding.
 
@@ -111,7 +110,7 @@ same body as the palette page and renders from the slug in the URL.
 ## The one real compromise
 
 Only the first 2000 palettes exist as their own HTML files. Every other
-`/palette/<slug>/` address is served by `404.html` — it renders correctly and
+`/palette/<slug>/` address is served by `404.html`, it renders correctly and
 the visitor sees a normal page, but **the response carries HTTP 404**, so
 search engines will not index it.
 
@@ -125,7 +124,7 @@ move. Everything else about the site behaves identically.
 
 To narrow the gap without switching hosts, raise `PRERENDER_PALETTES` in
 `src/lib/data.server.js`. Each additional 1000 palettes costs roughly 10 MB of
-HTML plus 11 MB of PNGs, against a 1 GB ceiling — so around 20 000 pre-rendered
+HTML plus 11 MB of PNGs, against a 1 GB ceiling, so around 20 000 pre-rendered
 pages is the practical maximum, and re-running `npm run images` only renders
 the new ones.
 
@@ -147,7 +146,7 @@ the ceiling shows up as a failed build rather than a silently broken deploy.
 
 ## After the first deploy
 
-1. Open `https://palettevault.github.io` — cards should be styled. Unstyled
+1. Open `https://palettevault.github.io`, cards should be styled. Unstyled
    means `.nojekyll` did not make it.
 2. Like a palette, then check the Firebase console. Nothing appearing means the
    secrets are missing; the browser console will say which failure it was.

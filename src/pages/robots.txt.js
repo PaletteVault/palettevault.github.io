@@ -12,7 +12,7 @@ export function GET({ site }) {
     'User-agent: *',
     'Allow: /',
     '',
-    '# Personal, stored in the visitor\'s browser — nothing for a crawler to see.',
+    '# Personal, stored in the visitor\'s browser, nothing for a crawler to see.',
     'Disallow: /collection/',
     '',
     '# Rewrite fallback shell: no content until a palette slug is attached.',
