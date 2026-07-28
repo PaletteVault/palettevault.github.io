@@ -18,6 +18,8 @@
 
 export const OBSIDIAN_PLUGIN_URL = 'https://community.obsidian.md/plugins/palette-vault';
 
+export const FIREFOX_ADDON_URL = 'https://addons.mozilla.org/en-US/firefox/addon/palette-vault/';
+
 export const CHROME_EXTENSION_URL =
   'https://chromewebstore.google.com/detail/palette-vault-color-palet/njnhlacephcfkccghemekgggekioiekh';
 
@@ -44,6 +46,35 @@ export const PLUGINS = [
     note:
       'There is no host permission, so the extension cannot see the sites you '
       + 'visit and has no standing access to any page.',
+  },
+  {
+    slug: 'firefox',
+    name: 'Palette Vault for Firefox',
+    platform: 'Firefox',
+    status: 'live',
+    url: FIREFOX_ADDON_URL,
+    cta: 'Add to Firefox',
+    summary:
+      'Generate palettes, pull them out of any image, and keep them in the '
+      + 'sidebar while you work.',
+    features: [
+      'Generate a four-color palette and reroll until one lands',
+      'Drop in an image and get the colors that define it',
+      'Right-click any image to extract its palette',
+      'Save palettes locally, no account needed',
+      'Lives in the sidebar, so it stays open while you work',
+    ],
+    /*
+     * Said plainly rather than left for someone to discover.
+     *
+     * The Firefox build has neither the eyedropper nor the page scanner, and
+     * both are listed on the Chrome entry directly above. Letting a reader
+     * assume the two are the same product would be a small lie that only
+     * surfaces after they install it.
+     */
+    note:
+      'The eyedropper is not here: Firefox does not implement the browser API '
+      + 'it needs. Reading colors off a page is not in this release either.',
   },
   {
     slug: 'obsidian',
