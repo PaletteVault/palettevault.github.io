@@ -48,12 +48,19 @@ The Chrome extension lives outside this repository and is not deployed.
 Not "Deploy from a branch". The branch mode serves committed files, and this
 site's dataset and images are generated at build time rather than committed, there would be nothing to serve.
 
-### 3. Add the Firebase secrets
+### 3. Add the Firebase variables
 
-**Settings → Secrets and variables → Actions → New repository secret**, seven
-of them:
+**Settings, Secrets and variables, Actions, the Variables tab, New repository
+variable.** Seven of them.
 
-| Secret | Value |
+Variables, not secrets. The two are neighbouring tabs on the same page and the
+distinction is easy to miss, but getting it wrong fails in the worst possible
+way: `${{ secrets.X }}` resolves to an empty string when `X` is a variable, so
+the build goes green, the site deploys, and likes silently do nothing. That is
+exactly how this configuration was broken once already. The workflow now stops
+with a list of the missing names instead.
+
+| Variable | Value |
 | --- | --- |
 | `PUBLIC_FIREBASE_API_KEY` | `AIzaSy…` |
 | `PUBLIC_FIREBASE_AUTH_DOMAIN` | `colorpalette-99684.firebaseapp.com` |
@@ -65,10 +72,12 @@ of them:
 
 Copy them from your local `.env`.
 
-These are not really secrets, a Firebase web config ships in the bundle of
-every site that uses one, and the database rules are what actually control
-access. They live in Actions secrets so the values are not duplicated across
-the repo and can be rotated in one place.
+These are not secrets in any meaningful sense. A Firebase web config ships in
+the client bundle of every site that uses one, so anyone can read it from view
+source. What actually controls access is the database rules. Storing the values
+as repository variables keeps them in one place for rotation without implying a
+confidentiality they do not have, and leaves them readable in build logs, where
+seeing them is useful rather than dangerous.
 
 Skipping this step is not fatal: the site builds and works, likes just stay in
 each visitor's browser and Popular stays empty.

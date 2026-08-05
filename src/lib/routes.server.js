@@ -182,6 +182,7 @@ export function getSitemapEntries() {
 
   entries.push({ path: '/palettes/', changefreq: 'hourly', priority: '0.9' });
   entries.push({ path: '/plugins/', changefreq: 'monthly', priority: '0.7' });
+  entries.push({ path: '/apps/', changefreq: 'monthly', priority: '0.7' });
   entries.push({ path: '/colors/', changefreq: 'weekly', priority: '0.9' });
 
   /*

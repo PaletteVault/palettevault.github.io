@@ -63,38 +63,39 @@ jobs:
       - name: Generate palette images
         run: npm run images
 
-      # Written to a file rather than passed as shell environment variables.
+      # `vars`, not `secrets`, and that is deliberate rather than incidental.
       #
-      # A Firebase web config is public by design: it ships in the bundle of
-      # every site that uses one, and the database rules are what actually
-      # control access. Secrets are used only to keep the values in one place.
+      # A Firebase web config is public by design. It ships inside the client
+      # bundle of every site that uses one, so anyone can read it from view
+      # source; what actually controls access is the database rules. Storing it
+      # as a secret would imply a confidentiality this data does not have, and
+      # would hide the values from logs where seeing them is useful.
       #
-      # The file matters. Astro inlines `import.meta.env.PUBLIC_*` into the
-      # client bundle from .env files; a variable that exists only in the
-      # process environment is visible to build scripts but does not reliably
-      # reach the browser bundle. The deploy passed the secrets correctly on
-      # the `env:` block and the site still reported them missing, because the
-      # value never made it past the build into gallery.js.
+      # The two are easy to confuse: Secrets and Variables are neighbouring
+      # tabs on the same settings page, and `${{ secrets.X }}` silently
+      # resolves to an empty string when X is a variable. That produced a green
+      # build, a deployed site, and likes that quietly did nothing.
       #
-      # Writing the file removes the ambiguity: Astro reads it the same way it
-      # reads a local .env, so production behaves like a working dev machine.
+      # Written to a file rather than passed on `env:`, because Astro inlines
+      # `import.meta.env.PUBLIC_*` into the browser bundle from .env files.
       - name: Write .env for the client bundle
         run: |
           cat > .env <<'ENV'
-          PUBLIC_FIREBASE_API_KEY=${{ secrets.PUBLIC_FIREBASE_API_KEY }}
-          PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          PUBLIC_FIREBASE_DATABASE_URL=${{ secrets.PUBLIC_FIREBASE_DATABASE_URL }}
-          PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
-          PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          PUBLIC_FIREBASE_APP_ID=${{ secrets.PUBLIC_FIREBASE_APP_ID }}
+          PUBLIC_FIREBASE_API_KEY=${{ vars.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN=${{ vars.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_DATABASE_URL=${{ vars.PUBLIC_FIREBASE_DATABASE_URL }}
+          PUBLIC_FIREBASE_PROJECT_ID=${{ vars.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET=${{ vars.PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ vars.PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID=${{ vars.PUBLIC_FIREBASE_APP_ID }}
           ENV
           # Fail here rather than shipping a build with likes quietly disabled.
-          # An empty secret produces a line ending in "=", which is exactly the
-          # state that looked like everything was configured.
+          # A missing value produces a line ending in "=", which is exactly the
+          # state that used to look like everything was configured.
           if grep -q '=$' .env; then
-            echo "::error::One or more PUBLIC_FIREBASE_* secrets are empty:"
+            echo "::error::These repository variables are missing or empty:"
             grep -n '=$' .env | cut -d= -f1
+            echo "Set them under Settings, Secrets and variables, Actions, Variables tab."
             exit 1
           fi
           echo "All 7 Firebase values present."

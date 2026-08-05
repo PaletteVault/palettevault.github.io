@@ -24,6 +24,7 @@ needs no lookup.
 - [All colors - names, hex codes, shades](https://palettevault.github.io/colors/)
 - [All tools](https://palettevault.github.io/tools/)
 - [Plugins - Chrome extension and Obsidian plugin](https://palettevault.github.io/plugins/)
+- [Apps - the Windows desktop app](https://palettevault.github.io/apps/)
 - [Blog](https://palettevault.github.io/blog/)
 
 ## Colors

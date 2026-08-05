@@ -1,0 +1,164 @@
+---
+/**
+ * /apps/
+ *
+ * Desktop applications. Sibling of /plugins/, and deliberately not merged
+ * with it: a plugin extends something the reader already runs, an app is
+ * something they install on its own, and the two want different copy.
+ */
+import Layout from '../layouts/Layout.astro';
+import { APPS } from '../lib/apps.js';
+
+const site = Astro.site ?? new URL('https://palettevault.github.io');
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Apps' },
+    ],
+  },
+  ...APPS.filter((app) => app.status === 'live').map((app) => ({
+    '@type': 'SoftwareApplication',
+    name: app.name,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: app.platform,
+    url: app.url,
+    description: app.summary,
+    screenshot: new URL(app.screenshot, site).href,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  })),
+];
+---
+
+<Layout
+	title='Palette Vault for Windows, a Free Desktop Color Tool | Palette Vault'
+	description='Generate color palettes, extract them from any photo, and pick colors from anywhere on screen. Free on the Microsoft Store, works offline.'
+	active='tools'
+	schema={schema}
+	prose>
+	<nav class='crumbs' aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>Apps</span>
+	</nav>
+
+	<h1>Desktop apps</h1>
+
+	<p class='lede'>
+		The colour tools as a program you install, rather than a page you open.
+		Everything runs on your own machine.
+	</p>
+
+	{
+		APPS.map((app) => (
+			<section class='app'>
+				<header class='app__head'>
+					<h2>{app.name}</h2>
+					<p class='app__platform'>{app.platform}</p>
+				</header>
+
+				<p>{app.summary}</p>
+
+				{app.screenshot && (
+					<img
+						class='app__shot'
+						src={app.screenshot}
+						alt={app.screenshotAlt}
+						width='1672'
+						height='941'
+						loading='lazy'
+						decoding='async'
+					/>
+				)}
+
+				<ul class='app__features'>
+					{app.features.map((feature) => (
+						<li>{feature}</li>
+					))}
+				</ul>
+
+				{app.url && app.cta && (
+					<p>
+						<a class='app__cta' href={app.url} target='_blank' rel='noopener'>
+							{app.cta}
+						</a>
+					</p>
+				)}
+
+				<p class='app__note'>{app.note}</p>
+			</section>
+		))
+	}
+
+	<section class='page-note'>
+		<h2>Also available</h2>
+		<p>
+			The same colour work runs in the browser without installing anything: see
+			the <a href='/tools/'>tools on this site</a>, or the{' '}
+			<a href='/plugins/'>browser extensions and the Obsidian plugin</a>.
+		</p>
+	</section>
+</Layout>
+
+<style>
+	.lede {
+		font-size: 1.08em;
+		color: var(--text-muted);
+	}
+
+	.app {
+		margin: 2.5rem 0;
+		padding-top: 1.75rem;
+		border-top: 1px solid var(--border);
+	}
+
+	.app__head h2 {
+		margin-bottom: 4px;
+	}
+
+	.app__platform {
+		margin-top: 0;
+		color: var(--text-muted);
+		font-size: 0.94em;
+	}
+
+	/*
+	 * Width and height are on the element as well as here. Without them the
+	 * page reflows when the screenshot finally loads, which on a long article
+	 * shifts everything the reader was already looking at.
+	 */
+	.app__shot {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 1.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+
+	.app__features {
+		margin: 1rem 0;
+	}
+
+	.app__cta {
+		display: inline-block;
+		padding: 11px 22px;
+		border-radius: 999px;
+		background: var(--text);
+		color: var(--bg);
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.app__cta:hover {
+		background: var(--accent-strong);
+		color: #fff;
+	}
+
+	.app__note {
+		color: var(--text-muted);
+		font-size: 0.95em;
+	}
+</style>

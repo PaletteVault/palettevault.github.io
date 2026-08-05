@@ -128,7 +128,13 @@ button {
 	backdrop-filter: saturate(180%) blur(14px);
 	border-bottom: 1px solid var(--border);
 }
-
+.badges {
+	padding: 0 22px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12rem;
+}
 .logo {
 	display: inline-flex;
 	align-items: center;
@@ -1044,6 +1050,9 @@ button {
 	.header {
 		padding: 0 14px;
 		gap: 10px;
+	}
+	.badges {
+		padding: 0 14px;
 	}
 
 	/* Visually hidden rather than display:none. The logo image is decorative
@@ -2032,6 +2041,9 @@ button {
 	}
 
 	.header {
+		padding: 0 12px;
+	}
+	.badges {
 		padding: 0 12px;
 	}
 }

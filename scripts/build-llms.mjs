@@ -81,6 +81,7 @@ const browse = [
   link('All colors - names, hex codes, shades', '/colors/'),
   link('All tools', '/tools/'),
   link('Plugins - Chrome extension and Obsidian plugin', '/plugins/'),
+  link('Apps - the Windows desktop app', '/apps/'),
   link('Blog', '/blog/'),
 ].join('\n');
 
