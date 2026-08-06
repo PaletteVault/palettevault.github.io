@@ -26,6 +26,12 @@ export const CHROME_EXTENSION_URL =
 export const VSCODE_EXTENSION_URL =
   'https://marketplace.visualstudio.com/items?itemName=jstoolsspace.palette-vault';
 
+export const FRAMER_PLUGIN_URL =
+  'https://www.framer.com/community/marketplace/plugins/palette-vault/';
+
+export const FIGMA_PLUGIN_URL =
+  'https://www.figma.com/community/plugin/1666986851833259239/palette-vault';
+
 export const PLUGINS = [
   {
     slug: 'chrome',
@@ -135,6 +141,72 @@ export const PLUGINS = [
       'No image extraction here, and no inline color chips: VS Code already '
       + 'draws those in CSS and Sass, and its extension host cannot decode an '
       + 'image.',
+  },
+  {
+    slug: 'figma',
+    category: 'DesignApplication',
+    name: 'Palette Vault for Figma',
+    platform: 'Figma and FigJam',
+    status: 'live',
+    url: FIGMA_PLUGIN_URL,
+    cta: 'Open in the Figma Community',
+    summary:
+      'Generate palettes, extract them from an image on the canvas, and put '
+      + 'them into the file as swatches, as fills, or as variables and styles.',
+    features: [
+      'Generate a four-color palette and reroll until one lands',
+      'Extract the colors from an image fill in your selection',
+      'Take the colors already in your selection, gradient stops included',
+      'Swatches placed where you are looking, labelled with their hex',
+      'Fill the selection, cycling when there are more layers than colors',
+      'Variables and paint styles, named by position rather than by hue',
+      'Contrast against all five WCAG thresholds at once',
+    ],
+    /*
+     * Why the selection reading is called out.
+     *
+     * Every competing palette plugin generates colors. Reading the ones a
+     * designer already has, weighted by how much of the artwork each covers
+     * and including gradient stops, is the part that took three rounds of
+     * fixing and the part a reader cannot infer from the word "palette".
+     */
+    note:
+      'Colors taken from a selection are ranked by how much of the artwork '
+      + 'each one covers, so a full-bleed background outranks a small dot, and '
+      + 'gradients are read stop by stop rather than skipped.',
+  },
+  {
+    slug: 'framer',
+    category: 'DesignApplication',
+    name: 'Palette Vault for Framer',
+    platform: 'Framer',
+    status: 'live',
+    url: FRAMER_PLUGIN_URL,
+    cta: 'Get it on the Framer Marketplace',
+    summary:
+      'Generate palettes, pull them out of an image or out of the layers you '
+      + 'already made, and turn them into swatches, fills or color styles with '
+      + 'the dark value worked out for you.',
+    features: [
+      'Generate a four-color palette and reroll until one lands',
+      'Extract the colors from an image on the selected layer',
+      'Take the colors already on your layers, ranked by how much they cover',
+      'Swatches on the canvas, or the palette applied to the selection',
+      'Color styles carrying both a light and a dark value',
+      'Contrast against all five WCAG thresholds at once',
+    ],
+    /*
+     * The dark half is the reason to mention colour styles at all.
+     *
+     * Every other entry on this page saves colours. This one saves twice as
+     * many as it was given, and that is the sentence a Framer user is looking
+     * for, so it belongs in the note rather than buried in the feature list.
+     */
+    note:
+      'A Framer color style holds a light and a dark value, so the plugin '
+      + 'derives the dark counterpart of each color in OKLCH and saves eight '
+      + 'values as four styles. Working in OKLCH is what keeps the dark variant '
+      + 'from drifting to a different hue.',
   },
 ];
 

@@ -15,6 +15,26 @@ import { PLUGINS } from '../lib/plugins.js';
 
 const site = Astro.site ?? new URL('https://palettevault.github.io');
 
+/*
+ * Four names in the title, whatever the page grows to.
+ *
+ * There are six live plugins now and the list will keep growing, so the rule
+ * is fixed rather than the names: name the four with the most search demand
+ * and let the page carry the rest. Beyond four the title runs past the length
+ * a search result shows, and a name nobody sees is worth less than the one it
+ * pushed off the end.
+ *
+ * Figma leads because it is the search term by a wide margin. Firefox and
+ * Obsidian are the ones left out: both have their own store listings that
+ * already answer a search naming them.
+ */
+const title =
+  'Color Palette Plugins for Figma, Framer, VS Code and Chrome | Palette Vault';
+
+const description =
+  'Free color palette tools where you already work. Generate palettes in OKLCH, '
+  + 'extract them from any page or image, create color styles, and check contrast.';
+
 const schema = [
   {
     '@type': 'BreadcrumbList',
@@ -41,8 +61,8 @@ const schema = [
 ---
 
 <Layout
-	title='Color Palette Plugins for Chrome, Firefox, VS Code and Obsidian | Palette Vault'
-	description='Free color palette tools where you already work. Generate palettes, extract them from any page or image, convert to OKLCH, and check contrast.'
+	title={title}
+	description={description}
 	active='tools'
 	schema={schema}
 	prose>
