@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Palette Vault</title>
+		<style>
+			/*
+ * Penpot ships @penpot/plugin-styles, and this file deliberately does not use
+ * it.
+ *
+ * That package is a stylesheet fetched at build time and inlined, which would
+ * pin the panel to whichever version was current on the day it was built. The
+ * theme, on the other hand, is a live signal: Penpot sends `themechange`, and
+ * following that with two sets of custom properties is a dozen lines and no
+ * dependency. The palette itself is what people came to look at, so matching
+ * Penpot's chrome exactly matters less than the colours reading truly.
+ *
+ * `data-theme` on <html> is set from the message. Dark is the default because
+ * Penpot opens dark, so a plugin that starts light flashes on every launch.
+ */
+
+:root,
+[data-theme='dark'] {
+	--bg: #18181a;
+	--bg-soft: #2e3434;
+	--bg-hover: #3b4040;
+	--text: #eef0f2;
+	--text-dim: #8f9da3;
+	--border: #2e3434;
+	--brand: #7efff5;
+	--on-brand: #18181a;
+	--ok: #56e0a0;
+	--bad: #ff6b6b;
+}
+
+[data-theme='light'] {
+	--bg: #fff;
+	--bg-soft: #f3f4f6;
+	--bg-hover: #e6e8ea;
+	--text: #1a1a1a;
+	--text-dim: #64717a;
+	--border: #e3e6e9;
+	--brand: #31efb8;
+	--on-brand: #1a1a1a;
+	--ok: #0a7c3e;
+	--bad: #c72c2c;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font:
+		11px/1.4 'Source Sans Pro',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		sans-serif;
+	color: var(--text);
+	background: var(--bg);
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+#app {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+}
+
+/* -------------------------------------------------------------- controls -- */
+
+select {
+	flex: 1;
+	min-width: 0;
+	height: 30px;
+	padding: 0 6px;
+	font: inherit;
+	color: inherit;
+	background: var(--bg-soft);
+	border: 1px solid var(--border);
+	border-radius: 5px;
+}
+
+button {
+	height: 30px;
+	padding: 0 10px;
+	font: inherit;
+	font-weight: 500;
+	color: var(--text);
+	background: var(--bg-soft);
+	border: 1px solid var(--border);
+	border-radius: 5px;
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+button:hover:not(:disabled) {
+	background: var(--bg-hover);
+}
+
+button:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+button.primary {
+	color: var(--on-brand);
+	background: var(--brand);
+	border-color: transparent;
+	font-weight: 600;
+	padding: 0 16px;
+}
+
+button.primary:hover:not(:disabled) {
+	filter: brightness(1.08);
+}
+
+button.quiet {
+	background: transparent;
+	border-style: dashed;
+}
+
+button.wide {
+	grid-column: 1 / -1;
+}
+
+.row {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.sources,
+.actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid var(--border);
+	margin: 14px 0 10px;
+}
+
+.label {
+	margin: 0 0 7px;
+	font-weight: 600;
+	color: var(--text-dim);
+}
+
+.hint {
+	margin: 0;
+	color: var(--text-dim);
+}
+
+.hint--tip {
+	margin-top: 7px;
+}
+
+/* -------------------------------------------------------------- swatches -- */
+
+/*
+ * One strip, not four cards. A palette is read as a whole, so the corners and
+ * the border belong to the strip and the colours meet edge to edge inside it.
+ *
+ * The generic `button` rule above sets a height, and these rules come after it
+ * on purpose. In the Figma build they came first, `height: 30px` won, and
+ * every swatch rendered as a 21 pixel chip.
+ */
+.swatches {
+	display: flex;
+	width: 100%;
+	height: 104px;
+	margin-bottom: 10px;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.swatches .swatch {
+	flex: 1 1 0;
+	min-width: 0;
+	height: 100%;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 0 0 8px;
+	border: 0;
+	border-radius: 0;
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	transition: filter 0.1s ease;
+}
+
+.swatches .swatch:hover {
+	filter: brightness(1.08);
+}
+
+.swatches .swatch.copied::after {
+	content: 'copied';
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	background: rgba(0, 0, 0, 0.55);
+	color: #fff;
+	font-size: 9px;
+	letter-spacing: 0;
+}
+
+/* -------------------------------------------------------------- contrast -- */
+
+.pair {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.pair__sample {
+	flex: 1;
+	height: 40px;
+	border-radius: 5px;
+	border: 1px solid var(--border);
+	display: grid;
+	place-items: center;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.pair__ratio {
+	font-size: 17px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.verdicts {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 2px 8px;
+	margin: 0;
+}
+
+.verdicts dt {
+	color: var(--text-dim);
+}
+
+.verdicts dd {
+	margin: 0;
+	font-weight: 600;
+	text-align: right;
+}
+
+.pass {
+	color: var(--ok);
+}
+
+.fail {
+	color: var(--bad);
+}
+
+/* ---------------------------------------------------------------- footer -- */
+
+footer {
+	flex: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+	padding: 7px 12px;
+	border-top: 1px solid var(--border);
+	color: var(--text-dim);
+}
+
+footer a {
+	color: inherit;
+	text-decoration: none;
+}
+
+footer a:hover {
+	text-decoration: underline;
+}
+
+#status {
+	text-align: right;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+		</style>
+	</head>
+	<body>
+		<main id="app">
+			<div class="swatches" id="swatches"></div>
+
+			<div class="row">
+				<select id="scheme" aria-label="Colour scheme"></select>
+				<button id="reroll" class="primary">Reroll</button>
+			</div>
+
+			<div class="sources">
+				<button id="from-image" class="quiet" disabled>From an image</button>
+				<button id="from-selection" class="quiet" disabled>From the selection</button>
+			</div>
+
+			<p class="hint hint--tip" id="tip" hidden></p>
+
+			<hr />
+
+			<p class="label">Put it in the file</p>
+			<div class="actions">
+				<button id="swatch-out">Swatches on the canvas</button>
+				<button id="apply" disabled>Fill the selection</button>
+				<button id="library" class="wide">Add to the file library</button>
+			</div>
+
+			<hr />
+
+			<p class="label">Contrast</p>
+			<div id="contrast" class="contrast"></div>
+		</main>
+
+		<footer>
+			<a href="https://palettevault.github.io/" target="_blank" rel="noopener"
+				>palettevault.github.io</a
+			>
+			<span id="status"></span>
+		</footer>
+
+		<script>
+			(() => {
+  // src/lib/color.js
+  var toLinear = (c) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  var toGamma = (c) => c <= 31308e-7 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+  function oklabToLinearSrgb(L, a, b) {
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = L - 0.0894841775 * a - 1.291485548 * b;
+    const l = l_ * l_ * l_;
+    const m = m_ * m_ * m_;
+    const s = s_ * s_ * s_;
+    return [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s
+    ];
+  }
+  function rgbToOklab(r, g, b) {
+    const lr = toLinear(r / 255);
+    const lg = toLinear(g / 255);
+    const lb = toLinear(b / 255);
+    const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
+    const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
+    const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
+    return [
+      0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+      1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+      0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
+    ];
+  }
+  function oklabDistance(a, b) {
+    const dl = a[0] - b[0];
+    const da = a[1] - b[1];
+    const db = a[2] - b[2];
+    return dl * dl + da * da + db * db;
+  }
+  var EPS = 1e-4;
+  var inGamut = ([r, g, b]) => r >= -EPS && r <= 1 + EPS && g >= -EPS && g <= 1 + EPS && b >= -EPS && b <= 1 + EPS;
+  function oklchToLinear(L, C, hDeg) {
+    const h = hDeg * Math.PI / 180;
+    return oklabToLinearSrgb(L, C * Math.cos(h), C * Math.sin(h));
+  }
+  function oklchToHex(L, C, hDeg) {
+    let linear = oklchToLinear(L, C, hDeg);
+    if (!inGamut(linear)) {
+      let lo = 0;
+      let hi = C;
+      for (let i = 0; i < 18; i += 1) {
+        const mid = (lo + hi) / 2;
+        if (inGamut(oklchToLinear(L, mid, hDeg))) lo = mid;
+        else hi = mid;
+      }
+      linear = oklchToLinear(L, lo, hDeg);
+    }
+    return linear.map((channel) => {
+      const value = Math.round(Math.min(1, Math.max(0, toGamma(channel))) * 255);
+      return value.toString(16).padStart(2, "0");
+    }).join("");
+  }
+  function hexToOklch(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const [L, a, bb] = rgbToOklab(r, g, b);
+    const C = Math.sqrt(a * a + bb * bb);
+    let h = Math.atan2(bb, a) * 180 / Math.PI;
+    if (h < 0) h += 360;
+    return { L, C, h };
+  }
+  function normalizeHex(value) {
+    const clean2 = String(value).replace(/[^0-9a-fA-F]/g, "").slice(0, 6).toLowerCase();
+    return clean2.length === 6 ? clean2 : "888888";
+  }
+  function hexToRgb(hex) {
+    const clean2 = normalizeHex(hex);
+    return {
+      r: parseInt(clean2.slice(0, 2), 16),
+      g: parseInt(clean2.slice(2, 4), 16),
+      b: parseInt(clean2.slice(4, 6), 16)
+    };
+  }
+  var rgbToHex = (r, g, b) => [r, g, b].map((v) => Math.round(Math.min(255, Math.max(0, v))).toString(16).padStart(2, "0")).join("");
+  function luminance(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    return 0.2126 * toLinear(r / 255) + 0.7152 * toLinear(g / 255) + 0.0722 * toLinear(b / 255);
+  }
+  var isDark = (hex) => luminance(hex) < 0.45;
+  function contrastRatio(hexA, hexB) {
+    const a = luminance(hexA);
+    const b = luminance(hexB);
+    const [light, dark] = a > b ? [a, b] : [b, a];
+    return (light + 0.05) / (dark + 0.05);
+  }
+
+  // src/lib/generate.js
+  var rand = (min, max) => min + Math.random() * (max - min);
+  var pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  var chance = (p) => Math.random() < p;
+  var HUE = {
+    red: [15, 40],
+    orange: [40, 70],
+    yellow: [70, 105],
+    green: [125, 165],
+    turquoise: [175, 205],
+    blue: [225, 265],
+    purple: [285, 320],
+    pink: [340, 370],
+    earth: [45, 95],
+    sea: [190, 250],
+    forest: [110, 170],
+    sunset: [10, 80]
+  };
+  var MOODS = [
+    { id: "pastel", label: "Pastel", weight: 9, L: [0.84, 0.94], C: [0.035, 0.075], schemes: ["analogous", "triad", "split", "mono"] },
+    { id: "vibrant", label: "Vibrant", weight: 7, L: [0.62, 0.88], C: [0.14, 0.24], schemes: ["triad", "split", "complement", "tetrad"] },
+    { id: "dark", label: "Dark", weight: 8, L: [0.2, 0.46], C: [0.03, 0.11], schemes: ["mono", "analogous", "gradient", "neutral"] },
+    { id: "light", label: "Light", weight: 7, L: [0.78, 0.95], C: [0.02, 0.09], schemes: ["analogous", "mono", "gradient"] },
+    { id: "vintage", label: "Vintage", weight: 6, L: [0.48, 0.8], C: [0.035, 0.085], hues: [HUE.earth, HUE.red, HUE.green], schemes: ["analogous", "neutral", "split"] },
+    { id: "retro", label: "Retro", weight: 5, L: [0.5, 0.78], C: [0.085, 0.155], hues: [HUE.orange, HUE.red, HUE.turquoise], schemes: ["split", "complement", "triad"] },
+    { id: "warm", label: "Warm", weight: 6, L: [0.45, 0.86], C: [0.07, 0.16], hues: [HUE.sunset], schemes: ["analogous", "gradient", "split"] },
+    { id: "cold", label: "Cold", weight: 6, L: [0.55, 0.88], C: [0.04, 0.12], hues: [HUE.blue, HUE.turquoise, HUE.purple], schemes: ["analogous", "mono", "gradient"] },
+    { id: "sunset", label: "Sunset", weight: 4, L: [0.45, 0.85], C: [0.09, 0.19], hues: [HUE.sunset, HUE.pink], schemes: ["gradient", "analogous"] },
+    { id: "nature", label: "Nature", weight: 5, L: [0.4, 0.84], C: [0.05, 0.13], hues: [HUE.forest, HUE.earth], schemes: ["analogous", "gradient", "neutral"] },
+    { id: "sea", label: "Sea", weight: 4, L: [0.42, 0.86], C: [0.05, 0.14], hues: [HUE.sea], schemes: ["gradient", "analogous", "mono"] },
+    { id: "night", label: "Night", weight: 4, L: [0.16, 0.42], C: [0.03, 0.12], hues: [HUE.blue, HUE.purple], schemes: ["gradient", "mono", "analogous"] },
+    { id: "neon", label: "Neon", weight: 4, L: [0.68, 0.9], C: [0.17, 0.3], schemes: ["complement", "split", "triad"] },
+    { id: "minimal", label: "Minimal", weight: 5, L: [0.18, 0.96], C: [4e-3, 0.022], schemes: ["gradient", "mono", "neutral"] },
+    { id: "balanced", label: "Balanced", weight: 9, L: [0.4, 0.88], C: [0.05, 0.16], schemes: ["analogous", "complement", "split", "triad", "tetrad", "neutral", "mono"] }
+  ];
+  var MOOD_POOL = MOODS.flatMap((mood) => Array.from({ length: mood.weight }, () => mood));
+  var SCHEMES = {
+    mono: { label: "Monochrome", offsets: () => [0, 0, 0, 0] },
+    analogous: {
+      label: "Analogous",
+      offsets: () => {
+        const step = rand(12, 26);
+        return [-step * 1.5, -step * 0.5, step * 0.5, step * 1.5];
+      }
+    },
+    complement: {
+      label: "Complementary",
+      offsets: () => {
+        const jitter = rand(-10, 10);
+        return [0, rand(8, 20), 180 + jitter, 180 + jitter + rand(8, 20)];
+      }
+    },
+    split: {
+      label: "Split complementary",
+      offsets: () => {
+        const spread = rand(24, 44);
+        return [0, rand(10, 22), 180 - spread, 180 + spread];
+      }
+    },
+    triad: {
+      label: "Triad",
+      offsets: () => {
+        const j = rand(-12, 12);
+        return [0, 120 + j, 240 - j, rand(8, 24)];
+      }
+    },
+    tetrad: {
+      label: "Tetrad",
+      offsets: () => {
+        const j = rand(-14, 14);
+        return [0, 90 + j, 180, 270 - j];
+      }
+    },
+    neutral: { label: "Accent", offsets: () => [0, rand(6, 16), rand(-16, -6), 180 + rand(-25, 25)] },
+    gradient: {
+      label: "Gradient",
+      offsets: () => {
+        const drift = rand(4, 16);
+        return [0, drift, drift * 2, drift * 3];
+      }
+    }
+  };
+  function baseHue(mood) {
+    if (!mood.hues?.length) return Math.random() * 360;
+    const [from, to] = pick(mood.hues);
+    return rand(from, to) % 360;
+  }
+  function lightnessRamp(mood, scheme) {
+    const [lo, hi] = mood.L;
+    const span = hi - lo;
+    if (scheme === "gradient" || scheme === "mono") {
+      const start = rand(lo, lo + span * 0.25);
+      const end = rand(hi - span * 0.25, hi);
+      const ramp = [0, 1, 2, 3].map((i) => start + (end - start) * i / 3);
+      return chance(0.5) ? ramp : ramp.reverse();
+    }
+    const mid = rand(lo + span * 0.25, hi - span * 0.15);
+    const values = [
+      mid + rand(-span * 0.12, span * 0.12),
+      mid + rand(-span * 0.12, span * 0.12),
+      mid + rand(-span * 0.12, span * 0.12),
+      chance(0.5) ? lo + span * rand(0, 0.12) : hi - span * rand(0, 0.12)
+    ];
+    for (let i = values.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [values[i], values[j]] = [values[j], values[i]];
+    }
+    return values.map((v) => Math.min(hi, Math.max(lo, v)));
+  }
+  function generatePalette(options = {}) {
+    const mood = MOODS.find((m) => m.id === options.mood) ?? pick(MOOD_POOL);
+    const scheme = options.scheme && SCHEMES[options.scheme] ? options.scheme : pick(mood.schemes);
+    const offsets = SCHEMES[scheme].offsets();
+    const h0 = options.baseHex ? hexToOklch(options.baseHex).h : baseHue(mood);
+    const ramp = lightnessRamp(mood, scheme);
+    const [cLo, cHi] = mood.C;
+    const locked = options.locked ?? [];
+    return ramp.map((L, i) => {
+      if (locked[i]) return locked[i];
+      const headroom = 1 - Math.pow(Math.abs(L - 0.62) / 0.62, 1.6);
+      const C = rand(cLo, cHi) * Math.max(0.35, headroom);
+      const H = (h0 + offsets[i] + rand(-4, 4) + 360) % 360;
+      return oklchToHex(L, C, H);
+    });
+  }
+
+  // src/lib/extract.js
+  function seedCentroids(points, k) {
+    const centroids = [points[Math.floor(Math.random() * points.length)]];
+    while (centroids.length < k) {
+      const distances = points.map((point) => {
+        let best = Infinity;
+        for (const centroid of centroids) best = Math.min(best, oklabDistance(point, centroid));
+        return best;
+      });
+      const total = distances.reduce((sum, value) => sum + value, 0);
+      if (total <= 0) break;
+      let target = Math.random() * total;
+      let index = 0;
+      while (index < distances.length - 1 && target > distances[index]) {
+        target -= distances[index];
+        index += 1;
+      }
+      centroids.push(points[index]);
+    }
+    return centroids;
+  }
+  function kmeans(points, k, iterations = 12) {
+    let centroids = seedCentroids(points, k);
+    const assignments = new Array(points.length).fill(0);
+    for (let step = 0; step < iterations; step += 1) {
+      let moved = false;
+      for (let i = 0; i < points.length; i += 1) {
+        let best = 0;
+        let bestDistance = Infinity;
+        for (let c = 0; c < centroids.length; c += 1) {
+          const distance = oklabDistance(points[i], centroids[c]);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            best = c;
+          }
+        }
+        if (assignments[i] !== best) {
+          assignments[i] = best;
+          moved = true;
+        }
+      }
+      const sums = centroids.map(() => [0, 0, 0, 0]);
+      for (let i = 0; i < points.length; i += 1) {
+        const bucket = sums[assignments[i]];
+        bucket[0] += points[i][0];
+        bucket[1] += points[i][1];
+        bucket[2] += points[i][2];
+        bucket[3] += 1;
+      }
+      centroids = sums.map(
+        (bucket, index) => bucket[3] === 0 ? centroids[index] : [bucket[0] / bucket[3], bucket[1] / bucket[3], bucket[2] / bucket[3]]
+      );
+      if (!moved) break;
+    }
+    const counts = centroids.map(() => 0);
+    for (const assignment of assignments) counts[assignment] += 1;
+    return { centroids, counts, assignments };
+  }
+  function fromImageData(imageData, count = 5) {
+    const { data } = imageData;
+    const points = [];
+    const rgb = [];
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 125) continue;
+      rgb.push([data[i], data[i + 1], data[i + 2]]);
+      points.push(rgbToOklab(data[i], data[i + 1], data[i + 2]));
+    }
+    if (points.length === 0) return [];
+    const k = Math.min(count, points.length);
+    const { centroids, counts } = kmeans(points, k);
+    const total = counts.reduce((sum, value) => sum + value, 0);
+    return centroids.map((centroid, index) => {
+      let bestPixel = rgb[0];
+      let bestDistance = Infinity;
+      for (let i = 0; i < points.length; i += 1) {
+        const distance = oklabDistance(points[i], centroid);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestPixel = rgb[i];
+        }
+      }
+      return {
+        hex: rgbToHex(bestPixel[0], bestPixel[1], bestPixel[2]),
+        share: total ? Math.round(counts[index] / total * 100) : 0,
+        weight: counts[index]
+      };
+    }).sort((a, b) => b.weight - a.weight);
+  }
+  function fromImageSource(source, count = 5, maxSide = 160) {
+    const width0 = source.width || source.naturalWidth;
+    const height0 = source.height || source.naturalHeight;
+    const scale = Math.min(1, maxSide / Math.max(width0, height0));
+    const width = Math.max(1, Math.round(width0 * scale));
+    const height = Math.max(1, Math.round(height0 * scale));
+    const canvas = typeof OffscreenCanvas === "function" ? new OffscreenCanvas(width, height) : Object.assign(document.createElement("canvas"), { width, height });
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(source, 0, 0, width, height);
+    return fromImageData(ctx.getImageData(0, 0, width, height), count);
+  }
+
+  // src/ui/ui.js
+  var $ = (id) => document.getElementById(id);
+  var post = (message) => parent.postMessage(message, "*");
+  var clean = (hex) => `#${normalizeHex(hex).toUpperCase()}`;
+  var colours = [];
+  var fromSelection = [];
+  var say = (text) => {
+    $("status").textContent = text;
+  };
+  function paint() {
+    const box = $("swatches");
+    box.textContent = "";
+    for (const hex of colours) {
+      const swatch = document.createElement("button");
+      swatch.className = "swatch";
+      swatch.style.background = clean(hex);
+      swatch.style.color = isDark(hex) ? "#fff" : "#000";
+      swatch.textContent = clean(hex).slice(1);
+      swatch.title = `Copy ${clean(hex)}`;
+      swatch.addEventListener("click", () => copy(hex, swatch));
+      box.appendChild(swatch);
+    }
+  }
+  function copy(hex, element) {
+    const field = document.createElement("textarea");
+    field.value = clean(hex);
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    try {
+      document.execCommand("copy");
+      element.classList.add("copied");
+      setTimeout(() => element.classList.remove("copied"), 550);
+    } catch {
+      say("Could not copy");
+    } finally {
+      field.remove();
+    }
+  }
+  function reroll() {
+    const scheme = $("scheme").value;
+    colours = generatePalette(scheme === "random" ? {} : { scheme });
+    paint();
+    say("");
+  }
+  async function extractFromBytes(bytes) {
+    const bitmap = await createImageBitmap(new Blob([bytes]));
+    try {
+      const found = fromImageSource(bitmap, 4);
+      if (!found.length) {
+        say("No colours found in that image");
+        return;
+      }
+      colours = found.map((entry) => entry.hex ?? entry);
+      paint();
+      say("Extracted from the image");
+    } finally {
+      bitmap.close();
+    }
+  }
+  var THRESHOLDS = [
+    ["AA normal text", 4.5],
+    ["AAA normal text", 7],
+    ["AA large text", 3],
+    ["AAA large text", 4.5],
+    ["AA interface", 3]
+  ];
+  function showContrast(pair) {
+    const box = $("contrast");
+    box.textContent = "";
+    if (!pair) {
+      const hint = document.createElement("p");
+      hint.className = "hint";
+      hint.textContent = "Select two shapes, or one shape on a background, to measure the contrast between them.";
+      box.appendChild(hint);
+      return;
+    }
+    const ratio = contrastRatio(normalizeHex(pair.foreground), normalizeHex(pair.background));
+    const row = document.createElement("div");
+    row.className = "pair";
+    const sample = document.createElement("div");
+    sample.className = "pair__sample";
+    sample.style.background = clean(pair.background);
+    sample.style.color = clean(pair.foreground);
+    sample.textContent = "Sample text";
+    const value = document.createElement("div");
+    value.className = "pair__ratio";
+    value.textContent = `${ratio.toFixed(2)}:1`;
+    row.append(sample, value);
+    const list = document.createElement("dl");
+    list.className = "verdicts";
+    for (const [label, min] of THRESHOLDS) {
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const verdict = document.createElement("dd");
+      const ok = ratio >= min;
+      verdict.className = ok ? "pass" : "fail";
+      verdict.textContent = ok ? "pass" : "fail";
+      list.append(term, verdict);
+    }
+    const source = document.createElement("p");
+    source.className = "hint";
+    source.style.marginTop = "7px";
+    source.textContent = `${clean(pair.foreground)} on ${clean(pair.background)}, from the ${pair.source}.`;
+    box.append(row, list, source);
+  }
+  function applySelectionState(msg) {
+    fromSelection = msg.colours || [];
+    $("from-image").disabled = !msg.hasImage;
+    $("from-selection").disabled = fromSelection.length < 1;
+    $("apply").disabled = msg.fillable === 0;
+    const tip = $("tip");
+    if (!msg.hasImage && fromSelection.length) {
+      tip.textContent = "Vector shapes and SVGs are not images. Use From the selection to take the colours they already carry.";
+      tip.hidden = false;
+    } else {
+      tip.hidden = true;
+    }
+    showContrast(msg.contrast);
+  }
+  function init() {
+    const select = $("scheme");
+    const random = document.createElement("option");
+    random.value = "random";
+    random.textContent = "Any scheme";
+    select.appendChild(random);
+    for (const [id, scheme] of Object.entries(SCHEMES)) {
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = scheme.label ?? id;
+      select.appendChild(option);
+    }
+    select.addEventListener("change", reroll);
+    $("reroll").addEventListener("click", reroll);
+    $("from-image").addEventListener("click", () => {
+      say("Reading the image");
+      post({ type: "read-image" });
+    });
+    $("from-selection").addEventListener("click", () => {
+      colours = fromSelection.slice(0, 4);
+      paint();
+      say(`${colours.length} colour${colours.length === 1 ? "" : "s"} from the selection`);
+    });
+    const send = (type) => () => post({ type, colours });
+    $("swatch-out").addEventListener("click", send("create-swatches"));
+    $("apply").addEventListener("click", send("apply-to-selection"));
+    $("library").addEventListener("click", send("create-library-colours"));
+    document.addEventListener("keydown", (event) => {
+      if (event.code !== "Space") return;
+      if (document.activeElement && document.activeElement !== document.body) return;
+      event.preventDefault();
+      reroll();
+    });
+    showContrast(null);
+    reroll();
+    post({ type: "ready" });
+  }
+  window.addEventListener("message", async (event) => {
+    const msg = event.data;
+    if (!msg || typeof msg !== "object") return;
+    if (msg.type === "theme") {
+      document.documentElement.setAttribute("data-theme", msg.theme === "light" ? "light" : "dark");
+      return;
+    }
+    if (msg.type === "selection") {
+      applySelectionState(msg);
+      return;
+    }
+    if (msg.type === "image") {
+      if (!msg.bytes) {
+        say("No image in the selection");
+        return;
+      }
+      try {
+        await extractFromBytes(msg.bytes);
+      } catch (error) {
+        say("Could not read that image");
+      }
+      return;
+    }
+    if (msg.type === "done") say(msg.text);
+    if (msg.type === "error") say(msg.message);
+  });
+  init();
+})();
+
+		</script>
+	</body>
+</html>

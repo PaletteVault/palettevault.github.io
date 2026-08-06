@@ -24,6 +24,7 @@
  *    - the home page, which is the root and needs no parent
  *    - 404.html, which is reached by status code
  *    - anything a page links to with rel=nofollow, which is not a real vote
+ *    - /penpot/, which is not a page of this site at all
  *
  *  Usage:  node scripts/check-orphans.mjs [dist]
  * ============================================================================
@@ -36,6 +37,21 @@ const DIST = process.argv[2] ?? 'dist';
 
 /** Pages that are legitimately without a parent. */
 const ROOTS = new Set(['/', '/404.html']);
+
+/*
+ * Trees that are shipped from this domain but are not part of this website.
+ *
+ * /penpot/ is the Penpot plugin: Penpot loads it by URL from the plugin
+ * manager, so it has no reader arriving by link and never should. Linking to
+ * it to satisfy this check would be worse than excluding it, because it would
+ * put a bare plugin iframe into the site's navigation.
+ *
+ * A prefix rather than one path, since the plugin is a folder and may grow
+ * more files.
+ */
+const NOT_THIS_SITE = ['/penpot/'];
+
+const isForeign = (url) => NOT_THIS_SITE.some((prefix) => url.startsWith(prefix));
 
 function walk(dir, out = []) {
   for (const entry of readdirSync(dir)) {
@@ -52,7 +68,7 @@ function toUrl(file) {
   return rel.endsWith('index.html') ? `/${rel.slice(0, -'index.html'.length)}` : `/${rel}`;
 }
 
-const files = walk(DIST);
+const files = walk(DIST).filter((file) => !isForeign(toUrl(file)));
 const pages = new Set(files.map(toUrl));
 
 console.log(`  scanning ${files.length} pages in ${DIST}/`);

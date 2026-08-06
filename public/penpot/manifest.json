@@ -1,0 +1,8 @@
+{
+  "name": "Palette Vault",
+  "description": "Generate color palettes in OKLCH, pull them out of an image or a selection, and turn them into swatches, fills or library colors. Works offline.",
+  "version": 2,
+  "code": "plugin.js",
+  "icon": "icon.png",
+  "permissions": ["content:read", "content:write", "library:read", "library:write"]
+}

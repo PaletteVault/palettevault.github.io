@@ -23,9 +23,13 @@ export const FIREFOX_ADDON_URL = 'https://addons.mozilla.org/en-US/firefox/addon
 export const CHROME_EXTENSION_URL =
   'https://chromewebstore.google.com/detail/palette-vault-color-palet/njnhlacephcfkccghemekgggekioiekh';
 
+export const VSCODE_EXTENSION_URL =
+  'https://marketplace.visualstudio.com/items?itemName=jstoolsspace.palette-vault';
+
 export const PLUGINS = [
   {
     slug: 'chrome',
+    category: 'BrowserApplication',
     name: 'Palette Vault for Chrome',
     platform: 'Chrome, Edge, Brave and other Chromium browsers',
     status: 'live',
@@ -49,6 +53,7 @@ export const PLUGINS = [
   },
   {
     slug: 'firefox',
+    category: 'BrowserApplication',
     name: 'Palette Vault for Firefox',
     platform: 'Firefox',
     status: 'live',
@@ -78,6 +83,7 @@ export const PLUGINS = [
   },
   {
     slug: 'obsidian',
+    category: 'ProductivityApplication',
     name: 'Palette Vault for Obsidian',
     platform: 'Obsidian, desktop and mobile',
     status: 'live',
@@ -97,6 +103,38 @@ export const PLUGINS = [
     note:
       'Install it from inside Obsidian: Settings, Community plugins, Browse, '
       + 'then search for Palette Vault.',
+  },
+  {
+    slug: 'vscode',
+    category: 'DeveloperApplication',
+    name: 'Palette Vault for VS Code',
+    platform: 'Visual Studio Code',
+    status: 'live',
+    url: VSCODE_EXTENSION_URL,
+    cta: 'Get it on the Marketplace',
+    summary:
+      'Generate a palette and have it written in the format of the file you '
+      + 'are editing: CSS custom properties, Sass variables, a Tailwind '
+      + 'fragment, JSON, or a comment.',
+    features: [
+      'Insert a palette in the format of the file you are in',
+      'Insert one as a comment instead, so nothing you wrote is disturbed',
+      'Build a palette around the color already under your cursor',
+      'Convert any color to HEX, rgb, hsl or oklch',
+      'Check contrast against all five WCAG thresholds at once',
+    ],
+    /*
+     * The two missing commands are named rather than left to be discovered.
+     *
+     * Every other entry on this page extracts colors from an image, and a
+     * reader who skims the list will carry that assumption into this one. It
+     * is absent for a reason the reader cannot guess: the VS Code extension
+     * host is Node with no canvas to decode an image with.
+     */
+    note:
+      'No image extraction here, and no inline color chips: VS Code already '
+      + 'draws those in CSS and Sass, and its extension host cannot decode an '
+      + 'image.',
   },
 ];
 

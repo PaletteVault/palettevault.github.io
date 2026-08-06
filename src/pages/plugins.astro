@@ -26,7 +26,12 @@ const schema = [
   ...PLUGINS.filter((plugin) => plugin.status === 'live').map((plugin) => ({
     '@type': 'SoftwareApplication',
     name: plugin.name,
-    applicationCategory: 'BrowserApplication',
+    /*
+     * Per plugin, not one blanket value. Two of the four are not browsers, and
+     * telling a search engine that an editor plugin is a BrowserApplication is
+     * a claim about the product, not a formality.
+     */
+    applicationCategory: plugin.category,
     operatingSystem: plugin.platform,
     url: plugin.url,
     description: plugin.summary,
@@ -36,8 +41,8 @@ const schema = [
 ---
 
 <Layout
-	title='Color Palette Plugins for Chrome and Obsidian | Palette Vault'
-	description='Free color palette tools where you already work. Generate palettes, extract them from any page or image, and pick colors from the screen.'
+	title='Color Palette Plugins for Chrome, Firefox, VS Code and Obsidian | Palette Vault'
+	description='Free color palette tools where you already work. Generate palettes, extract them from any page or image, convert to OKLCH, and check contrast.'
 	active='tools'
 	schema={schema}
 	prose>

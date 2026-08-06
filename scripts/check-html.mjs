@@ -28,8 +28,19 @@ import { join, relative, sep } from 'node:path';
 
 const DIST = process.argv[2] ?? 'dist';
 
+/*
+ * Trees shipped from this domain that are not pages of this website.
+ *
+ * /penpot/ is the Penpot plugin. Penpot loads it by URL into an iframe from
+ * its plugin manager, so nobody reads it as a page: it has no canonical, no
+ * breadcrumb and no business in the sitemap, and every check here would be
+ * measuring it against rules it was never meant to follow.
+ */
+const NOT_THIS_SITE = ['penpot'];
+
 function htmlFiles(dir, out = []) {
   for (const entry of readdirSync(dir)) {
+    if (dir === DIST && NOT_THIS_SITE.includes(entry)) continue;
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) htmlFiles(full, out);
     else if (entry.endsWith('.html')) out.push(full);
