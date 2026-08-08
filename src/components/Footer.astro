@@ -67,7 +67,8 @@ const COLOR_ORDER = [
 ];
 
 const COLOR_LINKS = COLOR_ORDER.map((slug) => COLORS.find((color) => color.slug === slug)).filter(
-	Boolean);
+	Boolean,
+);
 /*
  * Every tool, not a subset. The footer is the only place most tool pages get
  * an internal link from every page on the site, so truncating the list left
@@ -107,6 +108,8 @@ const TOOL_LINKS = TOOLS;
 				<li><a href='/random/'>Random</a></li>
 				<li><a href='/collection/'>My collection</a></li>
 				<li><a href='/colors/'>All colors</a></li>
+				<li><a href='/colors/css-names/'>CSS color names</a></li>
+				<li><a href='/colors/web-safe/'>Web safe colors</a></li>
 				<li><a href='/blog/'>Blog</a></li>
 				<li><a href='/plugins/'>Plugins</a></li>
 				<li><a href='/apps/'>Apps</a></li>

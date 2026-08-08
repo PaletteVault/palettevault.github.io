@@ -186,6 +186,17 @@ export function getSitemapEntries() {
   entries.push({ path: '/colors/', changefreq: 'weekly', priority: '0.9' });
 
   /*
+   * Two fixed vocabularies, listed apart from the catalogue.
+   *
+   * Neither changes: the CSS keywords are set by the specification and the 216
+   * were fixed decades ago, hence `yearly`. They sit below the catalogue in
+   * priority because they answer reference questions rather than the searches
+   * the colour pages are written for.
+   */
+  entries.push({ path: '/colors/css-names/', changefreq: 'yearly', priority: '0.7' });
+  entries.push({ path: '/colors/web-safe/', changefreq: 'yearly', priority: '0.7' });
+
+  /*
    * One page per color. Most are not canonicalised from their source tag
    * "coral" and the general orange category answer different questions. Only
    * pastel and purple cover the same ground as their tag, and those are listed

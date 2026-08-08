@@ -79,8 +79,15 @@ const browse = [
   link('Popular - ranked by likes', '/popular/'),
   link('Random', '/random/'),
   link('All colors - names, hex codes, shades', '/colors/'),
+  /*
+   * Both fixed vocabularies, described by what makes them different from the
+   * catalog above. An agent choosing between three color lists needs to know
+   * that two of them are closed sets it cannot expect to grow.
+   */
+  link('CSS color names - the 141 keywords a browser understands', '/colors/css-names/'),
+  link('216 web safe colors - the fixed palette from 8-bit displays', '/colors/web-safe/'),
   link('All tools', '/tools/'),
-  link('Plugins - Chrome extension and Obsidian plugin', '/plugins/'),
+  link('Plugins - Chrome, Firefox, Figma, Framer, VS Code, Obsidian', '/plugins/'),
   link('Apps - the Windows desktop app', '/apps/'),
   link('Blog', '/blog/'),
 ].join('\n');

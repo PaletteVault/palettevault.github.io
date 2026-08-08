@@ -22,8 +22,10 @@ needs no lookup.
 - [Popular - ranked by likes](https://palettevault.github.io/popular/)
 - [Random](https://palettevault.github.io/random/)
 - [All colors - names, hex codes, shades](https://palettevault.github.io/colors/)
+- [CSS color names - the 141 keywords a browser understands](https://palettevault.github.io/colors/css-names/)
+- [216 web safe colors - the fixed palette from 8-bit displays](https://palettevault.github.io/colors/web-safe/)
 - [All tools](https://palettevault.github.io/tools/)
-- [Plugins - Chrome extension and Obsidian plugin](https://palettevault.github.io/plugins/)
+- [Plugins - Chrome, Firefox, Figma, Framer, VS Code, Obsidian](https://palettevault.github.io/plugins/)
 - [Apps - the Windows desktop app](https://palettevault.github.io/apps/)
 - [Blog](https://palettevault.github.io/blog/)
 

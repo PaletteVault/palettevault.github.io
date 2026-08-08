@@ -1,0 +1,263 @@
+---
+/**
+ * /colors/css-names/
+ *
+ * The colour keywords a browser understands, with their hex values.
+ *
+ * WHY THIS IS NOT THE SAME PAGE AS /colors/
+ *
+ * The index at /colors/ lists this site's own catalogue: colours chosen
+ * because people search for them and because each has enough to say to earn a
+ * page. This one lists a fixed vocabulary defined by the CSS specification.
+ * The two overlap by a handful of names and answer different questions, which
+ * is the only reason both exist. Two pages covering the same ground would
+ * compete with each other and win nothing.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { CSS_NAMED } from '../../lib/tools/swatch-data.js';
+import { hexToRgb, isDark } from '../../lib/palette.js';
+import { perceptualDistance, LINKABLE } from '../../lib/color-spaces.js';
+import { hexToOklch } from '../../lib/oklch.js';
+import { COLORS } from '../../lib/colors.js';
+import { nearestColor } from '../../lib/nearest-color.js';
+
+const site = Astro.site ?? new URL('https://palettevault.github.io');
+
+const index = COLORS.map((color) => ({ hex: color.hex, slug: color.slug, name: color.name }));
+
+/**
+ * The catalogue colour worth linking to, or nothing.
+ *
+ * `nearestColor` returns whichever is closest, which is a different question
+ * from whether anything is close. Measured across this list it matched 139 of
+ * 141, and the worst pair sat 0.177 apart in OKLab, a deep magenta pointing at
+ * hot pink. The distance gate keeps the links honest.
+ */
+function linkFor(hex) {
+  const candidate = nearestColor(hex, index);
+  if (!candidate) return null;
+  return perceptualDistance(hex, candidate.hex) <= LINKABLE ? candidate : null;
+}
+
+/*
+ * Sorted by hue rather than alphabetically.
+ *
+ * An alphabetical list scatters the greens through the whole page and makes
+ * choosing between two similar names impossible. Greys have no meaningful hue,
+ * so they are pushed to the end as a group instead of being sprinkled wherever
+ * their arbitrary hue angle happens to land.
+ */
+const NEUTRAL_C = 0.03;
+
+const entries = CSS_NAMED.map(([name, hex]) => {
+  const { r, g, b } = hexToRgb(hex);
+  const { L, C, h } = hexToOklch(hex);
+  return {
+    name,
+    hex,
+    rgb: `${r}, ${g}, ${b}`,
+    dark: isDark(hex),
+    neutral: C < NEUTRAL_C,
+    L,
+    h,
+    near: linkFor(hex),
+  };
+}).sort((a, b) => {
+  if (a.neutral !== b.neutral) return a.neutral ? 1 : -1;
+  if (a.neutral) return b.L - a.L;
+  return a.h - b.h || b.L - a.L;
+});
+
+const linked = entries.filter((entry) => entry.near).length;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Colors', item: `${site.origin}/colors/` },
+      { '@type': 'ListItem', position: 3, name: 'CSS color names' },
+    ],
+  },
+];
+---
+
+<Layout
+	title={`${CSS_NAMED.length} CSS Color Names with Hex Codes and RGB Values | Palette Vault`}
+	description={`Every color keyword a browser understands, ${CSS_NAMED.length} of them, sorted by hue with hex codes and RGB values. Click any swatch to copy it.`}
+	active='colors'
+	schema={schema}
+	prose>
+	<nav class='crumbs' aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<a href='/colors/'>Colors</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>CSS color names</span>
+	</nav>
+
+	<h1>CSS color names</h1>
+
+	<p class='lede'>
+		The {CSS_NAMED.length} keywords you can write instead of a hex code, sorted
+		by hue so that similar colors sit together. Click a swatch to copy its
+		name.
+	</p>
+
+	<ul class='grid'>
+		{
+			entries.map((entry) => (
+				<li>
+					<button
+						type='button'
+						class={`chip ${entry.dark ? 'chip--dark' : 'chip--light'}`}
+						id={entry.name}
+						style={`background:#${entry.hex}`}
+						data-copy={entry.name}
+						title={`${entry.name} · #${entry.hex.toUpperCase()} · rgb(${entry.rgb})`}>
+						<span class='chip__name'>{entry.name}</span>
+						<span class='chip__hex'>#{entry.hex.toUpperCase()}</span>
+					</button>
+					{entry.near && (
+						<a class='chip__near' href={`/colors/${entry.near.slug}/`}>
+							{entry.near.name}
+						</a>
+					)}
+				</li>
+			))
+		}
+	</ul>
+
+	<section class='page-note'>
+		<h2>What a keyword is worth</h2>
+
+		<p>
+			A keyword is exactly as precise as the hex code it stands for: they are
+			the same color, written two ways. What a name buys you is readability
+			in a stylesheet, and what it costs you is range, because there are only{' '}
+			{CSS_NAMED.length} of them and none can be nudged.
+		</p>
+
+		<p>
+			The list is also a historical accident rather than a design. It grew out
+			of early browser vocabularies, which is why it holds four spellings of
+			grey, several near-identical blues, and nothing at all between some
+			neighbouring hues.
+		</p>
+
+		<h2>Sorted by hue, not by name</h2>
+
+		<p>
+			Alphabetical order scatters the greens across the whole page and makes
+			choosing between two similar names a matter of scrolling back and forth.
+			These are ordered by hue angle in OKLCH, with the greys collected at the
+			end by lightness, because a grey has no hue worth sorting on.
+		</p>
+
+		<h2>Where these lead</h2>
+
+		<p>
+			{linked} of the {CSS_NAMED.length} sit close enough to a color in{' '}
+			<a href='/colors/'>the color index</a> to link there, where you will find
+			conversions, shade scales and palettes. The rest carry no link rather
+			than an approximate one.
+		</p>
+
+		<p>
+			For colors that are not in this vocabulary, the{' '}
+			<a href='/tools/picker/'>color picker</a> converts anything you paste,
+			and the <a href='/colors/web-safe/'>216 web safe colors</a> are a
+			separate fixed list with its own history.
+		</p>
+	</section>
+</Layout>
+
+<script>
+	document.querySelectorAll('[data-copy]').forEach((node) => {
+		node.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(node.getAttribute('data-copy'));
+				node.classList.add('is-copied');
+				setTimeout(() => node.classList.remove('is-copied'), 600);
+			} catch {
+				/* Clipboard refused, which is not worth interrupting anybody over. */
+			}
+		});
+	});
+</script>
+
+<style>
+	.lede {
+		font-size: 1.08em;
+		color: var(--text-muted);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+		gap: 8px;
+		list-style: none;
+		margin: 1.5rem 0 2.5rem;
+		padding: 0;
+	}
+
+	.chip {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 5 / 3;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		cursor: pointer;
+		font: inherit;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 2px;
+		padding-bottom: 8px;
+	}
+
+	.chip__name {
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.chip__hex {
+		font-size: 9px;
+		opacity: 0.75;
+		letter-spacing: 0.04em;
+	}
+
+	.chip--dark {
+		color: #fff;
+	}
+
+	.chip--light {
+		color: #000;
+	}
+
+	.chip.is-copied::after {
+		content: 'copied';
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		border-radius: var(--radius);
+		background: rgba(0, 0, 0, 0.55);
+		color: #fff;
+		font-size: 11px;
+	}
+
+	.chip__near {
+		display: block;
+		margin-top: 3px;
+		font-size: 11px;
+		color: var(--text-muted);
+		text-align: center;
+		text-decoration: none;
+	}
+
+	.chip__near:hover {
+		text-decoration: underline;
+	}
+</style>

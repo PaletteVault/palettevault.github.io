@@ -9,7 +9,7 @@ import ColorLanding from '../../components/ColorLanding.astro';
 import { COLORS } from '../../lib/colors.js';
 
 export function getStaticPaths() {
-  return COLORS.map((color) => ({ params: { color: color.slug }, props: { color } }));
+	return COLORS.map((color) => ({ params: { color: color.slug }, props: { color } }));
 }
 
 const { color } = Astro.props;

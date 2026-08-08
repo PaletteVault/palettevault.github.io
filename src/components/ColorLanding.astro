@@ -12,13 +12,14 @@
  */
 import Layout from '../layouts/Layout.astro';
 import Feed from './Feed.astro';
+import ColorFacts from './ColorFacts.astro';
 import { getFirstRows, getMeta, SSG_BATCH } from '../lib/data.server.js';
 import { contrastRatio, describeColor, hexToHsl, hexToRgb, isDark } from '../lib/palette.js';
 import { formatOklch, oklchToHex, ramp } from '../lib/oklch.js';
 import { COLORS } from '../lib/colors.js';
 
 interface Props {
-  color: Record<string, any>;
+	color: Record<string, any>;
 }
 
 const { color } = Astro.props;
@@ -28,16 +29,16 @@ const tag = meta.tags.find((t) => t.slug === color.tag);
 const preRows = getFirstRows(`tag/${color.tag}`, SSG_BATCH);
 
 const describe = (hex: string) => {
-  const { h, s, l } = hexToHsl(hex);
-  const { r, g, b } = hexToRgb(hex);
-  return {
-    hex,
-    rgb: `rgb(${r}, ${g}, ${b})`,
-    hsl: `hsl(${h}, ${s}%, ${l}%)`,
-    oklch: formatOklch(hex),
-    onWhite: contrastRatio(hex, 'ffffff').toFixed(2),
-    onBlack: contrastRatio(hex, '000000').toFixed(2),
-  };
+	const { h, s, l } = hexToHsl(hex);
+	const { r, g, b } = hexToRgb(hex);
+	return {
+		hex,
+		rgb: `rgb(${r}, ${g}, ${b})`,
+		hsl: `hsl(${h}, ${s}%, ${l}%)`,
+		oklch: formatOklch(hex),
+		onWhite: contrastRatio(hex, 'ffffff').toFixed(2),
+		onBlack: contrastRatio(hex, '000000').toFixed(2),
+	};
 };
 
 const base = describe(color.hex);
@@ -48,8 +49,8 @@ const base = describe(color.hex);
  * chalky through the middle and drifts off the hue at both ends.
  */
 const SCALE = ramp(color.hex, 11).map((hex, index) => ({
-  step: index === 0 ? 50 : index * 100,
-  ...describe(hex),
+	step: index === 0 ? 50 : index * 100,
+	...describe(hex),
 }));
 
 /*
@@ -67,9 +68,9 @@ const SCALE = ramp(color.hex, 11).map((hex, index) => ({
  * not. A number in prose that restates a number in code will drift the first
  * time either one moves.
  */
-const SHADE_STEPS = SCALE
-  .filter((shade) => shade.step >= 100 && shade.step <= 900)
-  .map((shade) => ({ ...shade, display: `#${shade.hex.toUpperCase()}` }));
+const SHADE_STEPS = SCALE.filter((shade) => shade.step >= 100 && shade.step <= 900).map(
+	(shade) => ({ ...shade, display: `#${shade.hex.toUpperCase()}` }),
+);
 
 const firstAA = SCALE.find((shade) => Number(shade.onWhite) >= 4.5);
 
@@ -82,9 +83,9 @@ const firstAA = SCALE.find((shade) => Number(shade.onWhite) >= 4.5);
 const isFamily = color.kind === 'family' || color.kind === 'style';
 
 const NAMED = (color.named ?? []).map((shade: any) => ({
-  name: shade.name,
-  note: shade.note ?? null,
-  ...describe(shade.hex ?? oklchToHex(shade.L, shade.C, shade.hue)),
+	name: shade.name,
+	note: shade.note ?? null,
+	...describe(shade.hex ?? oklchToHex(shade.L, shade.C, shade.hue)),
 }));
 
 /** Neighbours in the catalog, for internal linking. */
@@ -94,219 +95,334 @@ const lower = color.name.toLowerCase();
 const site = Astro.site ?? new URL('https://palette-vault.example');
 
 const schema: Record<string, unknown>[] = [
-  {
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
-      { '@type': 'ListItem', position: 2, name: 'Colors', item: `${site.origin}/colors/` },
-      { '@type': 'ListItem', position: 3, name: color.name },
-    ],
-  },
+	{
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+			{ '@type': 'ListItem', position: 2, name: 'Colors', item: `${site.origin}/colors/` },
+			{ '@type': 'ListItem', position: 3, name: color.name },
+		],
+	},
 ];
 
 if (color.faq?.length) {
-  schema.push({
-    '@type': 'FAQPage',
-    mainEntity: color.faq.map((item: any) => ({
-      '@type': 'Question',
-      name: item.q,
-      acceptedAnswer: { '@type': 'Answer', text: item.a },
-    })),
-  });
+	schema.push({
+		'@type': 'FAQPage',
+		mainEntity: color.faq.map((item: any) => ({
+			'@type': 'Question',
+			name: item.q,
+			acceptedAnswer: { '@type': 'Answer', text: item.a },
+		})),
+	});
 }
 
 const description =
-  `${color.name} color: hex code #${color.hex.toUpperCase()}, RGB, HSL and OKLCH values, `
-  + `a full shade scale, contrast notes and ${lower} color palettes to copy.`;
+	`${color.name} color: hex code #${color.hex.toUpperCase()}, RGB, HSL and OKLCH values, ` +
+	`a full shade scale, contrast notes and ${lower} color palettes to copy.`;
 ---
 
 <Layout
-  title={color.title ?? `${color.name} Color, Hex #${color.hex.toUpperCase()}, Shades & Palettes`}
-  description={description}
-  schema={schema}
-  canonical={color.canonicalTo}
->
-  <Feed
-    title={color.h1 ?? `${color.name} color: hex codes, shades and palettes`}
-    subtitle={`Palettes built around ${color.name.toLowerCase()}. Click any swatch to copy its hex code.`}
-    type="chunks"
-    base={`/data/tag/${color.tag}`}
-    chunks={tag?.chunks ?? 0}
-    preRows={preRows}
-    emptyTitle={`No ${lower} palettes yet`}
-    emptyText="Run npm run generate to build the dataset."
-  >
-    <div slot="intro" class="page-intro">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span aria-hidden="true">/</span>
-        <a href="/colors/">Colors</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">{color.name}</span>
-      </nav>
+	title={color.title ?? `${color.name} Color, Hex #${color.hex.toUpperCase()}, Shades & Palettes`}
+	description={description}
+	schema={schema}
+	canonical={color.canonicalTo}>
+	<Feed
+		title={color.h1 ?? `${color.name} color: hex codes, shades and palettes`}
+		subtitle={`Palettes built around ${color.name.toLowerCase()}. Click any swatch to copy its hex code.`}
+		type='chunks'
+		base={`/data/tag/${color.tag}`}
+		chunks={tag?.chunks ?? 0}
+		preRows={preRows}
+		emptyTitle={`No ${lower} palettes yet`}
+		emptyText='Run npm run generate to build the dataset.'>
+		<div
+			slot='intro'
+			class='page-intro'>
+			<nav
+				class='crumbs'
+				aria-label='Breadcrumb'>
+				<a href='/'>Home</a>
+				<span aria-hidden='true'>/</span>
+				<a href='/colors/'>Colors</a>
+				<span aria-hidden='true'>/</span>
+				<span aria-current='page'>{color.name}</span>
+			</nav>
 
-      {
-        color.lead
-          ? color.lead.map((text: string) => <p set:html={text} />)
-          : (
-              <p>
-                <strong>{color.name}</strong> is <code>#{base.hex.toUpperCase()}</code>, {' '}{describeColor(color.hex).toLowerCase()}. Below are its shades with hex
-                codes, the values in every common format, and {lower} color palettes to copy.
-              </p>
-            )
-      }
+			{
+				color.lead ?
+					color.lead.map((text: string) => <p set:html={text} />)
+				:	<p>
+						<strong>{color.name}</strong> is <code>#{base.hex.toUpperCase()}</code>,{' '}
+						{describeColor(color.hex).toLowerCase()}. Below are its shades with hex codes, the
+						values in every common format, and {lower} color palettes to copy.
+					</p>
+			}
 
-      <div class="ramp-strip" data-copy-grid style={isFamily ? 'display:none' : undefined}>
-        {
-          SCALE.map((shade) => (
-            <button
-              type="button"
-              class="ramp-strip__step"
-              style={`background:#${shade.hex}`}
-              data-copy={`#${shade.hex.toUpperCase()}`}
-              title={`${shade.step} · #${shade.hex.toUpperCase()} · ${shade.onWhite}:1 on white`}
-            >
-              <span class="ramp-strip__label">{shade.step}</span>
-            </button>
-          ))
-        }
-      </div>
-    </div>
+			<div
+				class='ramp-strip'
+				data-copy-grid
+				style={isFamily ? 'display:none' : undefined}>
+				{
+					SCALE.map((shade) => (
+						<button
+							type='button'
+							class='ramp-strip__step'
+							style={`background:#${shade.hex}`}
+							data-copy={`#${shade.hex.toUpperCase()}`}
+							title={`${shade.step} · #${shade.hex.toUpperCase()} · ${shade.onWhite}:1 on white`}>
+							<span class='ramp-strip__label'>{shade.step}</span>
+						</button>
+					))
+				}
+			</div>
 
-    <section class="page-note">
-      {!isFamily && (<Fragment>
-      <h2>{color.name} hex, RGB, HSL and OKLCH</h2>
+		{/*
+		 * The intro slot now holds the whole page, so the palette grid lands
+		 * after all of it.
+		 *
+		 * Feed renders `intro`, then the grid, then its default slot. This
+		 * wrapper used to close here, which left everything below it in the
+		 * default slot and put the palettes in the middle of the page: between
+		 * the shade strip and every explanation of the colour. Somebody who
+		 * arrived for one hex value met a wall of unrelated palettes before
+		 * reaching the numbers they came for.
+		 */}
+		<section class='page-note'>
+			{
+				!isFamily && (
+					<Fragment>
+						<h2>{color.name} hex, RGB, HSL and OKLCH</h2>
 
-      <div class="value-card">
-        <div class={`value-card__chip ${isDark(color.hex) ? 'on-dark' : 'on-light'}`} style={`background:#${color.hex}`}>
-          <span>#{base.hex.toUpperCase()}</span>
-        </div>
-        <dl class="value-card__list">
-          <div><dt>HEX</dt><dd><code>#{base.hex.toUpperCase()}</code></dd></div>
-          <div><dt>RGB</dt><dd><code>{base.rgb}</code></dd></div>
-          <div><dt>HSL</dt><dd><code>{base.hsl}</code></dd></div>
-          <div><dt>OKLCH</dt><dd><code>{base.oklch}</code></dd></div>
-          <div><dt>On white</dt><dd>{base.onWhite}:1</dd></div>
-          <div><dt>On black</dt><dd>{base.onBlack}:1</dd></div>
-        </dl>
-      </div>
+						<div class='value-card'>
+							<div
+								class={`value-card__chip ${isDark(color.hex) ? 'on-dark' : 'on-light'}`}
+								style={`background:#${color.hex}`}>
+								<span>#{base.hex.toUpperCase()}</span>
+							</div>
+							<dl class='value-card__list'>
+								<div>
+									<>
+										<dt>HEX</dt>
+										<dd>
+											<code>#{base.hex.toUpperCase()}</code>
+										</dd>
+									</>
+								</div>
+								<div>
+									<>
+										<dt>RGB</dt>
+										<dd>
+											<code>{base.rgb}</code>
+										</dd>
+									</>
+								</div>
+								<div>
+									<>
+										<dt>HSL</dt>
+										<dd>
+											<code>{base.hsl}</code>
+										</dd>
+									</>
+								</div>
+								<div>
+									<>
+										<dt>OKLCH</dt>
+										<dd>
+											<code>{base.oklch}</code>
+										</dd>
+									</>
+								</div>
+								<div>
+									<>
+										<dt>On white</dt>
+										<dd>{base.onWhite}:1</dd>
+									</>
+								</div>
+								<div>
+									<>
+										<dt>On black</dt>
+										<dd>{base.onBlack}:1</dd>
+									</>
+								</div>
+							</dl>
+						</div>
 
-      <h2>Shades of {lower}</h2>
+						<h2>Shades of {lower}</h2>
 
-      <p>
-        {SHADE_STEPS.length} steps from one base color, generated in{' '}
-        <strong>OKLCH</strong> so each step is an equal <em>perceived</em> step
-        rather than an equal numeric one. Click a swatch to copy it.
-      </p>
+						<p>
+							{SHADE_STEPS.length} steps from one base color, generated in <strong>OKLCH</strong> so
+							each step is an equal <em>perceived</em> step rather than an equal numeric one. Click
+							a swatch to copy it.
+						</p>
 
-      <div class="shade-grid" data-copy-grid>
-        {
-          SHADE_STEPS.map((shade) => (
-            <button
-              type="button"
-              class="shade"
-              data-copy={shade.display}
-              title={`Copy ${shade.display}`}>
-              <span class="shade__chip" style={`background:#${shade.hex}`} />
-              <span class="shade__body">
-                <span class="shade__name">{color.name} {shade.step}</span>
-                <code class="shade__hex">{shade.display}</code>
-                <span class="shade__meta">{shade.hsl} · {shade.onWhite}:1 on white</span>
-              </span>
-            </button>
-          ))
-        }
-      </div>
-      </Fragment>)}
+						<div
+							class='shade-grid'
+							data-copy-grid>
+							{SHADE_STEPS.map((shade) => (
+								<button
+									type='button'
+									class='shade'
+									data-copy={shade.display}
+									title={`Copy ${shade.display}`}>
+									<span
+										class='shade__chip'
+										style={`background:#${shade.hex}`}
+									/>
+									<span class='shade__body'>
+										<span class='shade__name'>
+											{color.name} {shade.step}
+										</span>
+										<code class='shade__hex'>{shade.display}</code>
+										<span class='shade__meta'>
+											{shade.hsl} · {shade.onWhite}:1 on white
+										</span>
+									</span>
+								</button>
+							))}
+						</div>
+					</Fragment>
+				)
+			}
 
-      {
-        NAMED.length > 0 && (
-          <Fragment>
-            <h2>Named shades and close relatives</h2>
-            <div class="shade-grid" data-copy-grid>
-              {NAMED.map((shade: any) => (
-                <button type="button" class="shade" data-copy={`#${shade.hex.toUpperCase()}`}
-                  title={`Copy #${shade.hex.toUpperCase()}`}>
-                  <span class="shade__chip" style={`background:#${shade.hex}`} />
-                  <span class="shade__body">
-                    <span class="shade__name">
-                      {shade.name}
-                      {shade.note && <em class="shade__note"> · {shade.note}</em>}
-                    </span>
-                    <code class="shade__hex">#{shade.hex.toUpperCase()}</code>
-                    <span class="shade__meta">{shade.rgb} · {shade.hsl}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </Fragment>
-        )
-      }
+			{
+				/*
+				 * Outside the !isFamily gate on purpose.
+				 *
+				 * It started inside it, which meant a family page like /colors/orange/
+				 * got none of this: no conversions, no ramps, no schemes. A family page
+				 * still has one representative hex, and everything here is derived from
+				 * six hex digits, so there was never a reason it could not be shown.
+				 *
+				 * Placed before the palettes because somebody who lands on a page for a
+				 * colour arrived with a question about that colour. Palettes are a good
+				 * second thing to offer and a poor first one.
+				 */
+			}
+			<ColorFacts
+				hex={color.hex}
+				name={color.name}
+			/>
 
-      {
-        (color.sections ?? []).map((section: any) => (
-          <>
-            <h2>{section.h2}</h2>
-            {section.paragraphs.map((text: string) => <p set:html={text} />)}
-          </>
-        ))
-      }
+			{
+				NAMED.length > 0 && (
+					<Fragment>
+						<h2>Named shades and close relatives</h2>
+						<div
+							class='shade-grid'
+							data-copy-grid>
+							{NAMED.map((shade: any) => (
+								<button
+									type='button'
+									class='shade'
+									data-copy={`#${shade.hex.toUpperCase()}`}
+									title={`Copy #${shade.hex.toUpperCase()}`}>
+									<span
+										class='shade__chip'
+										style={`background:#${shade.hex}`}
+									/>
+									<span class='shade__body'>
+										<span class='shade__name'>
+											{shade.name}
+											{shade.note && <em class='shade__note'> · {shade.note}</em>}
+										</span>
+										<code class='shade__hex'>#{shade.hex.toUpperCase()}</code>
+										<span class='shade__meta'>
+											{shade.rgb} · {shade.hsl}
+										</span>
+									</span>
+								</button>
+							))}
+						</div>
+					</Fragment>
+				)
+			}
 
-      <h2>Contrast and readability</h2>
+			{
+				(color.sections ?? []).map((section: any) => (
+					<>
+						<h2>{section.h2}</h2>
+						{section.paragraphs.map((text: string) => (
+							<p set:html={text} />
+						))}
+					</>
+				))
+			}
 
-      {!isFamily && (
-        <p>
-          {color.name} on white measures <strong>{base.onWhite}:1</strong> and on
-          black <strong>{base.onBlack}:1</strong>. WCAG AA asks for 4.5:1 on
-          normal text and 3:1 on large text and UI components, so the higher of
-          those two decides which background it belongs on. In the scale above,
-          <strong> {firstAA?.step ?? 'no step'}</strong> is the first to clear
-          4.5:1 on white{firstAA ? `, at ${firstAA.onWhite}:1` : ''}.
-        </p>
-      )}
+			<h2>Contrast and readability</h2>
 
-      <p>
-        The <a href="/tools/contrast/" title="WCAG contrast checker">contrast
-        checker</a> reports every level for a given pair and suggests the
-        nearest passing shade on the same hue. The{' '}
-        <a href="/tools/picker/" title="Color picker with tints and shades"
-          >color picker</a
-        > builds this same scale from any color you paste in.
-      </p>
+			{
+				!isFamily && (
+					<p>
+						{color.name} on white measures <strong>{base.onWhite}:1</strong> and on black{' '}
+						<strong>{base.onBlack}:1</strong>. WCAG AA asks for 4.5:1 on normal text and 3:1 on
+						large text and UI components, so the higher of those two decides which background it
+						belongs on. In the scale above,
+						<strong> {firstAA?.step ?? 'no step'}</strong> is the first to clear 4.5:1 on white
+						{firstAA ? `, at ${firstAA.onWhite}:1` : ''}.
+					</p>
+				)
+			}
 
-      {
-        color.faq?.length > 0 && (
-          <>
-            <h2>{color.name} color questions</h2>
-            <dl class="faq">
-              {color.faq.map((item: any) => (<><dt>{item.q}</dt><dd>{item.a}</dd></>))}
-            </dl>
-          </>
-        )
-      }
+			<p>
+				The <a
+					href='/tools/contrast/'
+					title='WCAG contrast checker'
+					>contrast checker</a
+				> reports every level for a given pair and suggests the nearest passing shade on the same hue.
+				The{' '}
+				<a
+					href='/tools/picker/'
+					title='Color picker with tints and shades'
+					>color picker</a
+				> builds this same scale from any color you paste in.
+			</p>
 
-      {
-        RELATED.length > 0 && (
-          <p class="page-note__more">
-            Related colors:
-            {RELATED.map((c, index) => (
-              <>
-                {index > 0 && ', '}
-                <a href={`/colors/${c.slug}/`} title={`${c.name} color`}>{c.name.toLowerCase()}</a>
-              </>
-            ))}. See every shade on the <a href="/colors/">colors index</a>.
-          </p>
-        )
-      }
-    </section>
-  </Feed>
+			{
+				color.faq?.length > 0 && (
+					<>
+						<h2>{color.name} color questions</h2>
+						<dl class='faq'>
+							{color.faq.map((item: any) => (
+								<>
+									<dt>{item.q}</dt>
+									<dd>{item.a}</dd>
+								</>
+							))}
+						</dl>
+					</>
+				)
+			}
+
+			{
+				RELATED.length > 0 && (
+					<p class='page-note__more'>
+						Related colors:{' '}
+						{RELATED.map((c, index) => (
+							<>
+								{index > 0 && ', '}
+								<a
+									href={`/colors/${c.slug}/`}
+									title={`${c.name} color`}>
+									{c.name.toLowerCase()}
+								</a>
+							</>
+						))}
+						. See every shade on the <a href='/colors/'>colors index</a>.
+					</p>
+				)
+			}
+		</section>
+
+		{/* Closes the intro wrapper opened just before the breadcrumb. */}
+		</div>
+	</Feed>
 </Layout>
 
 <script>
-  import { copyWithToast } from '../lib/clipboard.js';
+	import { copyWithToast } from '../lib/clipboard.js';
 
-  document.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-copy-grid] [data-copy]');
-    if (button) copyWithToast(button.dataset.copy);
-  });
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest('[data-copy-grid] [data-copy]');
+		if (button) copyWithToast(button.dataset.copy);
+	});
 </script>

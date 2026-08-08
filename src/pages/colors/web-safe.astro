@@ -1,0 +1,243 @@
+---
+/**
+ * /colors/web-safe/
+ *
+ * The 216 colours every display could show in the days of eight bit video.
+ *
+ * WHY A PAGE FOR SOMETHING OBSOLETE
+ *
+ * The constraint is gone: any screen sold this century shows millions of
+ * colours, and choosing from these 216 costs quality for nothing. But the
+ * palette is still asked about, still specified in old brand guidelines, and
+ * still the answer to "what is the web safe version of this colour", which is
+ * a question the colour pages link here to answer.
+ *
+ * So the page carries the grid and says plainly that it is history rather than
+ * advice. A reference page that quietly implies you should still design this
+ * way would be worse than no page.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { webSafePalette, perceptualDistance, LINKABLE } from '../../lib/color-spaces.js';
+import { hexToRgb, isDark } from '../../lib/palette.js';
+import { COLORS } from '../../lib/colors.js';
+import { nearestColor } from '../../lib/nearest-color.js';
+
+const site = Astro.site ?? new URL('https://palettevault.github.io');
+
+const palette = webSafePalette();
+
+const index = COLORS.map((color) => ({ hex: color.hex, slug: color.slug, name: color.name }));
+
+/**
+ * The catalogue colour worth linking to, or nothing.
+ *
+ * `nearestColor` answers "which is closest", which is not the question. On
+ * this list it found a nearest for 215 of the 216, and the worst pair was
+ * 0.204 apart in OKLab: a muted rose pointing at a deep wine red. Nearest is
+ * not near, so the distance is measured and anything past LINKABLE is dropped.
+ */
+function linkFor(hex) {
+  const candidate = nearestColor(hex, index);
+  if (!candidate) return null;
+  return perceptualDistance(hex, candidate.hex) <= LINKABLE ? candidate : null;
+}
+
+const swatches = palette.map((hex) => {
+  const { r, g, b } = hexToRgb(hex);
+  return { hex, rgb: `${r}, ${g}, ${b}`, dark: isDark(hex), near: linkFor(hex) };
+});
+
+const linked = swatches.filter((s) => s.near).length;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Colors', item: `${site.origin}/colors/` },
+      { '@type': 'ListItem', position: 3, name: 'Web safe colors' },
+    ],
+  },
+];
+---
+
+<Layout
+	title='216 Web Safe Colors with Hex Codes and RGB Values | Palette Vault'
+	description='The full 216 color web safe palette, every swatch with its hex code and RGB values, plus what the palette was for and why it no longer constrains anything.'
+	active='colors'
+	schema={schema}
+	prose>
+	<nav class='crumbs' aria-label='Breadcrumb'>
+		<a href='/'>Home</a>
+		<span aria-hidden='true'>/</span>
+		<a href='/colors/'>Colors</a>
+		<span aria-hidden='true'>/</span>
+		<span aria-current='page'>Web safe colors</span>
+	</nav>
+
+	<h1>The 216 web safe colors</h1>
+
+	<p class='lede'>
+		Every color in the palette, with its hex code and RGB values. Click a
+		swatch to copy it.
+	</p>
+
+	<ul class='grid'>
+		{
+			swatches.map((swatch) => (
+				<li>
+					<button
+						type='button'
+						class={`chip ${swatch.dark ? 'chip--dark' : 'chip--light'}`}
+						id={swatch.hex}
+						style={`background:#${swatch.hex}`}
+						data-copy={`#${swatch.hex.toUpperCase()}`}
+						title={`#${swatch.hex.toUpperCase()} · rgb(${swatch.rgb})`}>
+						<span>{swatch.hex.toUpperCase()}</span>
+					</button>
+					{swatch.near && (
+						<a class='chip__near' href={`/colors/${swatch.near.slug}/`}>
+							{swatch.near.name}
+						</a>
+					)}
+				</li>
+			))
+		}
+	</ul>
+
+	<section class='page-note'>
+		<h2>What the palette was for</h2>
+
+		<p>
+			A display running 256 colors could not show an arbitrary image without
+			inventing the missing colors on the spot, and every operating system
+			reserved part of that range for itself. What was left was a cube of six
+			evenly spaced levels per channel: <code>00</code>, <code>33</code>,
+			<code>66</code>, <code>99</code>, <code>CC</code> and <code>FF</code>.
+			Six by six by six is 216, and a color built only from those levels
+			looked the same on every machine.
+		</p>
+
+		<h2>Whether to use it now</h2>
+
+		<p>
+			No. Any screen sold this century shows millions of colors, so
+			restricting a design to 216 gives up precision and gains nothing. The
+			palette survives as a reference: old brand guidelines still cite it,
+			and people still ask what the nearest web safe version of a color is.
+		</p>
+
+		<p>
+			Every color page on this site answers that question for its own color,
+			by snapping each channel to the nearest of the six levels. That is how
+			the palette was defined, and it is what every other tool reports.
+			Choosing the perceptually closest of the 216 instead would be a
+			defensible and different answer, and it would make this site disagree
+			with all of them for no visible reason.
+		</p>
+
+		<h2>Where these lead</h2>
+
+		<p>
+			{linked} of the 216 sit close enough to a named color in{' '}
+			<a href='/colors/'>the color index</a> to link there. The rest have no
+			link, because sending you to a page about a different color would be
+			worse than sending you nowhere.
+		</p>
+
+		<p>
+			If you want colors chosen for how they look rather than for a hardware
+			limit that no longer exists, the{' '}
+			<a href='/tools/generate/'>palette generator</a> works in OKLCH, and{' '}
+			<a href='/palettes/'>the palette catalog</a> has ready-made sets.
+		</p>
+	</section>
+</Layout>
+
+<script>
+	/*
+	 * Copy on click, with the confirmation on the swatch itself.
+	 *
+	 * A toast somewhere else on a grid this dense leaves you unsure which of the
+	 * 216 you actually hit.
+	 */
+	document.querySelectorAll('[data-copy]').forEach((node) => {
+		node.addEventListener('click', async () => {
+			const value = node.getAttribute('data-copy');
+			try {
+				await navigator.clipboard.writeText(value);
+				node.classList.add('is-copied');
+				setTimeout(() => node.classList.remove('is-copied'), 600);
+			} catch {
+				/* Clipboard refused, which is not worth interrupting anybody over. */
+			}
+		});
+	});
+</script>
+
+<style>
+	.lede {
+		font-size: 1.08em;
+		color: var(--text-muted);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+		gap: 8px;
+		list-style: none;
+		margin: 1.5rem 0 2.5rem;
+		padding: 0;
+	}
+
+	.chip {
+		position: relative;
+		display: block;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		cursor: pointer;
+		font: inherit;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		padding-bottom: 6px;
+	}
+
+	.chip--dark {
+		color: #fff;
+	}
+
+	.chip--light {
+		color: #000;
+	}
+
+	.chip.is-copied::after {
+		content: 'copied';
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		border-radius: var(--radius);
+		background: rgba(0, 0, 0, 0.55);
+		color: #fff;
+		letter-spacing: 0;
+	}
+
+	.chip__near {
+		display: block;
+		margin-top: 3px;
+		font-size: 11px;
+		color: var(--text-muted);
+		text-align: center;
+		text-decoration: none;
+	}
+
+	.chip__near:hover {
+		text-decoration: underline;
+	}
+</style>
