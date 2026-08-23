@@ -6,14 +6,19 @@
  * palette. The page needs no chunk request and no id, it rebuilds itself
  * entirely from the URL.
  *
- * Only the top of the feed is pre-rendered (see PRERENDER_PALETTES). Every
- * other address is caught by the host's rewrite rule and served
- * pages/palette/index.astro instead.
+ * Every palette in the library is pre-rendered (see PRERENDER_PALETTES). The
+ * rewrite fallback in pages/palette/index.astro is kept as a safety net for a
+ * slug that is well formed but not in the library, not as the normal path.
+ *
+ * It used to be the normal path for everything outside a 2000-page window,
+ * which was fine on a host with rewrites and quietly wrong on GitHub Pages,
+ * where the fallback is 404.html: those pages rendered correctly and answered
+ * 404.
  *
  * These pages are also the only ones that can carry per-palette social
- * metadata. The rewrite fallback serves a single shared HTML file, and
- * crawlers do not run JavaScript, so an og:image set on the client would never
- * be seen. That is why the PNGs are generated for exactly this set of pages.
+ * metadata, because crawlers do not run JavaScript and an og:image set on the
+ * client would never be seen. That is why the PNGs are generated for exactly
+ * this set of pages.
  */
 import Layout from '../../layouts/Layout.astro';
 import PaletteDetail from '../../components/PaletteDetail.astro';
@@ -71,7 +76,14 @@ const schema = [
 
 <Layout
   title={`${name}, ${hexList}`}
-  description={`${name}: color palette ${hexList}. Copy the HEX codes or download it as a PNG.`}
+  {/*
+    Sized against the real bounds rather than one example. Generated names run
+    from 7 characters ("Hot Ivy") to 20 ("Whispered Chartreuse"), and the hex
+    list is always 31, so this template lands between 141 and 154 for every one
+    of the thousands of palette pages. The first version I wrote fit the sample
+    in the audit and overran the longest names by 30 characters.
+  */}
+  description={`${name} is a four-color palette of ${hexList}. Copy the HEX codes, read each color in RGB, HSL and OKLCH, or save a PNG.`}
   image={imagePath}
   schema={schema}
 >

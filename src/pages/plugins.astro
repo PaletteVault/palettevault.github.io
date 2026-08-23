@@ -28,8 +28,13 @@ const site = Astro.site ?? new URL('https://palettevault.github.io');
  * Obsidian are the ones left out: both have their own store listings that
  * already answer a search naming them.
  */
-const title =
-  'Color Palette Plugins for Figma, Framer, VS Code and Chrome | Palette Vault';
+/*
+ * 48 characters. The previous title named all four tools and ran to 75, which
+ * Google truncates around 60, so the brand at the end was never shown. Two
+ * tools named and the brand kept is a better trade than four tools and a
+ * cut-off title.
+ */
+const title = 'Palette Vault Plugins for Figma, VS Code and More';
 
 const description =
   'Free color palette tools where you already work. Generate palettes in OKLCH, '

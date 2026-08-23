@@ -300,9 +300,23 @@ const jsonLd = {
 			><a
 				href='https://get.microsoft.com/installer/download/9n2f8n1z1lc4?referrer=appbadge'
 				target='_self'>
+				<!--
+					The badge is a picture of the words "Get it from Microsoft",
+					so the alt text says what it says. Calling it a "Microsoft
+					Store badge" would describe the picture rather than convey
+					it, and the link already carries the destination.
+
+					No height attribute. One belongs here, so the layout does
+					not shift when a remote image finally loads, but the badge
+					is served by Microsoft and its aspect ratio is not something
+					to guess at: a wrong height would squash it until the CSS
+					caught up. Add it once measured.
+				-->
 				<img
 					src='https://get.microsoft.com/images/en-us%20dark.svg'
+					alt='Get Palette Vault from the Microsoft Store'
 					width='200'
+					loading='lazy'
 				/>
 			</a></div
 		>

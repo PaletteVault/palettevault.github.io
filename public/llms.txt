@@ -144,12 +144,12 @@ All run entirely in the browser. No image or color is ever uploaded.
 - [Extract palette from image](https://palettevault.github.io/tools/extract/): Drop in a photo and pull out the colors that actually define it, clustered rather than sampled at random.
 - [Color collage generator](https://palettevault.github.io/tools/collage/): Combine a photo with the colors extracted from it into one shareable PNG, with the swatches placed above, below, left or right.
 - [Contrast checker](https://palettevault.github.io/tools/contrast/): Check any pair of colors against WCAG 2.1 AA and AAA thresholds for normal text, large text and UI components.
-- [Color picker](https://palettevault.github.io/tools/picker/): Pick a color and read it back as HEX, RGB, HSL and OKLCH, with a full ramp of tints and shades.
+- [Color picker](https://palettevault.github.io/tools/picker/): Pick a color and read it back as HEX, RGB, HSL and OKLCH, with a ramp of tints and shades built in OKLCH so the mid-tones keep their saturation.
 - [OKLCH color picker and converter](https://palettevault.github.io/tools/oklch/): Pick a color by lightness, chroma and hue, see where it leaves the sRGB gamut, and copy it as OKLCH, HEX, RGB, HSL, Display P3, Lab or LCH.
 - [Tailwind colors](https://palettevault.github.io/tools/tailwind/): The full default Tailwind CSS palette with every shade, ready to copy as a class name or a HEX value.
-- [List of colors](https://palettevault.github.io/tools/colors/): Every named CSS color, sortable by hue and lightness, with HEX, RGB and HSL for each one.
+- [List of colors](https://palettevault.github.io/tools/colors/): Every named CSS color, sortable by hue and by lightness, with HEX, RGB and HSL for each one and a contrast reading against black and white.
 - [Browse gradients](https://palettevault.github.io/tools/gradients/): A library of two-stop CSS gradients generated in OKLCH, so the midpoints stay clean instead of going grey.
-- [Gradient maker](https://palettevault.github.io/tools/gradient-maker/): Compose a gradient from your own stops, choose the interpolation space and copy the CSS.
+- [Gradient maker](https://palettevault.github.io/tools/gradient-maker/): Compose a gradient from your own stops, choose whether it interpolates in OKLCH or sRGB, and copy the CSS with a fallback for older browsers.
 
 ## Categories
 

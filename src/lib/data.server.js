@@ -79,18 +79,34 @@ export function getFirstRows(base, count = SSG_BATCH) {
 /**
  * How many individual palette pages to pre-render.
  *
- * Pre-rendering all of them is not an option: at 100 000 palettes that means
- * 100 000 HTML files, a build measured in hours, and an output directory of
- * several hundred megabytes that many hosts will simply refuse.
+ * `Infinity` means all of them, which is the only honest setting on a host
+ * without rewrite rules.
  *
- * So the top of the New feed is pre-rendered, freshest palettes get opened
- * most, for search engines and for hosts with no rewrite configured. Every
- * other address lands on the same file through a rewrite rule. The page draws
- * itself from the slug either way, so visitors see no difference.
+ * WHY THIS CHANGED
  *
- * For scale: ~2 000 pages add a few seconds to the build.
+ * The old value was 2000, on the reasoning that the rest would be served by a
+ * rewrite and nobody would notice. That reasoning holds on Netlify and it does
+ * not hold on GitHub Pages, which has no rewrites: it falls back to 404.html,
+ * so the page rendered correctly in a browser while the server answered 404.
+ * Measured on the live site: a palette inside the window returned 200, one
+ * outside it returned 404, and the two were indistinguishable to look at.
+ *
+ * The site linked to about 8000 of those, so a crawler met thousands of errors
+ * and learned that the /palette/ section was broken. That is the cost this
+ * setting was hiding.
+ *
+ * WHAT IT COSTS
+ *
+ * Measured, not guessed: a palette page is 33.5 KB and carries two PNGs. At
+ * 10 000 palettes that is roughly 335 MB of HTML and 140 MB of images, against
+ * the 1 GB GitHub Pages allows. It fits, with less than a factor of two spare.
+ *
+ * If the library ever grows past about 20 000, this stops fitting and the
+ * answer changes: either a host with rewrites, or linking only to what exists.
+ * Raising the palette count without re-reading this note is how a build starts
+ * failing for reasons nobody remembers.
  */
-export const PRERENDER_PALETTES = 2000;
+export const PRERENDER_PALETTES = Number.POSITIVE_INFINITY;
 
 /**
  * Rows for pre-rendered palette pages, taken from the top of the New feed.

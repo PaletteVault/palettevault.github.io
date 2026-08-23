@@ -60,7 +60,7 @@ export const TOOLS = [
     title: 'Color picker',
     short: 'Color picker',
     description:
-      'Pick a color and read it back as HEX, RGB, HSL and OKLCH, with a full ramp of tints and shades.',
+      'Pick a color and read it back as HEX, RGB, HSL and OKLCH, with a ramp of tints and shades built in OKLCH so the mid-tones keep their saturation.',
     icon: 'M15 4l5 5M17.5 6.5 8 16l-4 4 4-1 9.5-9.5',
   },
   {
@@ -84,7 +84,7 @@ export const TOOLS = [
     title: 'List of colors',
     short: 'List of colors',
     description:
-      'Every named CSS color, sortable by hue and lightness, with HEX, RGB and HSL for each one.',
+      'Every named CSS color, sortable by hue and by lightness, with HEX, RGB and HSL for each one and a contrast reading against black and white.',
     icon: 'M4 5h16v14H4zM9 5v14M14 5v14',
   },
   {
@@ -100,7 +100,7 @@ export const TOOLS = [
     title: 'Gradient maker',
     short: 'Create a gradient',
     description:
-      'Compose a gradient from your own stops, choose the interpolation space and copy the CSS.',
+      'Compose a gradient from your own stops, choose whether it interpolates in OKLCH or sRGB, and copy the CSS with a fallback for older browsers.',
     icon: 'M4 20 20 4M4 12h8M12 4v8',
   },
 ];
