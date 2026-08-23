@@ -7,7 +7,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "generate": "node scripts/generate-palettes.mjs --count=100000 --chunk=1000",
+    "generate": "node scripts/generate-palettes.mjs --count=10000 --chunk=1000",
     "generate:dev": "node scripts/generate-palettes.mjs --count=10000 --chunk=1000",
     "icons": "node scripts/build-icons.mjs",
     "images": "node scripts/build-palette-images.mjs",

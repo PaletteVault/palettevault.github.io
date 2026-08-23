@@ -79,8 +79,22 @@ export function getFirstRows(base, count = SSG_BATCH) {
 /**
  * How many individual palette pages to pre-render.
  *
- * `Infinity` means all of them, which is the only honest setting on a host
- * without rewrite rules.
+ * MEASURED BUDGET
+ *
+ * A palette costs 45 KB of output: 33.5 KB of HTML plus two PNGs averaging
+ * 6.4 KB each. GitHub Pages publishes at most 1 GB, so the whole site fits
+ * about 22 000 palettes and nothing else. 10 000 costs 441 MB, which leaves
+ * real room for the rest of the site and for growth.
+ *
+ * This was briefly set to Infinity, on the belief that the library held 10 000
+ * palettes. It holds 100 000: generate-palettes.mjs defaults to that, and only
+ * the local checkout carries a 10 000 sample. Infinity therefore meant 100 000
+ * pages, 200 000 images and about 4.4 GB, four times what the host accepts. CI
+ * spent an hour on it before anyone noticed, because the failure would only
+ * have appeared at the very end, on upload.
+ *
+ * So: a number, not a predicate, and a number derived from a measurement
+ * rather than from an assumption about how many palettes there are.
  *
  * WHY THIS CHANGED
  *
@@ -91,22 +105,21 @@ export function getFirstRows(base, count = SSG_BATCH) {
  * Measured on the live site: a palette inside the window returned 200, one
  * outside it returned 404, and the two were indistinguishable to look at.
  *
- * The site linked to about 8000 of those, so a crawler met thousands of errors
- * and learned that the /palette/ section was broken. That is the cost this
- * setting was hiding.
+ * Those addresses were reachable from the grid, which builds its links in the
+ * browser, so the built HTML never pointed at them and no build check could
+ * have seen it. Only a crawler that runs scripts, or a person pasting a URL,
+ * met the 404.
  *
- * WHAT IT COSTS
+ * WHAT IS STILL UNSOLVED
  *
- * Measured, not guessed: a palette page is 33.5 KB and carries two PNGs. At
- * 10 000 palettes that is roughly 335 MB of HTML and 140 MB of images, against
- * the 1 GB GitHub Pages allows. It fits, with less than a factor of two spare.
- *
- * If the library ever grows past about 20 000, this stops fitting and the
- * answer changes: either a host with rewrites, or linking only to what exists.
- * Raising the palette count without re-reading this note is how a build starts
- * failing for reasons nobody remembers.
+ * At 100 000 palettes and 45 KB each, pre-rendering the library is not
+ * possible on this host at any setting. 10 000 is a window, not a fix: the
+ * other 90 000 still answer 404 to anything that reaches them. Closing that
+ * properly means one of three things, and all of them are decisions rather
+ * than constants: shrink the library, move to a host with rewrite rules, or
+ * stop offering addresses for palettes that have no page.
  */
-export const PRERENDER_PALETTES = Number.POSITIVE_INFINITY;
+export const PRERENDER_PALETTES = 10_000;
 
 /**
  * Rows for pre-rendered palette pages, taken from the top of the New feed.

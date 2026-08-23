@@ -23,7 +23,7 @@
  *   a single tag page. Disk is cheap; round trips are not.
  *
  *  Usage:
- *    node scripts/generate-palettes.mjs --count=100000 --chunk=1000 --seed=42
+ *    node scripts/generate-palettes.mjs --count=10000 --chunk=1000 --seed=42
  *
  *  No external dependencies, Node.js standard library only.
  * ============================================================================
@@ -41,7 +41,17 @@ const PUBLIC_DATA_DIR = resolve(__dirname, '..', 'public', 'data');
  * ========================================================================== */
 
 function parseArgs(argv) {
-  const out = { count: 100_000, chunk: 1000, seed: 20260726, out: PUBLIC_DATA_DIR };
+  /*
+   * The default is the real library size, so a bare run reproduces what the
+   * site ships. It used to be 100 000 while the deploy workflow, the npm
+   * script and the local checkout each said something different, and the
+   * disagreement was invisible until a build tried to render 100 000 pages.
+   *
+   * Count is not a tuning knob. Section 9.2 shuffles the whole array before
+   * assigning ids, so changing it produces a different library with different
+   * URLs, not a longer version of the same one.
+   */
+  const out = { count: 10_000, chunk: 1000, seed: 20260726, out: PUBLIC_DATA_DIR };
   for (const arg of argv.slice(2)) {
     const m = /^--([\w-]+)(?:=(.*))?$/.exec(arg);
     if (!m) continue;

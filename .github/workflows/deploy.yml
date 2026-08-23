@@ -14,9 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       palette_count:
-        description: 'How many palettes to generate'
+        description: 'How many palettes to generate (changing this changes every URL)'
         required: false
-        default: '100000'
+        default: '10000'
 
 # Required to publish. The token is scoped to this run only.
 permissions:
@@ -54,8 +54,21 @@ jobs:
       - name: Install Pillow
         run: python3 -m pip install --quiet --break-system-packages Pillow
 
+      # 10 000, down from 100 000.
+      #
+      # The library has to be a size the host can actually serve. A palette
+      # costs 45 KB of output once its page and two PNGs are counted, and
+      # GitHub Pages publishes at most 1 GB, so 100 000 palettes was never
+      # servable: 90 000 of them existed only as addresses that fell through
+      # to 404.html and drew themselves in the browser. 10 000 costs 441 MB
+      # and every one of them is a real page.
+      #
+      # Changing this number changes the library. Generation shuffles the whole
+      # array before assigning ids, so a different count with the same seed
+      # yields entirely different palettes and therefore different URLs. Treat
+      # it as a migration, not a setting.
       - name: Generate palettes
-        run: node scripts/generate-palettes.mjs --count=${{ github.event.inputs.palette_count || '100000' }} --chunk=1000
+        run: node scripts/generate-palettes.mjs --count=${{ github.event.inputs.palette_count || '10000' }} --chunk=1000
 
       - name: Generate icons
         run: npm run icons
