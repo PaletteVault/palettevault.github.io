@@ -18,6 +18,10 @@ export function GET({ site }) {
     '# Rewrite fallback shell: no content until a palette slug is attached.',
     'Disallow: /palette/$',
     '',
+    // The index first, because it is the one to prefer. /sitemap.xml stays
+    // listed: it is still correct, and removing it would only discard a path
+    // some crawler may already know.
+    `Sitemap: ${origin}/sitemap-index.xml`,
     `Sitemap: ${origin}/sitemap.xml`,
     '',
   ].join('\n');
