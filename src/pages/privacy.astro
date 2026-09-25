@@ -15,7 +15,7 @@
  */
 import Layout from '../layouts/Layout.astro';
 
-const UPDATED = 'July 2026';
+const UPDATED = 'September 2026';
 
 const site = Astro.site ?? new URL('https://palette-vault.example');
 const schema = [
@@ -131,6 +131,23 @@ const schema = [
 			tab you are currently looking at, and only at the moment you invoke it. It deliberately does
 			not request broad access to every site you visit. It generates palettes locally, keeps its
 			saved palettes in the browser's own storage, and sends nothing anywhere.
+		</p>
+
+		<h2>The Android app</h2>
+		<p>
+			The app works entirely on the phone and makes no network requests at all. Palettes are
+			generated on the device, saved palettes are kept in the app's own storage, and nothing is
+			sent anywhere, so there is no account, no analytics and no advertising identifier.
+		</p>
+		<p>
+			It asks for one permission: the camera, and only when you choose to photograph something on
+			the screen that reads colors from a picture. A photo you take or choose is reduced to a
+			small copy in memory, measured for its colors, and discarded. The picture itself is never
+			copied out of your gallery, never stored by the app, and never uploaded.
+		</p>
+		<p>
+			Removing the app removes the saved palettes with it. There is nothing held anywhere else to
+			delete, and nothing for us to hand back, because we never had it.
 		</p>
 
 		<h2>Children</h2>
