@@ -202,6 +202,8 @@ not declared, so a palette appears under Blue because its colors measure blue.
 
 - [Blog](https://palettevault.github.io/blog/)
 - [RSS feed](https://palettevault.github.io/blog/rss.xml)
+- [How AI Is Changing Software Development in 2026](https://palettevault.github.io/blog/ai-development-2026/)
+- [Color Psychology in UI Design: How Color Shapes User Behavior](https://palettevault.github.io/blog/color-psychology/)
 - [OKLCH vs HSL: why your color scale looks uneven](https://palettevault.github.io/blog/oklch-vs-hsl/)
 - [The Y2K Comeback: Why Retro UI Is Trending Again](https://palettevault.github.io/blog/y2k-renaissance/)
 

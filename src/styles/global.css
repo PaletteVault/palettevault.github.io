@@ -40,8 +40,8 @@
 	 */
 	--shell-max: 1560px;
 	--shell-wide: 1200px;
-	/* Article column: ~1200px of content at 17px is close to 90 characters. */
-	--content: 1200px;
+	/* Long-form copy needs a calm reading measure, not the width of a product grid. */
+	--content: 900px;
 	--pad: 22px;
 
 	--font:
@@ -264,6 +264,83 @@ button {
 	stroke-linejoin: round;
 }
 
+/* ======================================================= site-wide notice == */
+
+/*
+ * One line under the navigation, for something true only for a while.
+ *
+ * On --bg-soft rather than on --accent: a full-width band of brand colour at
+ * the top of every page competes with the palettes, which are the only thing
+ * on this site whose colour should carry. The link is where the accent goes.
+ */
+.notice {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 10px var(--pad);
+	background: var(--bg-soft);
+	border-bottom: 1px solid var(--border);
+}
+
+.notice[hidden] {
+	display: none;
+}
+
+.notice__text {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.45;
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.notice__text strong {
+	color: var(--text);
+	font-weight: 600;
+}
+
+.notice__link {
+	color: var(--accent-strong);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	white-space: nowrap;
+}
+
+.notice__close {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	display: grid;
+	place-items: center;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.notice__close:hover {
+	background: var(--border);
+	color: var(--text);
+}
+
+@media (max-width: 620px) {
+	.notice {
+		align-items: flex-start;
+		gap: 8px;
+		padding: 10px 12px;
+	}
+
+	.notice__text {
+		font-size: 13px;
+		text-align: left;
+	}
+}
+
 /* =============================================================== layout == */
 
 .shell {
@@ -319,18 +396,22 @@ button {
  * that got cut off. At the interface size the same block reads as what it is
  * supporting copy under the cards.
  */
-.shell--prose .prose.shell--prose .post__body.shell--prose .page-note {
+.shell--prose .prose,
+.shell--prose .post__body,
+.shell--prose .page-note {
 	font-size: 17px;
 	line-height: 1.72;
 }
 
-.shell--prose .prose li.shell--prose .post__body li {
+.shell--prose .prose li,
+.shell--prose .post__body li {
 	margin-bottom: 6px;
 }
 
 /* Code keeps the interface size: monospace at 17px is disproportionately wide
    and would break lines that fit fine elsewhere. */
-.post__body pre.prose pre {
+.post__body pre,
+.prose pre {
 	font-size: 13.5px;
 }
 
@@ -1862,7 +1943,8 @@ button {
  * Headings get scroll-margin so that following a contents link does not park
  * the heading underneath the sticky header.
  */
-.post__body h2.post__body h3 {
+.post__body h2,
+.post__body h3 {
 	scroll-margin-top: calc(var(--header-h) + 20px);
 	margin-top: 2.2em;
 	letter-spacing: -0.015em;
@@ -1896,10 +1978,186 @@ button {
 }
 
 .post__body blockquote {
-	margin: 1.6em 0;
-	padding-left: 18px;
-	border-left: 3px solid var(--border);
+	margin: 1.75em 0;
+	padding: 18px 22px;
+	border-left: 4px solid var(--accent-strong);
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	background: var(--bg-soft);
+	color: var(--text);
+}
+
+.post__body blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+.post__body ul,
+.post__body ol {
+	margin: 1.25em 0 1.75em;
+	padding-left: 1.5em;
+}
+
+.post__body li {
+	padding-left: 0.35em;
+}
+
+.post__body li::marker {
+	color: var(--accent-strong);
+	font-weight: 700;
+}
+
+.post__body table {
+	width: 100%;
+	margin: 1.75em 0 2.25em;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	overflow: hidden;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.post__body th,
+.post__body td {
+	padding: 13px 16px;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 1px solid var(--border);
+}
+
+.post__body th {
+	background: var(--bg-soft);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.post__body tr:last-child td {
+	border-bottom: 0;
+}
+
+.post__body tbody tr:nth-child(even) {
+	background: color-mix(in srgb, var(--bg-soft) 55%, transparent);
+}
+
+.post__body tbody tr:hover {
+	background: color-mix(in srgb, var(--accent) 7%, var(--bg));
+}
+
+/* Editorial data visual used by the AI development article. */
+.article-chart {
+	margin: 1.8em 0 2.4em;
+}
+
+.article-chart__title {
+	margin: 0 0 12px !important;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.article-chart__stats {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.article-chart__stat {
+	padding: 17px 18px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+}
+
+.article-chart__value {
+	display: block;
+	margin-bottom: 2px;
+	font-size: 28px;
+	font-weight: 750;
+	line-height: 1.15;
+	letter-spacing: -0.03em;
+}
+
+.article-chart__stat small,
+.article-chart figcaption {
 	color: var(--text-muted);
+}
+
+.article-chart__plot {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	align-items: end;
+	gap: clamp(50px, 16vw, 150px);
+	height: 270px;
+	padding: 28px clamp(32px, 10vw, 90px) 0;
+	border-bottom: 1px solid var(--border);
+	background: repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 25%);
+}
+
+.article-chart__bar {
+	position: relative;
+	min-width: 72px;
+	height: var(--bar);
+	border-radius: 10px 10px 0 0;
+	background: var(--accent-swatch, #4f7cf0);
+}
+
+.article-chart__bar::before {
+	content: attr(data-value);
+	position: absolute;
+	inset: -31px 0 auto;
+	font-weight: 700;
+	text-align: center;
+}
+
+.article-chart__bar::after {
+	content: attr(data-label);
+	position: absolute;
+	inset: auto 50% -32px auto;
+	width: max-content;
+	transform: translateX(50%);
+	font-size: 14px;
+}
+
+.article-chart figcaption {
+	margin-top: 44px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.agent-flow {
+	margin: 1.75em 0 2.25em;
+	padding: 15px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--bg-soft);
+}
+
+.agent-flow__step {
+	padding: 18px 20px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+	text-align: center;
+}
+
+.agent-flow__step strong,
+.agent-flow__step span {
+	display: block;
+}
+
+.agent-flow__step span {
+	margin-top: 3px;
+	color: var(--text-muted);
+	font-size: 15px;
+}
+
+.agent-flow__arrow {
+	padding: 7px 0;
+	color: var(--accent-strong);
+	font-size: 20px;
+	line-height: 1;
+	text-align: center;
 }
 
 /* ============================================================== responsive == */
@@ -2001,8 +2259,29 @@ button {
 		margin-bottom: 20px;
 	}
 
-	.post__body h2.post__body h3 {
+	.post__body h2,
+	.post__body h3 {
 		margin-top: 1.7em;
+	}
+
+	.post__body table {
+		display: block;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	.article-chart__stats {
+		grid-template-columns: 1fr;
+	}
+
+	.article-chart__plot {
+		gap: 38px;
+		height: 230px;
+		padding-inline: 24px;
+	}
+
+	.agent-flow {
+		padding: 10px;
 	}
 
 	.post__toc {
