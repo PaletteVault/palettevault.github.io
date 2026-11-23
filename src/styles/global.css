@@ -131,9 +131,18 @@ button {
 .badges {
 	padding: 0 22px;
 	display: flex;
-	align-items: center;
+	flex-wrap: wrap;
 	justify-content: center;
-	gap: 12rem;
+	gap: 16px;
+}
+.badges__play img {
+	display: block;
+	/*
+	 * 79px tall with ~13px of transparent padding on each side leaves a
+	 * visible badge 53px tall, the same height as the Microsoft badge at
+	 * 200px wide.
+	 */
+	margin: -13px;
 }
 .logo {
 	display: inline-flex;

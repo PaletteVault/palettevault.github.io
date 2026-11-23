@@ -2,6 +2,7 @@
 /** Site header: logo, primary navigation, extension link, theme toggle. */
 
 import { CHROME_EXTENSION_URL } from '../lib/plugins.js';
+import { ANDROID_APP_URL } from '../lib/apps.js';
 
 interface Props {
 	/** Highlighted section. */
@@ -137,6 +138,38 @@ const links = [
 			<circle cx='24' cy='24' r='7.2' fill='#4285F4'></circle>
 		</svg>
 		<span>Add to Chrome</span>
+	</a>
+
+	{/*
+	 * Same pill as the Chrome button, pointing straight at the Play Store
+	 * listing for the Android app. The mark keeps Google Play's own colors for
+	 * the same reason the Chrome mark does.
+	 */}
+	<a
+		class='header__cta'
+		href={ANDROID_APP_URL}
+		target='_blank'
+		rel='noopener'
+		title='Palette Vault for Android, free on Google Play'>
+		<svg
+			class='header__cta-mark'
+			viewBox='0 0 48 48'
+			aria-hidden='true'
+			focusable='false'>
+			<path
+				d='M7.5 4.6 26.5 24 7.5 43.4c-.6-.5-1-1.3-1-2.3V6.9c0-1 .4-1.8 1-2.3Z'
+				fill='#4285F4'></path>
+			<path
+				d='M7.5 4.6c.8-.6 2-.7 3.2 0l21.8 12.6-6 6.8Z'
+				fill='#34A853'></path>
+			<path
+				d='M7.5 43.4 26.5 24l6 6.8-21.8 12.6c-1.2.7-2.4.6-3.2 0Z'
+				fill='#EA4335'></path>
+			<path
+				d='m32.5 17.2 7.1 4.1c2 1.2 2 4.2 0 5.4l-7.1 4.1-6-6.8Z'
+				fill='#FBBC05'></path>
+		</svg>
+		<span>Get for Android</span>
 	</a>
 
 	<button

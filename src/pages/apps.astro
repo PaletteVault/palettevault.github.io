@@ -2,7 +2,7 @@
 /**
  * /apps/
  *
- * Desktop applications. Sibling of /plugins/, and deliberately not merged
+ * Installable applications (Windows and Android). Sibling of /plugins/, and deliberately not merged
  * with it: a plugin extends something the reader already runs, an app is
  * something they install on its own, and the two want different copy.
  */
@@ -33,8 +33,8 @@ const schema = [
 ---
 
 <Layout
-	title='Palette Vault for Windows, a Free Desktop Color Tool | Palette Vault'
-	description='Generate color palettes, extract them from any photo, and pick colors from anywhere on screen. Free on the Microsoft Store, works offline.'
+	title='Palette Vault Apps for Windows and Android, Free Color Tools | Palette Vault'
+	description='Generate color palettes, extract them from any photo, and check contrast. Free on the Microsoft Store and Google Play.'
 	active='tools'
 	schema={schema}
 	prose>
@@ -44,11 +44,11 @@ const schema = [
 		<span aria-current='page'>Apps</span>
 	</nav>
 
-	<h1>Desktop apps</h1>
+	<h1>Apps</h1>
 
 	<p class='lede'>
-		The colour tools as a program you install, rather than a page you open.
-		Everything runs on your own machine.
+		The colour tools as an app you install, on your computer or your phone,
+		rather than a page you open.
 	</p>
 
 	{
@@ -66,8 +66,8 @@ const schema = [
 						class='app__shot'
 						src={app.screenshot}
 						alt={app.screenshotAlt}
-						width='1672'
-						height='941'
+						width={app.screenshotWidth ?? 1672}
+						height={app.screenshotHeight ?? 941}
 						loading='lazy'
 						decoding='async'
 					/>
